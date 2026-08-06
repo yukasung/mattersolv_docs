@@ -197,7 +197,7 @@ git commit -m "feat: validate workspace role assignments"
 
 **Files:**
 
-- Create: `docs/requirements/access-control/frontend-contract-boundary.md`
+- Create: `frontend/docs/requirements/access-control/frontend-contract-boundary.md`
 
 - [ ] **Step 1: Document the adapter boundary**
 
