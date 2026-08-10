@@ -7,6 +7,8 @@
   "scripts": {
     "build": "next build --webpack",
     "dev": "next dev",
+    "questions:test": "node --test --experimental-strip-types app/docs/questions/_lib/*.test.ts",
+    "questions:verify": "node scripts/verify-question-snapshot.mjs",
     "postbuild": "next-sitemap && pagefind --site .next/server/app --output-path public/_pagefind",
     "postinstall": "patch-package",
     "start": "next start"
