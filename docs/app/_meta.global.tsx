@@ -18,7 +18,7 @@ export default {
       workflow: 'Business Workflow',
       plans: { title: 'Plans & Pricing', items: { index: 'Overview', pricing: 'Pricing', 'subscription-access': 'Signup & Access', 'feature-comparison': 'Feature Comparison', 'plan-rules': 'Plan Rules' } },
       roles: { title: 'Roles', items: { index: 'Overview', roles: 'User Roles', permissions: 'Permissions' } },
-      modules: { title: 'โมดูล', items: { index: 'ภาพรวม', clients: 'ลูกค้า', matters: 'คดีและงานกฎหมาย', documents: 'เอกสาร', quotations: 'ใบเสนอราคา', calendar: 'ปฏิทินนัดหมาย', tasks: 'งาน', billing: 'การวางบิล', finance: 'การเงินและบัญชี', hr: 'บุคลากร', reports: 'รายงาน', administration: 'การดูแลระบบ' } },
+      modules: { title: 'Modules', items: { index: 'Overview', clients: 'Clients', matters: 'Matters', documents: 'Documents', quotations: 'Quotations', calendar: 'Calendar', tasks: 'Tasks', billing: 'Billing', finance: 'Finance', hr: 'Human Resources', reports: 'Reports', administration: 'Administration' } },
       reference: { title: 'Reference', items: { 'menu-map': 'Application Menu Map', courts: 'Courts & Court Forms', requirements: 'Requirement Register' } },
       _technical: { type: 'separator', title: <Section>Technical</Section> },
       architecture: { title: 'Architecture', items: { index: 'Overview', 'technology-stack': 'Technology Stack', 'scalability-capacity': 'Scalability & Capacity' } },
