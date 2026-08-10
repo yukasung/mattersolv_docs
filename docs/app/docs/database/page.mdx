@@ -26,30 +26,38 @@ identity ฝั่ง server ห้ามเชื่อถือ `workspace_id`
 - Aggregate, report, export, bulk operation และ background job ต้องใช้ขอบเขต
   Workspace เดียวกัน
 - Unique constraint ของข้อมูลที่ไม่จำเป็นต้องซ้ำข้ามบริษัทควรรวม `workspace_id`
-- ตารางข้อมูลกลางที่ไม่เป็นของ Workspace ต้องระบุเป็นข้อยกเว้นอย่างชัดเจน
-  โดยปัจจุบันมีตาราง `permissions` เป็นข้อยกเว้นตามหัวข้อถัดไป
+- ตารางข้อมูลกลางที่ไม่เป็นของสำนักงานต้องระบุเป็นข้อยกเว้นอย่างชัดเจน
+  โดยตาราง Django auth เป็นข้อมูลกลางตามหัวข้อถัดไป
 
-## Roles and Permissions Tables
+## Django Roles and Permissions Tables
 
-Access Profile ของแต่ละ Workspace เก็บแยกจากกัน ส่วนรหัสสิทธิ์เป็น catalog
-กลางที่ใช้ร่วมกันทั้งระบบ
+MatterSolv ใช้ตารางมาตรฐานของ `django.contrib.auth` เป็น contract หลัก และไม่สร้าง
+ตาราง role หรือ permission ซ้ำอีกชุดหนึ่ง การจำกัดบทบาทรายสำนักงานทำผ่านตารางเชื่อม
+ของโดเมน MatterSolv โดยไม่เพิ่มหรือแก้คอลัมน์ในตาราง Django auth
 
-|       ตาราง       |     ขอบเขต     | คำอธิบาย                                                       |
-| ----------------- | :------------: | -------------------------------------------------------------- |
-| `permissions`     |    ทั้งระบบ    | รหัสสิทธิ์มาตรฐาน เช่น `case.edit` **ไม่มี `workspace_id`**     |
-| `roles`           | ราย Workspace  | Access Profile ของ Workspace หนึ่ง **ต้องมี `workspace_id`**    |
-| `role_permissions`| ราย Workspace  | ผูก role กับรหัสสิทธิ์ที่ได้รับ                                |
-| `user_roles`      | ราย Workspace  | ผูกสมาชิกกับ role โดยหนึ่งคนมีได้มากกว่าหนึ่ง role             |
+| ตาราง | ขอบเขต | คำอธิบาย |
+| --- | :---: | --- |
+| `auth_permission` | ทั้งระบบ | Django model permissions และ custom permissions ที่สร้างจาก migration |
+| `auth_group` | ทั้งระบบ | กลุ่มสิทธิ์มาตรฐานของ Django; หนึ่งกลุ่มเป็นบทบาทของสำนักงานผ่านตารางเชื่อม |
+| `auth_group_permissions` | ทั้งระบบ | ผูก Django Group กับ Django Permission |
+| `auth_user_groups` | ทั้งระบบ | ใช้เฉพาะ Group ระดับระบบที่ไม่ขึ้นกับสำนักงาน; ไม่ใช้มอบบทบาทรายสำนักงาน |
+| `office_groups` | รายสำนักงาน | ผูก `office_id` กับ `group_id` เก็บ `display_name` และ unique (`office_id`, `display_name`) |
+| `office_role_assignments` | รายสำนักงาน | ผูกสมาชิกกับ `office_group_id`; ไม่เพิ่มบทบาทสำนักงานลง `auth_user_groups` |
 
 กฎการใช้งาน:
 
-- Query ตาราง `roles`, `role_permissions` และ `user_roles` ต้องกรอง
-  `workspace_id` เสมอ
-- ห้ามผูก `user_roles` ข้าม Workspace สมาชิกกับ role ต้องอยู่ Workspace เดียวกัน
-- การสร้าง Workspace ใหม่คือการคัดลอก role template มาสร้างแถวใน `roles`
-  และ `role_permissions` ของ Workspace นั้น ไม่ใช่การอ้างถึงแถวที่ใช้ร่วมกัน
-- `permissions` เพิ่มหรือแก้ได้จากการพัฒนาระบบเท่านั้น ไม่ใช่จากการตั้งค่า
-  ของ Workspace
+- ตรวจว่าสมาชิกและ Django Group เชื่อมกับสำนักงานเดียวกันก่อนเพิ่มหรือลบสมาชิก
+- ทุกการจัดการบทบาทต้อง query ผ่าน `office_groups` และ `office_role_assignments`
+  เพื่อป้องกันการใช้ Group ข้ามสำนักงาน
+- `auth_group.name` ใช้ชื่อภายในที่ unique ทั้งระบบ เช่น `<office_uuid>:<role_uuid>`
+  ส่วนชื่อที่ผู้ใช้เห็นและแก้ไขได้เก็บใน `office_groups.display_name`
+- การสร้างสำนักงานใหม่คัดลอก role template เป็น `auth_group` ใหม่ แล้วเชื่อมกับสำนักงานใหม่
+- สิทธิ์มาตรฐานและสิทธิ์พิเศษประกาศบน Django model และสร้างโดย migration เท่านั้น
+- สิทธิ์ระดับระบบที่ไม่ขึ้นกับสำนักงานตรวจด้วย `user.has_perm()` ได้ตาม Django
+- สิทธิ์ของบทบาทสำนักงานต้องตรวจด้วย `has_office_perm(user, office, permission)`
+  ซึ่ง query `office_role_assignments -> office_groups -> auth_group_permissions`; ห้ามใช้
+  `user.has_perm()` ตัดสินสิทธิ์รายสำนักงาน เพราะ Django รวมสิทธิ์จากทุก Group ของผู้ใช้
+- data scope และ workflow เป็นเงื่อนไขเพิ่มเติมที่ authorization service ต้องตรวจแยก
 - ดูความหมายเชิงธุรกิจที่ [Roles](/docs/roles) และรหัสสิทธิ์ที่
   [Permissions](/docs/roles/permissions)
 

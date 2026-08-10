@@ -1,111 +1,142 @@
 # Permissions
 
-Access Profile เป็นชุดสิทธิ์เริ่มต้นที่ใช้ได้ทุกแผน ส่วนสิทธิ์รายบุคคลใช้ปรับ
-ให้เหมาะกับหน้าที่ของสมาชิกแต่ละคน และเปิดใช้ตั้งแต่แผน PRO ขึ้นไป
-
-การมีสิทธิ์ไม่ได้ทำให้แผนของ Workspace เปิดโมดูลเพิ่ม และการเปลี่ยนแผน
-ไม่เปลี่ยนสิทธิ์ของสมาชิกโดยอัตโนมัติ
+บทบาทของ MatterSolv ใช้ Django `Group` และ `Permission` เป็น contract หลัก
+โดยไม่แก้ `django.contrib.auth`, `Group`, `Permission` หรือ `ModelBackend`
 
 ## Access Rules
 
 สมาชิกใช้งานรายการหนึ่งได้เมื่อผ่านทุกเงื่อนไข:
 
-1. บัญชีสมาชิกยังใช้งานได้
-2. แผนของ Workspace เปิดโมดูลหรือฟีเจอร์นั้น
-3. Access Profile หรือสิทธิ์รายบุคคลอนุญาตให้ดำเนินการ
-4. ข้อมูลอยู่ใน Workspace ทีม แฟ้มงาน หรือขอบเขตที่ได้รับมอบหมาย
-5. สถานะรายการและระดับอนุมัติรองรับการดำเนินการ
+1. บัญชีสมาชิกและสมาชิกภาพของสำนักงานยังใช้งานได้
+2. แผนของสำนักงานเปิดโมดูลหรือฟีเจอร์นั้น
+3. Django Group หรือสิทธิ์รายบุคคลมี permission ที่ต้องใช้
+4. ข้อมูลอยู่ในสำนักงาน ทีม สำนวน หรือขอบเขตที่ได้รับมอบหมาย
+5. สถานะ workflow และระดับอนุมัติรองรับการดำเนินการ
 
-แผนที่สูงขึ้นไม่ให้สิทธิ์สมาชิกเพิ่มเติมโดยอัตโนมัติ และการมีสิทธิ์ไม่ได้เปิด
-โมดูลที่แผนไม่รองรับ
+การตรวจ permission เป็นเพียงหนึ่งชั้นของ authorization เท่านั้น สิทธิ์ระดับสำนักงานต้องใช้
+`has_office_perm(user, office, permission)`; `user.has_perm()` สงวนไว้สำหรับสิทธิ์
+ระดับระบบที่ไม่ขึ้นกับสำนักงาน
+สิทธิ์ไม่สามารถข้าม plan entitlement, data scope หรือ workflow rule ได้
 
-## Permission Actions
+## Django Permission Contract
 
-- view: ดูข้อมูลหรือรายการ
-- create: สร้างข้อมูลใหม่
-- edit/update: แก้ไขข้อมูล
-- delete/cancel: ลบหรือยกเลิกรายการตามกติกาของข้อมูล
-- export: ส่งออกเอกสาร รายงาน หรือข้อมูล
-- approve: อนุมัติรายการตามระดับและขอบเขตที่กำหนด
-- assign: มอบหมายงานหรือเปลี่ยนผู้รับผิดชอบ
-- manage: จัดการการตั้งค่า สมาชิก Access Profile หรือข้อมูลตั้งต้น
+### บทบาท
 
-## Starting Rules
+บทบาทหนึ่งรายการใน MatterSolv เท่ากับ Django `Group` หนึ่งรายการของสำนักงาน
+สมาชิกหนึ่งคนอยู่ได้หลาย Group และได้รับ permission จากทุก Group รวมกัน
 
-- ใช้สิทธิ์เริ่มต้นจาก Access Profile ที่ตรงกับหน้าที่
-- Workspace Admin เพิ่มหรือลดสิทธิ์เป็นรายบุคคลได้เมื่อใช้แผน PRO ขึ้นไป
-  ส่วนแผน STANDARD และ ESSENTIALS ใช้ Access Profile อย่างเดียว
-- ข้อมูลของแต่ละ Workspace ต้องแยกจากกัน
-- การสร้างหรือแก้ไขรายการไม่รวมสิทธิ์อนุมัติโดยอัตโนมัติ
-- การลบ ส่งออก อนุมัติ และเปลี่ยนสิทธิ์ต้องบันทึกประวัติ
-- ตำแหน่งงานไม่ให้สิทธิ์จนกว่า Workspace Admin จะกำหนด
+### สิทธิ์มาตรฐาน
 
-## Permission Matrix
+ทุก resource ที่แก้ไขข้อมูลได้ใช้ Django model permissions เดิม:
 
-ทุกสิทธิ์ในตารางนี้อยู่ภายใน Workspace เดียวกันเท่านั้น และสิทธิ์ของ Lawyer กับ
-Assistant ต้องถูกจำกัดด้วยแฟ้มงานกฎหมาย ทีม หรือรายการที่ได้รับมอบหมายเสมอ
-ในตารางนี้ Client หมายถึงลูกความหรือผู้รับบริการ, Matter หมายถึงแฟ้มงานกฎหมาย
-และ Document หมายถึงเอกสารทางกฎหมาย ตารางนี้แสดงขอบเขตสูงสุดของ Access Profile
-ไม่รับประกันว่าแผนของ Workspace เปิดโมดูลนั้น
+| คอลัมน์ในหน้าจอ | Django action | รูปแบบ codename |
+| --- | --- | --- |
+| ดู | `view` | `<app_label>.view_<model>` |
+| เพิ่ม | `add` | `<app_label>.add_<model>` |
+| แก้ไข | `change` | `<app_label>.change_<model>` |
+| ลบ | `delete` | `<app_label>.delete_<model>` |
 
-| <span style={{ display: 'block', textAlign: 'center' }}>Area</span> |       Admin       |      Lawyer      |      Assistant      |        Finance         |         HR          |       Manager       |
-| :------------------------------------------------------------------ | :---------------: | :--------------: | :-----------------: | :--------------------: | :-----------------: | :-----------------: |
-| Workspace & Member                                                  |   Config / Full   |        No        |         No          |           No           |         No          |  Read team members  |
-| Master Data                                                         |   Config / Full   |       Read       |        Read         |  Config finance data   |   Config HR data    |        Read         |
-| Client                                                              |   Support only    |       Work       |       Support       | Read billing contacts  |         No          |    Read overview    |
-| Matter                                                              |   Support only    |   Work / Full    |       Support       |  Read billing status   |         No          |   Read / Approve    |
-| Document & Template                                                 | Config templates  |       Work       |       Support       | Read finance documents |         No          |  Approve / Export   |
-| Task & Calendar                                                     | Config categories |       Work       |   Work / Support    |   Work finance tasks   | Work leave calendar |    Read / Assign    |
-| Quotation & Service Fee                                             |      Config       |    Work draft    |       Support       |          Full          |         No          |  Approve / Export   |
-| Billing & Payment                                                   |      Config       | Read own matters | Read assigned items |          Full          |         No          |  Approve / Export   |
-| Finance Foundation                                                  |      Config       |        No        |         No          |          Full          |         No          |   Read / Approve    |
-| HR & Payroll                                                        |  Config settings  |        No        |         No          |           No           |        Full         |   Read / Approve    |
-| Reports & Dashboard                                                 | Read system/audit |  Read own/team   | Read assigned work  |  Read finance reports  |   Read HR reports   |    Full overview    |
-| Audit Log & Security                                                |       Full        |        No        |         No          |   Read finance audit   |    Read HR audit    | Read management log |
+ตัวอย่าง: บทบาทที่แก้ไขลูกความได้ต้องมี `clients.change_client`
+ไม่ใช้รหัสรวมอย่าง `client.manage`, `client.edit` หรือ `client.update`
 
-## Approval Matrix
+Resource แบบอ่านอย่างเดียว เช่น บันทึกตรวจสอบ แสดงเฉพาะ `view` และไม่แสดง
+checkbox ของ action ที่ไม่รองรับ
 
-รายการที่มีผลต่อเอกสารทางกฎหมาย การเงิน หรือสิทธิ์ผู้ใช้งานควรแยกคนเตรียมข้อมูล
-ออกจากคนอนุมัติ เพื่อลดความผิดพลาดและตรวจสอบย้อนหลังได้ง่าย
+### สิทธิ์พิเศษ
 
-| Item                     | Prepare / Edit                 | Approve / Confirm                                 | Audit Note                                                    |
-| ------------------------ | ------------------------------ | ------------------------------------------------- | ------------------------------------------------------------- |
-| Document final approval  | Lawyer, Assistant              | Manager หรือ Senior Lawyer ที่มีสิทธิ์เฉพาะขอบเขต | บันทึกผู้แก้ไข ผู้ตรวจ authority/scope และเวลาที่อนุมัติ      |
-| Quotation approval       | Lawyer, Finance                | Manager                                           | บันทึกส่วนลด เงื่อนไขพิเศษ และเวอร์ชัน quotation              |
-| Billing adjustment       | Finance                        | Manager                                           | บันทึกเหตุผลการแก้ invoice, payment หรือยอดค้าง               |
-| Payment refund/write-off | Finance                        | Manager                                           | บันทึกจำนวนเงิน เหตุผล และผู้อนุมัติ                          |
-| Leave request            | พนักงาน (self-service) หรือ HR | Manager หรือ alternate HR                         | policy/balance/overlap และ requester/approver แยกกัน          |
-| Payroll run              | HR                             | Manager A1; privileged/org-wide เพิ่ม Admin A2    | maker/A1/A2/System post แยกกันและ Posted immutable            |
-| Personnel lifecycle      | HR หรือ scoped Manager         | alternate/scoped Manager                          | Admin execute access; System transition; reconcile ทุก domain |
-| Delete / restore data    | เจ้าของข้อมูลหรือผู้รับผิดชอบ  | Manager หรือ Admin ตามประเภทข้อมูล                | ใช้ soft delete สำหรับข้อมูลสำคัญ                             |
-| Permission change        | Admin                          | Manager; privileged ใช้ Manager A1 + Admin A2     | บันทึก Access Profile และสิทธิ์ก่อนกับหลังการเปลี่ยนแปลง      |
-| Sensitive export         | ผู้มีสิทธิ์ตาม module          | Manager เมื่อเป็นข้อมูลสำคัญ                      | บันทึกไฟล์ เวลา ผู้ส่งออก และขอบเขตข้อมูล                     |
+Workflow ที่ไม่ใช่ CRUD ใช้ custom Django permissions ซึ่งประกาศใน `Meta.permissions`
+ของ model แล้ว Django จะสร้าง record ในตาราง `auth_permission` ตามปกติ
+หน้าจอแสดงสิทธิ์เหล่านี้ในปุ่ม **เพิ่มเติม** ของ resource นั้น ไม่เพิ่มเป็นคอลัมน์หลัก
 
-## Data Boundary Rules
+ตัวอย่างสิทธิ์พิเศษ:
 
-- Admin มีหน้าที่ตั้งค่าและช่วยแก้ปัญหาระบบ แต่ไม่ควรเห็นหรือแก้เนื้อหางาน
-  กฎหมายโดยไม่จำเป็น
-- Lawyer และ Assistant เห็นข้อมูลตามแฟ้มงานกฎหมาย ทีม หรือรายการที่ได้รับ
-  มอบหมาย
-- Finance เห็นข้อมูลที่จำเป็นต่อ quotation, billing, payment และ finance
-  foundation แต่ไม่จำเป็นต้องเห็นรายละเอียดเอกสารทางกฎหมายทั้งหมด
-- HR เห็นเฉพาะข้อมูลบุคลากร เงินเดือน และการลา ไม่เห็นข้อมูล Matter, document
-  ทางกฎหมาย หรือ billing ของลูกค้า และข้อมูลเงินเดือนรายบุคคลไม่ควรให้ Finance
-  เข้าถึงโดยตรง
-- Manager เห็นภาพรวมและอนุมัติรายการสำคัญตามระดับความรับผิดชอบ ไม่ใช่เห็นทุก
-  ข้อมูลของทุกทีมโดยอัตโนมัติ
-- การลบ ส่งออก อนุมัติ เปลี่ยนสิทธิ์ และแก้ไขข้อมูลการเงินต้องมี audit log เสมอ
-- ถ้ามีแฟ้มงานที่ต้องจำกัดเป็นพิเศษ ควรมีสิทธิ์ระดับแฟ้มงานกฎหมายเพิ่มเติมเหนือ
-  Access Profile ปกติ
-- Client Contact ใช้ Portal Membership และ publication scope ไม่ได้รับ internal
-  role จากการมี Client record
-- ตำแหน่ง เช่น Partner หรือ Owner ไม่ทำให้เห็นทุกข้อมูลจนกว่า Workspace Admin
-  จะกำหนด Access Profile สิทธิ์รายบุคคล และขอบเขตที่เหมาะสม
+- `submit_*`: ส่งรายการเข้าสู่ขั้นตอนอนุมัติ
+- `approve_*`: อนุมัติรายการ
+- `export_*`: ส่งออกข้อมูล
+- `assign_*`: มอบหมายผู้รับผิดชอบ
+- `send_*`: ส่งให้ลูกความหรือบุคคลภายนอก
+- `sign_*`: ลงนาม
+- `share_*`: แชร์หรือเผยแพร่
+- `restore_*`: คืนเวอร์ชัน
+- `lock_*`: ล็อกรายการไม่ให้แก้ไข
+
+## Resource Catalogue
+
+คอลัมน์ Standard model ด้านล่างสร้าง permission `view/add/change/delete`
+ตามรูปแบบ Django โดยอัตโนมัติ เว้นแต่ระบุว่าอ่านอย่างเดียว
+
+| กลุ่ม | Resource | Standard model | Custom Django permissions |
+| --- | --- | --- | --- |
+| สำนักงานและสมาชิก | การตั้งค่าสำนักงาน | `office.office` | — |
+| สำนักงานและสมาชิก | สมาชิก | `office.member` | `office.invite_member` |
+| สำนักงานและสมาชิก | บทบาท | `auth.group` | — |
+| ข้อมูลตั้งต้น | ข้อมูลตั้งต้น | `office.master_data` | — |
+| ลูกความ | ลูกความ | `clients.client` | `clients.export_client`, `clients.invite_client_portal` |
+| สำนวน | สำนวน | `matters.matter` | `matters.approve_matter`, `matters.assign_matter_team` |
+| สำนวน | บันทึกเวลา | `matters.time_entry` | `matters.submit_time_entry`, `matters.approve_time_entry` |
+| เอกสารและเทมเพลต | เอกสาร | `documents.document` | `documents.export_document`, `documents.approve_document`, `documents.sign_document`, `documents.share_document`, `documents.restore_document`, `documents.lock_document` |
+| เอกสารและเทมเพลต | เทมเพลตเอกสาร | `documents.document_template` | — |
+| งานและปฏิทิน | งาน | `tasks.task` | `tasks.assign_task` |
+| งานและปฏิทิน | นัดหมาย | `calendar.calendar_event` | `calendar.cancel_calendar_event` |
+| งานและปฏิทิน | หมวดหมู่งาน | `tasks.task_category` | — |
+| ใบเสนอราคาและค่าบริการ | ใบเสนอราคา | `quotations.quotation` | `quotations.submit_quotation`, `quotations.approve_quotation`, `quotations.send_quotation`, `quotations.convert_quotation`, `quotations.export_quotation`, `quotations.cancel_quotation` |
+| ใบเสนอราคาและค่าบริการ | ค่าบริการ | `quotations.service_fee` | — |
+| วางบิลและการชำระเงิน | ใบวางบิล | `billing.invoice` | `billing.approve_invoice_adjustment`, `billing.export_invoice`, `billing.cancel_invoice` |
+| วางบิลและการชำระเงิน | การชำระเงิน | `billing.payment` | `billing.approve_payment_refund`, `billing.export_payment` |
+| การเงินและบัญชี | ข้อมูลการเงินตั้งต้น | `finance.finance_setting` | `finance.export_finance_setting` |
+| บุคลากรและเงินเดือน | บุคลากร | `hr.employee` | — |
+| บุคลากรและเงินเดือน | คำขอลา | `hr.leave_request` | `hr.submit_leave_request`, `hr.approve_leave_request` |
+| บุคลากรและเงินเดือน | เงินเดือน | `hr.payroll` | `hr.approve_payroll`, `hr.export_payroll` |
+| รายงานและแดชบอร์ด | รายงาน (อ่านอย่างเดียว) | `reports.report` เฉพาะ `view` | `reports.export_report` |
+| บันทึกตรวจสอบและความปลอดภัย | บันทึกตรวจสอบ (อ่านอย่างเดียว) | `audit.audit_log` เฉพาะ `view` | `audit.export_audit_log` |
+| บันทึกตรวจสอบและความปลอดภัย | ความปลอดภัย | `office.security_setting` เฉพาะ `view/change` | — |
+
+ผู้ดูแลสำนักงานเลือกได้เฉพาะ permission จาก catalogue ของระบบ
+ไม่สามารถสร้าง codename ใหม่หรือเปลี่ยนความหมายของ codename ผ่านหน้าบทบาท
+
+## Leave Request Workflow
+
+คำขอลาใช้สิทธิ์สองชั้น:
+
+1. Django permission กำหนดว่า **บทบาทใดทำ action ได้**
+   - ผู้ลา: `hr.add_leave_request` และ `hr.submit_leave_request`
+   - ผู้อนุมัติ: `hr.view_leave_request` และ `hr.approve_leave_request`
+2. HR workflow scope กำหนดว่า **ผู้อนุมัติอนุมัติคำขอของใครได้**
+   เช่น manager ของพนักงาน, alternate approver หรือสายบังคับบัญชา
+
+การมี `hr.approve_leave_request` อย่างเดียวไม่ทำให้อนุมัติคำขอของทุกคนได้
+และผู้ขอห้ามอนุมัติคำขอของตนเอง แม้จะมีทั้งสองบทบาท
+การกำหนดผู้อนุมัติรายพนักงานจึงอยู่ในหน้าตั้งค่า HR ไม่อยู่ใน permission matrix
+
+## Data Scope and Workflow
+
+Backend ต้องตรวจ permission และเงื่อนไขธุรกิจร่วมกัน:
+
+```text
+allowed = has_office_perm(user, office, permission)
+  AND plan_allows(module)
+  AND object_is_in_office(object, user)
+  AND data_scope_allows(user, object)
+  AND workflow_allows(action, object.status)
+```
+
+- Lawyer และ Assistant เห็นข้อมูลตามสำนวน ทีม หรือรายการที่ได้รับมอบหมาย
+- Finance เห็นเฉพาะข้อมูลที่จำเป็นต่อ quotation, billing, payment และบัญชี
+- HR เห็นข้อมูลบุคลากร เงินเดือน และการลา แต่ไม่เห็นเนื้อหางานกฎหมายโดยอัตโนมัติ
+- Manager อนุมัติตามขอบเขตที่รับผิดชอบ ไม่ได้เห็นข้อมูลทุกสำนักงานโดยอัตโนมัติ
+- Admin ตั้งค่าและตรวจสอบระบบ แต่ไม่ควรได้สิทธิ์เนื้อหางานกฎหมายทั้งหมดโดยค่าเริ่มต้น
+- การลบ ส่งออก อนุมัติ เปลี่ยนสิทธิ์ และแก้ข้อมูลการเงินต้องสร้าง audit event
+- กฎ deny by default: เมื่อไม่มี permission หรือ scope ที่ชัดเจนให้ปฏิเสธ
+
+## Frontend Fixture Scope
+
+รอบ frontend ปัจจุบันใช้ shared in-memory fixture store เพื่อทดสอบ list, form,
+permission matrix และ delete confirmation ข้อมูลคงอยู่ระหว่างเปลี่ยนหน้า
+แต่ reset เมื่อ refresh จนกว่าจะเชื่อม Django API
 
 ## Related Documents
 
 - [Roles Overview](/docs/roles)
 - [User Roles](/docs/roles/roles)
 - [Plans & Pricing](/docs/plans)
-- [Feature Comparison](/docs/plans/feature-comparison)
 - [Plan Rules](/docs/plans/plan-rules)
