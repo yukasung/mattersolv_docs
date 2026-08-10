@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Legal Practice ERP Platform Documentation'
+export const alt = 'MatterSolv Documentation'
 export const contentType = 'image/png'
 export const size = {
   width: 1200,
@@ -57,7 +57,7 @@ export default function OpenGraphImage() {
               lineHeight: 1
             }}
           >
-            Legal Practice ERP Platform Documentation
+            MatterSolv Documentation
           </div>
           <div style={{ color: '#cbd5e1', fontSize: 34, letterSpacing: 0 }}>
             Workflows, modules, and administration

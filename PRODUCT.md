@@ -6,12 +6,12 @@ product
 
 ## Users
 
-Developer, QA, product owner และผู้เกี่ยวข้องกับการดำเนินงาน Legal Practice ERP Platform ที่ต้อง
+Developer, QA, product owner และผู้เกี่ยวข้องกับการดำเนินงาน MatterSolv ที่ต้อง
 เข้าใจกระบวนการธุรกิจ กฎ และจุดส่งต่อระหว่างระบบก่อนพัฒนา ทดสอบ หรืออนุมัติงาน
 
 ## Product Purpose
 
-เอกสารกลางสำหรับระบบ Legal Practice ERP Platform SaaS ที่อธิบายขอบเขต Workflow, Plans, Roles,
+เอกสารกลางสำหรับระบบ MatterSolv SaaS ที่อธิบายขอบเขต Workflow, Plans, Roles,
 Modules และ Technical controls ให้ทุกทีมใช้ความหมายและลำดับงานเดียวกัน
 ความสำเร็จคือผู้อ่านค้นหาข้อมูลได้เร็ว เข้าใจกระบวนการโดยไม่ต้องตีความเอกสาร
 Requirement ต้นทางซ้ำ และสามารถนำหน้าเอกสารไปใช้งานหรือพิมพ์เป็น PDF ได้

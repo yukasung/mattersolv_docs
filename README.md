@@ -1,6 +1,6 @@
-# Legal Practice ERP Platform Documentation
+# MatterSolv Documentation
 
-เอกสารกลางสำหรับทีม Product, Developer และ QA ของ Legal Practice ERP Platform
+เอกสารกลางสำหรับทีม Product, Developer และ QA ของ MatterSolv
 
 ## Development
 

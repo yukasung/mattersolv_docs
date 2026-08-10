@@ -10,7 +10,7 @@ export default {
   index: { type: 'page', display: 'hidden' },
   docs: {
     type: 'page',
-    title: 'Legal Practice ERP Platform',
+    title: 'MatterSolv',
     href: '/docs',
     items: {
       index: 'Overview',

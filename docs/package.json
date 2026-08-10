@@ -1,6 +1,6 @@
 {
-  "name": "docs",
-  "author": "Legal Practice ERP Platform Documentation",
+  "name": "mattersolv-docs",
+  "author": "MatterSolv Documentation",
   "license": "MIT",
   "private": true,
   "type": "module",
