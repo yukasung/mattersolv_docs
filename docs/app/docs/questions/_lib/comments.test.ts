@@ -7,27 +7,27 @@ import {
 } from './comments.ts'
 import { POST } from '../../../api/question-comments/route.ts'
 
-test('validates and normalizes a lawyer comment', () => {
+test('validates and normalizes a comment from a commenter', () => {
   assert.deepEqual(
     validateCreateQuestionComment({
       issueId: 'dev-187',
-      lawyerName: '  ทนายสมชาย  ',
+      commenterName: '  สมชาย  ',
       body: '  ควรเก็บ log 7 ปี  '
     }),
     {
       issueId: 'DEV-187',
-      lawyerName: 'ทนายสมชาย',
+      commenterName: 'สมชาย',
       body: 'ควรเก็บ log 7 ปี'
     }
   )
 })
 
-test('rejects invalid or blank lawyer comments', () => {
+test('rejects invalid or blank comments', () => {
   for (const input of [
-    { issueId: '', lawyerName: 'ทนายสมชาย', body: 'ความเห็น' },
-    { issueId: 'DEV-187', lawyerName: '', body: 'ความเห็น' },
-    { issueId: 'DEV-187', lawyerName: 'ทนายสมชาย', body: '' },
-    { issueId: 'not-an-issue', lawyerName: 'ทนายสมชาย', body: 'ความเห็น' }
+    { issueId: '', commenterName: 'สมชาย', body: 'ความคิดเห็น' },
+    { issueId: 'DEV-187', commenterName: '', body: 'ความคิดเห็น' },
+    { issueId: 'DEV-187', commenterName: 'สมชาย', body: '' },
+    { issueId: 'not-an-issue', commenterName: 'สมชาย', body: 'ความคิดเห็น' }
   ]) {
     assert.throws(() => validateCreateQuestionComment(input))
   }
@@ -52,12 +52,12 @@ test('returns a client-safe Thai validation error', async () => {
     new Request('https://example.test/api/question-comments', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ issueId: 'invalid', lawyerName: '', body: '' })
+      body: JSON.stringify({ issueId: 'invalid', commenterName: '', body: '' })
     })
   )
 
   assert.equal(response.status, 400)
   assert.deepEqual(await response.json(), {
-    error: 'กรุณากรอกชื่อทนายและความเห็นให้ครบถ้วน'
+    error: 'กรุณากรอกชื่อผู้แสดงความคิดเห็นและความคิดเห็นให้ครบถ้วน'
   })
 })

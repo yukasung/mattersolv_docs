@@ -53,7 +53,7 @@ test('Linear description styles preserve heading hierarchy and visible bullet li
   assert.match(styles, /\.linear-description ul\s*\{[^}]*padding-inline-start:/s)
 })
 
-test('choice sections render selectable checkboxes instead of bullet markers', async () => {
+test('choice sections with multiple items render as numbered lists without checkboxes', async () => {
   const [component, styles] = await Promise.all([
     readFile(
       new URL('../_components/linear-markdown.tsx', import.meta.url),
@@ -62,23 +62,12 @@ test('choice sections render selectable checkboxes instead of bullet markers', a
     readFile(new URL('../../../globals.css', import.meta.url), 'utf8')
   ])
 
-  assert.match(component, /listIsChoice/)
-  assert.match(component, /<input type="checkbox" \/>/)
-  assert.doesNotMatch(component, /<input type="checkbox" disabled \/>/)
+  assert.match(component, /let listIsChoice = false/)
+  assert.match(component, /listIsChoice && list\.length > 1/)
+  assert.match(component, /<ol key=\{`ol-\$\{blocks\.length\}`\}>/)
+  assert.doesNotMatch(component, /type="checkbox"/)
   assert.match(
     styles,
-    /\.linear-description \.linear-choice-list\s*\{[^}]*list-style:\s*none/s
-  )
-  assert.match(
-    styles,
-    /\.linear-description \.linear-choice-list\s*\{[^}]*padding-inline-start:\s*0/s
-  )
-  assert.match(
-    styles,
-    /\.linear-choice-list label\s*\{[^}]*align-items:\s*center/s
-  )
-  assert.doesNotMatch(
-    styles,
-    /\.linear-choice-list input\s*\{[^}]*margin-top:/s
+    /\.linear-description ol\s*\{[^}]*list-style:\s*decimal/s
   )
 })

@@ -40,24 +40,16 @@ export function LinearMarkdown({ content }: { content: string }) {
   }
   const flushList = () => {
     if (list.length) {
+      const items = list.map((item, index) => (
+        <li key={index}>{inline(item)}</li>
+      ))
+
       blocks.push(
-        <ul
-          className={listIsChoice ? 'linear-choice-list' : undefined}
-          key={`ul-${blocks.length}`}
-        >
-          {list.map((item, index) => (
-            <li key={index}>
-              {listIsChoice ? (
-                <label>
-                  <input type="checkbox" />
-                  {inline(item)}
-                </label>
-              ) : (
-                inline(item)
-              )}
-            </li>
-          ))}
-        </ul>
+        listIsChoice && list.length > 1 ? (
+          <ol key={`ol-${blocks.length}`}>{items}</ol>
+        ) : (
+          <ul key={`ul-${blocks.length}`}>{items}</ul>
+        )
       )
       list = []
       listIsChoice = false
@@ -73,7 +65,7 @@ export function LinearMarkdown({ content }: { content: string }) {
       flushList()
       const level = heading[1]?.length ?? 2
       const label = displayHeading(heading[2])
-      listIsChoice = heading[2].trim() === 'ตัวเลือก'
+      listIsChoice = label === 'ทางเลือกที่ควรพิจารณา'
       if (level === 2) blocks.push(<h2 key={`h-${blocks.length}`}>{inline(label)}</h2>)
       else if (level === 3) blocks.push(<h3 key={`h-${blocks.length}`}>{inline(label)}</h3>)
       else blocks.push(<h4 key={`h-${blocks.length}`}>{inline(label)}</h4>)

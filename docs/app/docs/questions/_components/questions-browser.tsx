@@ -24,8 +24,7 @@ export interface BrowserQuestion {
 
 const answerLabels: Record<AnswerState, string> = {
   unanswered: 'ยังไม่มีคำตอบ',
-  partial: 'รอยืนยันเพิ่มเติม',
-  confirmed: 'ยืนยันแล้ว'
+  answered: 'ตอบแล้ว'
 }
 
 function formatLatestCommentDate(date: string): string {
@@ -101,27 +100,6 @@ export function QuestionsBrowser({
             ))}
           </select>
         </label>
-
-        <label>
-          <span>ความสำคัญ</span>
-          <select value={priority} onChange={(event) => setPriority(event.target.value)}>
-            <option value="all">ทั้งหมด</option>
-            {priorities.map((item) => (
-              <option key={item}>{item}</option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          <span>สถานะ Linear</span>
-          <select value={status} onChange={(event) => setStatus(event.target.value)}>
-            <option value="all">ทั้งหมด</option>
-            {statuses.map((item) => (
-              <option key={item}>{item}</option>
-            ))}
-          </select>
-        </label>
-
         <label>
           <span>สถานะคำตอบ</span>
           <select
@@ -132,8 +110,7 @@ export function QuestionsBrowser({
           >
             <option value="all">ทั้งหมด</option>
             <option value="unanswered">ยังไม่มีคำตอบ</option>
-            <option value="partial">รอยืนยันเพิ่มเติม</option>
-            <option value="confirmed">ยืนยันแล้ว</option>
+            <option value="answered">ตอบแล้ว</option>
           </select>
         </label>
       </div>

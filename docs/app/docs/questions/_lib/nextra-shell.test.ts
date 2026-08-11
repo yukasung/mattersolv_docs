@@ -28,3 +28,16 @@ test('questions routes use MDX shells so Nextra supplies the documentation layou
   assert.match(overview, /<QuestionsHub\s*\/>/)
   assert.match(detail, /<QuestionDetail\s*\/>/)
 })
+
+test('questions is the final item in the documentation sidebar', async () => {
+  const meta = await readFile(
+    new URL('../../../_meta.global.tsx', import.meta.url),
+    'utf8'
+  )
+
+  const apiItem = meta.indexOf("api: { title: 'API' }")
+  const questionsItem = meta.indexOf("questions: { title: 'Questions' }")
+
+  assert.ok(apiItem >= 0)
+  assert.ok(questionsItem > apiItem)
+})

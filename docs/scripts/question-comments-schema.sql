@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS question_comments (
   id TEXT PRIMARY KEY,
   issue_id TEXT NOT NULL,
-  lawyer_name TEXT NOT NULL,
+  commenter_name TEXT NOT NULL,
   body TEXT NOT NULL,
   created_at TEXT NOT NULL
 );

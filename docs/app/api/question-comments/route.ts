@@ -8,37 +8,10 @@ import {
 
 export const dynamic = 'force-dynamic'
 
-const VALIDATION_ERROR = 'กรุณากรอกชื่อทนายและความเห็นให้ครบถ้วน'
+const VALIDATION_ERROR = 'กรุณากรอกชื่อผู้แสดงความคิดเห็นและความคิดเห็นให้ครบถ้วน'
 
 function getIpAddress(request: Request): string {
   return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
-}
-
-async function verifyTurnstile(token: unknown, ipAddress: string): Promise<void> {
-  const secret = process.env.TURNSTILE_SECRET_KEY
-
-  if (typeof token !== 'string' || !token || !secret) {
-    throw new CommentConfigurationError('Turnstile is not configured')
-  }
-
-  const body = new URLSearchParams({
-    secret,
-    response: token,
-    remoteip: ipAddress
-  })
-  const response = await fetch(
-    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-    { method: 'POST', body }
-  )
-
-  if (!response.ok) {
-    throw new CommentConfigurationError('Turnstile is unavailable')
-  }
-
-  const result = (await response.json()) as { success?: boolean }
-  if (!result.success) {
-    throw new Error('Invalid Turnstile token')
-  }
 }
 
 export async function GET(request: Request) {
@@ -49,7 +22,7 @@ export async function GET(request: Request) {
   } catch (error) {
     if (error instanceof CommentConfigurationError) {
       return Response.json(
-        { error: 'ระบบความเห็นยังไม่พร้อมใช้งาน' },
+        { error: 'ระบบความคิดเห็นยังไม่พร้อมใช้งาน' },
         { status: 503 }
       )
     }
@@ -66,26 +39,22 @@ export async function POST(request: Request) {
     }
 
     const input = validateCreateQuestionComment(
-      payload as { issueId: string; lawyerName: string; body: string }
+      payload as { issueId: string; commenterName: string; body: string }
     )
     const ipAddress = getIpAddress(request)
-    await verifyTurnstile(
-      (payload as { turnstileToken?: unknown }).turnstileToken,
-      ipAddress
-    )
     const comment = await createQuestionComment(input, ipAddress)
     return Response.json({ comment }, { status: 201 })
   } catch (error) {
     if (error instanceof CommentRateLimitError) {
       return Response.json(
-        { error: 'ส่งความเห็นบ่อยเกินไป กรุณาลองใหม่อีกครั้งภายหลัง' },
+        { error: 'ส่งความคิดเห็นบ่อยเกินไป กรุณาลองใหม่อีกครั้งภายหลัง' },
         { status: 429 }
       )
     }
 
     if (error instanceof CommentConfigurationError) {
       return Response.json(
-        { error: 'ระบบความเห็นยังไม่พร้อมใช้งาน' },
+        { error: 'ระบบความคิดเห็นยังไม่พร้อมใช้งาน' },
         { status: 503 }
       )
     }

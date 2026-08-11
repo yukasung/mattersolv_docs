@@ -1,19 +1,19 @@
 export interface QuestionComment {
   id: string
   issueId: string
-  lawyerName: string
+  commenterName: string
   body: string
   createdAt: string
 }
 
 export interface CreateQuestionCommentInput {
   issueId: string
-  lawyerName: string
+  commenterName: string
   body: string
 }
 
 const ISSUE_ID_PATTERN = /^[A-Z]+-\d+$/u
-const MAX_LAWYER_NAME_LENGTH = 120
+const MAX_COMMENTER_NAME_LENGTH = 120
 const MAX_COMMENT_BODY_LENGTH = 4_000
 const MAX_SUBMISSIONS_PER_WINDOW = 5
 const SUBMISSION_WINDOW_MINUTES = 10
@@ -61,7 +61,7 @@ function rowToComment(row: Record<string, unknown>): QuestionComment {
   return {
     id: String(row.id),
     issueId: String(row.issue_id),
-    lawyerName: String(row.lawyer_name),
+    commenterName: String(row.commenter_name),
     body: String(row.body),
     createdAt: String(row.created_at)
   }
@@ -71,22 +71,22 @@ export function validateCreateQuestionComment(
   input: CreateQuestionCommentInput
 ): CreateQuestionCommentInput {
   const issueId = normalizeIssueId(input.issueId)
-  const lawyerName = input.lawyerName.trim()
+  const commenterName = input.commenterName.trim()
   const body = input.body.trim()
 
   if (!ISSUE_ID_PATTERN.test(issueId)) {
     throw new Error('Invalid issue ID')
   }
 
-  if (!lawyerName || lawyerName.length > MAX_LAWYER_NAME_LENGTH) {
-    throw new Error('Invalid lawyer name')
+  if (!commenterName || commenterName.length > MAX_COMMENTER_NAME_LENGTH) {
+    throw new Error('Invalid commenter name')
   }
 
   if (!body || body.length > MAX_COMMENT_BODY_LENGTH) {
     throw new Error('Invalid comment body')
   }
 
-  return { issueId, lawyerName, body }
+  return { issueId, commenterName, body }
 }
 
 export function isCommentStorageConfigured(): boolean {
@@ -97,7 +97,7 @@ export async function getCommentsForIssue(issueId: string): Promise<QuestionComm
   const normalizedIssueId = normalizeIssueId(issueId)
   const result = await getDatabaseClient().execute({
     sql: `
-      SELECT id, issue_id, lawyer_name, body, created_at
+      SELECT id, issue_id, commenter_name, body, created_at
       FROM question_comments
       WHERE issue_id = ?
       ORDER BY created_at DESC
@@ -169,13 +169,13 @@ export async function createQuestionComment(
     [
       {
         sql: `
-          INSERT INTO question_comments (id, issue_id, lawyer_name, body, created_at)
+          INSERT INTO question_comments (id, issue_id, commenter_name, body, created_at)
           VALUES (?, ?, ?, ?, ?)
         `,
         args: [
           savedComment.id,
           savedComment.issueId,
-          savedComment.lawyerName,
+          savedComment.commenterName,
           savedComment.body,
           savedComment.createdAt
         ]

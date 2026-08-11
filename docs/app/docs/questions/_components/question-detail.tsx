@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { useState } from 'react'
 
 import { LinearMarkdown } from './linear-markdown'
 import { QuestionComments } from './question-comments'
@@ -9,24 +10,26 @@ import { extractMeetingQuestion } from '../_lib/meeting-content'
 import {
   getAnswerState,
   getQuestionBySlug,
-  moduleLabel
+  moduleLabel,
+  resolveAnswerState
 } from '../_lib/questions'
 
 const answerLabels = {
   unanswered: 'ยังไม่มีคำตอบ',
-  partial: 'รอยืนยันเพิ่มเติม',
-  confirmed: 'ยืนยันแล้ว'
+  answered: 'ตอบแล้ว'
 } as const
 
 export function QuestionDetail() {
   const params = useParams<{ issueId?: string }>()
+  const [hasComments, setHasComments] = useState(false)
   const question = getQuestionBySlug(params.issueId ?? '')
 
   if (!question) {
     return <p>ไม่พบคำถามนี้ กรุณากลับไปตรวจสอบจากหน้าคำถามทั้งหมด</p>
   }
 
-  const answerState = getAnswerState(question.description)
+  const sourceAnswerState = getAnswerState(question.description)
+  const answerState = resolveAnswerState(sourceAnswerState, hasComments)
   const meetingQuestion = extractMeetingQuestion(question.description)
 
   return (
@@ -45,7 +48,6 @@ export function QuestionDetail() {
       <div className="question-detail-meta">
         <span>โมดูล: {moduleLabel(question.primaryModule)}</span>
         <span>ความสำคัญ: {question.priority}</span>
-        <span>สถานะใน Linear: {question.status}</span>
       </div>
 
       {meetingQuestion && (
@@ -56,7 +58,10 @@ export function QuestionDetail() {
 
       <LinearMarkdown content={question.description} />
 
-      <QuestionComments issueId={question.id} />
+      <QuestionComments
+        issueId={question.id}
+        onCommentPresenceChange={setHasComments}
+      />
 
       <section className="question-source-meta">
         {question.relatedModules.length > 0 && (

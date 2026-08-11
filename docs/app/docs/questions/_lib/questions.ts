@@ -2,7 +2,7 @@ import snapshotData from '../_data/questions.snapshot.json' with { type: 'json' 
 import { MODULES, type ModuleId } from './modules.ts'
 
 export { MODULES, type ModuleId } from './modules.ts'
-export type AnswerState = 'unanswered' | 'partial' | 'confirmed'
+export type AnswerState = 'unanswered' | 'answered'
 
 export interface Question {
   id: string
@@ -67,11 +67,18 @@ export function getAnswerState(description: string): AnswerState {
     return 'unanswered'
   }
 
-  if (/สถานะคำตอบ:\*\*\s*ยืนยันแล้ว/iu.test(description)) {
-    return 'confirmed'
+  return 'answered'
+}
+
+export function resolveAnswerState(
+  sourceState: AnswerState,
+  hasComments: boolean
+): AnswerState {
+  if (sourceState === 'unanswered' && hasComments) {
+    return 'answered'
   }
 
-  return 'partial'
+  return sourceState
 }
 
 export function getModuleCounts(): Record<ModuleId, number> {

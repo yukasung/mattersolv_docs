@@ -19,13 +19,13 @@ export default {
       plans: { title: 'Plans & Pricing', items: { index: 'Overview', pricing: 'Pricing', 'subscription-access': 'Signup & Access', 'feature-comparison': 'Feature Comparison', 'plan-rules': 'Plan Rules' } },
       roles: { title: 'Roles', items: { index: 'Overview', roles: 'User Roles', permissions: 'Permissions' } },
       modules: { title: 'Modules', items: { index: 'Overview', clients: 'Clients', matters: 'Matters', documents: 'Documents', quotations: 'Quotations', calendar: 'Calendar', tasks: 'Tasks', billing: 'Billing', finance: 'Finance', hr: 'Human Resources', reports: 'Reports', administration: 'Administration' } },
-      questions: { title: 'Questions' },
       reference: { title: 'Reference', items: { 'menu-map': 'Application Menu Map', courts: 'Courts & Court Forms', requirements: 'Requirement Register' } },
       _technical: { type: 'separator', title: <Section>Technical</Section> },
       architecture: { title: 'Architecture', items: { index: 'Overview', 'technology-stack': 'Technology Stack', 'scalability-capacity': 'Scalability & Capacity' } },
       development: { title: 'Development', items: { workflow: 'Development Workflow', rules: 'Development Rules' } },
       database: { title: 'Database' },
-      api: { title: 'API' }
+      api: { title: 'API' },
+      questions: { title: 'Questions' }
     }
   }
 }

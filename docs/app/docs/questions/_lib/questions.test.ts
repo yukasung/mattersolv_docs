@@ -11,7 +11,8 @@ import {
   getQuestionBySlug,
   getQuestionGroups,
   getQuestions,
-  questionHref
+  questionHref,
+  resolveAnswerState
 } from './questions.ts'
 
 test('displayQuestionTitle removes the question prefix used by Linear', () => {
@@ -32,7 +33,7 @@ test('question hub displays titles without the Linear question prefix', async ()
   assert.doesNotMatch(component, /<span>\{question\.status\}<\/span>/)
 })
 
-test('question hub displays the latest lawyer comment time', async () => {
+test('question hub displays the latest comment time', async () => {
   const [hub, browser] = await Promise.all([
     readFile(
       new URL('../_components/questions-hub.tsx', import.meta.url),
@@ -45,8 +46,15 @@ test('question hub displays the latest lawyer comment time', async () => {
   ])
 
   assert.match(hub, /getLatestCommentDatesForIssues/)
+  assert.match(hub, /resolveAnswerState/)
+  assert.match(hub, /Boolean\(latestCommentDates\[question\.id\]\)/)
   assert.match(browser, /latestCommentAt: string \| null/)
   assert.match(browser, /ความเห็นล่าสุด/)
+  assert.match(browser, /answered: 'ตอบแล้ว'/)
+  assert.match(browser, /<option value="answered">ตอบแล้ว<\/option>/)
+  assert.doesNotMatch(browser, /value="partial"|value="confirmed"/)
+  assert.doesNotMatch(browser, /รอยืนยันเพิ่มเติม|ยืนยันแล้ว/)
+  assert.doesNotMatch(hub, /questions-notice|ข้อมูลจาก Linear แบบอ่านอย่างเดียว/)
 })
 
 test('snapshot contains every Linear main issue and sub-issue exactly once', () => {
@@ -91,18 +99,25 @@ test('related modules are based on the question subject, not incidental descript
   )
 })
 
-test('answer state is derived from the standardized lawyer-answer section', () => {
+test('answer state only distinguishes unanswered and answered questions', () => {
   assert.equal(getAnswerState('## คำถาม\nคำถามเดิม'), 'unanswered')
   assert.equal(
     getAnswerState(
       '## คำตอบจากทีมทนาย\n\n**สถานะคำตอบ:** รอยืนยันเพิ่มเติม'
     ),
-    'partial'
+    'answered'
   )
   assert.equal(
     getAnswerState('## คำตอบจากทีมทนาย\n\n**สถานะคำตอบ:** ยืนยันแล้ว'),
-    'confirmed'
+    'answered'
   )
+})
+
+test('a comment marks an otherwise unanswered question as answered', () => {
+  assert.equal(resolveAnswerState('unanswered', false), 'unanswered')
+  assert.equal(resolveAnswerState('unanswered', true), 'answered')
+  assert.equal(resolveAnswerState('answered', false), 'answered')
+  assert.equal(resolveAnswerState('answered', true), 'answered')
 })
 
 test('meeting filters match Thai text and combine module, priority, and status', () => {
