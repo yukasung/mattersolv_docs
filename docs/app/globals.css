@@ -263,6 +263,10 @@ code.text-\[\.9em\] {
   font-weight: 700;
 }
 
+.module-question-links > summary + ul {
+  margin-top: 1rem;
+}
+
 .module-question-links li {
   margin-block: 0.35rem;
 }
