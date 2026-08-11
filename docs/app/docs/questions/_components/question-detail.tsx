@@ -35,10 +35,7 @@ export function QuestionDetail() {
       </Link>
 
       <div className="question-detail-heading">
-        <div>
-          <span className="question-id">{question.id}</span>
-          <h1>{question.title}</h1>
-        </div>
+        <span className="question-id">{question.id}</span>
         <span className={`answer-badge answer-${answerState}`}>
           {answerLabels[answerState]}
         </span>
@@ -54,16 +51,6 @@ export function QuestionDetail() {
         <aside className="question-meeting-summary">
           <strong>คำถามที่ต้องตัดสินใจ</strong>
           <p>{meetingQuestion}</p>
-        </aside>
-      )}
-
-      {answerState === 'unanswered' && (
-        <aside className="question-answer-help">
-          <strong>บันทึกข้อสรุปหลังประชุม</strong>
-          <p>
-            พิมพ์ในแชตว่า <code>บันทึกคำตอบ {question.id}</code> พร้อมข้อสรุป
-            ผู้ยืนยัน และเงื่อนไขที่เกี่ยวข้อง
-          </p>
         </aside>
       )}
 
