@@ -7,7 +7,7 @@ import {
   MODULES,
   type ModuleId
 } from '../_lib/modules.ts'
-import type { AnswerState } from '../_lib/questions'
+import { displayQuestionTitle, type AnswerState } from '../_lib/questions'
 
 export interface BrowserQuestion {
   id: string
@@ -143,10 +143,12 @@ export function QuestionsBrowser({
               <span>{groupQuestions.length} รายการ</span>
             </summary>
             <div className="questions-list">
-              {groupQuestions.map((question) => (
-                <article className="question-row" key={question.id}>
-                  <div className="question-row-heading">
-                    <Link href={question.href}>{question.title}</Link>
+                  {groupQuestions.map((question) => (
+                    <article className="question-row" key={question.id}>
+                      <div className="question-row-heading">
+                        <Link href={question.href}>
+                          {displayQuestionTitle(question.title)}
+                        </Link>
                     <span className={`answer-badge answer-${question.answerState}`}>
                       {answerLabels[question.answerState]}
                     </span>
@@ -154,7 +156,6 @@ export function QuestionsBrowser({
                   <div className="question-meta">
                     <span>{question.id}</span>
                     <span>{question.priority}</span>
-                    <span>{question.status}</span>
                     <a href={question.linearUrl} target="_blank" rel="noreferrer">
                       เปิดใน Linear ↗
                     </a>

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 
 import {
@@ -19,6 +20,16 @@ test('displayQuestionTitle removes the question prefix used by Linear', () => {
     'ลูกความเห็นข้อมูลอะไรได้บ้างในระบบ'
   )
   assert.equal(displayQuestionTitle('หัวข้อทั่วไป'), 'หัวข้อทั่วไป')
+})
+
+test('question hub displays titles without the Linear question prefix', async () => {
+  const component = await readFile(
+    new URL('../_components/questions-browser.tsx', import.meta.url),
+    'utf8'
+  )
+
+  assert.match(component, /displayQuestionTitle\(question\.title\)/)
+  assert.doesNotMatch(component, /<span>\{question\.status\}<\/span>/)
 })
 
 test('snapshot contains every Linear main issue and sub-issue exactly once', () => {
