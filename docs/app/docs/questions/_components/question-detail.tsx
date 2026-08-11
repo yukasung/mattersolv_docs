@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 
 import { LinearMarkdown } from './linear-markdown'
+import { QuestionComments } from './question-comments'
 import { extractMeetingQuestion } from '../_lib/meeting-content'
 import {
   getAnswerState,
@@ -54,6 +55,8 @@ export function QuestionDetail() {
       )}
 
       <LinearMarkdown content={question.description} />
+
+      <QuestionComments issueId={question.id} />
 
       <section className="question-source-meta">
         {question.relatedModules.length > 0 && (

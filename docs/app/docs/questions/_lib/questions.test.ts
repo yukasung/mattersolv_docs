@@ -32,6 +32,23 @@ test('question hub displays titles without the Linear question prefix', async ()
   assert.doesNotMatch(component, /<span>\{question\.status\}<\/span>/)
 })
 
+test('question hub displays the latest lawyer comment time', async () => {
+  const [hub, browser] = await Promise.all([
+    readFile(
+      new URL('../_components/questions-hub.tsx', import.meta.url),
+      'utf8'
+    ),
+    readFile(
+      new URL('../_components/questions-browser.tsx', import.meta.url),
+      'utf8'
+    )
+  ])
+
+  assert.match(hub, /getLatestCommentDatesForIssues/)
+  assert.match(browser, /latestCommentAt: string \| null/)
+  assert.match(browser, /ความเห็นล่าสุด/)
+})
+
 test('snapshot contains every Linear main issue and sub-issue exactly once', () => {
   const questions = getQuestions()
   const ids = questions.map(({ id }) => id)

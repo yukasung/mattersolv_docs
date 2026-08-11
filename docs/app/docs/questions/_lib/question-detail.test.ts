@@ -13,3 +13,22 @@ test('question detail keeps the decision prompt without duplicate title or answe
   assert.doesNotMatch(component, /question-answer-help/)
   assert.doesNotMatch(component, /บันทึกข้อสรุปหลังประชุม/)
 })
+
+test('question detail provides immutable lawyer comments with a remembered name', async () => {
+  const [detail, comments] = await Promise.all([
+    readFile(
+      new URL('../_components/question-detail.tsx', import.meta.url),
+      'utf8'
+    ),
+    readFile(
+      new URL('../_components/question-comments.tsx', import.meta.url),
+      'utf8'
+    )
+  ])
+
+  assert.match(detail, /<QuestionComments issueId=\{question\.id\} \/>/)
+  assert.match(comments, /localStorage\.getItem\('mattersolv\.lawyer-name'\)/)
+  assert.match(comments, /localStorage\.setItem\('mattersolv\.lawyer-name'/)
+  assert.match(comments, /localStorage\.removeItem\('mattersolv\.lawyer-name'\)/)
+  assert.doesNotMatch(comments, /dangerouslySetInnerHTML/)
+})

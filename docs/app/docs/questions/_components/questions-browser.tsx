@@ -19,12 +19,21 @@ export interface BrowserQuestion {
   labels: string[]
   href: string
   linearUrl: string
+  latestCommentAt: string | null
 }
 
 const answerLabels: Record<AnswerState, string> = {
   unanswered: 'ยังไม่มีคำตอบ',
   partial: 'รอยืนยันเพิ่มเติม',
   confirmed: 'ยืนยันแล้ว'
+}
+
+function formatLatestCommentDate(date: string): string {
+  return new Intl.DateTimeFormat('th-TH', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'Asia/Bangkok'
+  }).format(new Date(date))
 }
 
 export function QuestionsBrowser({
@@ -156,6 +165,11 @@ export function QuestionsBrowser({
                   <div className="question-meta">
                     <span>{question.id}</span>
                     <span>{question.priority}</span>
+                    {question.latestCommentAt && (
+                      <span>
+                        ความเห็นล่าสุด {formatLatestCommentDate(question.latestCommentAt)}
+                      </span>
+                    )}
                     <a href={question.linearUrl} target="_blank" rel="noreferrer">
                       เปิดใน Linear ↗
                     </a>

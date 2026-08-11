@@ -1,4 +1,5 @@
 import { QuestionsBrowser } from './questions-browser'
+import { getLatestCommentDatesForIssues } from '../_lib/comments'
 import {
   getAnswerState,
   getFilterOptions,
@@ -7,9 +8,12 @@ import {
   questionSnapshot
 } from '../_lib/questions'
 
-export function QuestionsHub() {
+export async function QuestionsHub() {
   const questions = getQuestions()
   const options = getFilterOptions(questions)
+  const latestCommentDates = await getLatestCommentDatesForIssues(
+    questions.map(({ id }) => id)
+  )
   const syncedAt = new Intl.DateTimeFormat('th-TH', {
     dateStyle: 'medium',
     timeStyle: 'short',
@@ -39,7 +43,8 @@ export function QuestionsHub() {
           primaryModule: question.primaryModule,
           labels: question.labels,
           href: questionHref(question),
-          linearUrl: question.url
+          linearUrl: question.url,
+          latestCommentAt: latestCommentDates[question.id] ?? null
         }))}
         priorities={options.priorities}
         statuses={options.statuses}
