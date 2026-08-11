@@ -32,3 +32,21 @@ test('question detail provides immutable lawyer comments with a remembered name'
   assert.match(comments, /localStorage\.removeItem\('mattersolv\.lawyer-name'\)/)
   assert.doesNotMatch(comments, /dangerouslySetInnerHTML/)
 })
+
+test('lawyer comment inputs have visible form controls without undefined Nextra colors', async () => {
+  const styles = await readFile(
+    new URL('../../../globals.css', import.meta.url),
+    'utf8'
+  )
+
+  assert.match(
+    styles,
+    /\.question-comments-form input,[\s\S]*?min-height:\s*2\.75rem/s
+  )
+  assert.match(
+    styles,
+    /\.question-comments-form input,[\s\S]*?border:\s*1px solid color-mix\(in srgb, currentColor 18%, transparent\)/s
+  )
+  assert.doesNotMatch(styles, /--nextra-border/)
+  assert.doesNotMatch(styles, /--nextra-primary;/)
+})

@@ -564,7 +564,7 @@ article main table td {
 .question-comments {
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--nextra-border);
+  border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
 }
 
 .question-comments h2 {
@@ -580,9 +580,9 @@ article main table td {
 
 .question-comments-form {
   padding: 1rem;
-  border: 1px solid var(--nextra-border);
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
   border-radius: 0.75rem;
-  background: color-mix(in srgb, var(--nextra-bg) 94%, var(--nextra-primary) 6%);
+  background: color-mix(in srgb, rgb(var(--nextra-bg)) 94%, #2563eb 6%);
 }
 
 .question-comments-form label {
@@ -594,10 +594,11 @@ article main table td {
 .question-comments-form input,
 .question-comments-form textarea {
   width: 100%;
+  min-height: 2.75rem;
   padding: 0.625rem 0.75rem;
-  border: 1px solid var(--nextra-border);
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
   border-radius: 0.5rem;
-  background: var(--nextra-bg);
+  background: rgb(var(--nextra-bg));
   color: inherit;
   font: inherit;
 }
@@ -615,22 +616,22 @@ article main table td {
 }
 
 .question-comments-form button[type='submit'] {
-  border: 1px solid var(--nextra-primary);
-  background: var(--nextra-primary);
+  border: 1px solid #2563eb;
+  background: #2563eb;
   color: white;
 }
 
 .question-comments-form button:focus-visible,
 .question-comments-form input:focus-visible,
 .question-comments-form textarea:focus-visible {
-  outline: 2px solid var(--nextra-primary);
+  outline: 2px solid #2563eb;
   outline-offset: 2px;
 }
 
 .question-comments-clear {
   border: 0;
   background: transparent;
-  color: var(--nextra-primary);
+  color: #2563eb;
 }
 
 .question-comments-status {
@@ -640,7 +641,7 @@ article main table td {
 
 .question-comment {
   padding: 1rem;
-  border: 1px solid var(--nextra-border);
+  border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
   border-radius: 0.75rem;
 }
 
@@ -652,7 +653,7 @@ article main table td {
 }
 
 .question-comment time {
-  color: var(--nextra-fg);
+  color: color-mix(in srgb, currentColor 72%, transparent);
   font-size: 0.875rem;
   opacity: 0.72;
 }
