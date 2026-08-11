@@ -49,7 +49,6 @@ export function QuestionDetail() {
 
       {meetingQuestion && (
         <aside className="question-meeting-summary">
-          <strong>คำถามที่ต้องตัดสินใจ</strong>
           <p>{meetingQuestion}</p>
         </aside>
       )}

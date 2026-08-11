@@ -1,5 +1,8 @@
 import type { ReactNode } from 'react'
-import { displayHeading } from '../_lib/meeting-content'
+import {
+  displayHeading,
+  omitDecisionQuestionSection
+} from '../_lib/meeting-content'
 
 export { displayHeading } from '../_lib/meeting-content'
 
@@ -22,10 +25,12 @@ function inline(text: string): ReactNode[] {
 }
 
 export function LinearMarkdown({ content }: { content: string }) {
-  const lines = content.replace(/<issue[^>]*>(.*?)<\/issue>/g, '$1').split('\n')
+  const normalizedContent = content.replace(/<issue[^>]*>(.*?)<\/issue>/g, '$1')
+  const lines = omitDecisionQuestionSection(normalizedContent).split('\n')
   const blocks: ReactNode[] = []
   let paragraph: string[] = []
   let list: string[] = []
+  let listIsChoice = false
 
   const flushParagraph = () => {
     if (paragraph.length) {
@@ -36,13 +41,26 @@ export function LinearMarkdown({ content }: { content: string }) {
   const flushList = () => {
     if (list.length) {
       blocks.push(
-        <ul key={`ul-${blocks.length}`}>
+        <ul
+          className={listIsChoice ? 'linear-choice-list' : undefined}
+          key={`ul-${blocks.length}`}
+        >
           {list.map((item, index) => (
-            <li key={index}>{inline(item)}</li>
+            <li key={index}>
+              {listIsChoice ? (
+                <label>
+                  <input type="checkbox" />
+                  {inline(item)}
+                </label>
+              ) : (
+                inline(item)
+              )}
+            </li>
           ))}
         </ul>
       )
       list = []
+      listIsChoice = false
     }
   }
 
@@ -55,6 +73,7 @@ export function LinearMarkdown({ content }: { content: string }) {
       flushList()
       const level = heading[1]?.length ?? 2
       const label = displayHeading(heading[2])
+      listIsChoice = heading[2].trim() === 'ตัวเลือก'
       if (level === 2) blocks.push(<h2 key={`h-${blocks.length}`}>{inline(label)}</h2>)
       else if (level === 3) blocks.push(<h3 key={`h-${blocks.length}`}>{inline(label)}</h3>)
       else blocks.push(<h4 key={`h-${blocks.length}`}>{inline(label)}</h4>)

@@ -21,3 +21,18 @@ export function extractMeetingQuestion(content: string) {
     .map((line) => line.replace(/^\s*[*-]\s+/, '').trim())
     .find(Boolean)
 }
+
+export function omitDecisionQuestionSection(content: string) {
+  const lines = content.split('\n')
+  const questionStart = lines.findIndex((line) => /^##\s+คำถาม\s*$/.test(line))
+
+  if (questionStart === -1) return content
+
+  const followingLines = lines.slice(questionStart + 1)
+  const nextHeading = followingLines.findIndex((line) => /^#{2,4}\s+/.test(line))
+  const retainedLines = nextHeading === -1
+    ? lines.slice(0, questionStart)
+    : [...lines.slice(0, questionStart), ...followingLines.slice(nextHeading)]
+
+  return retainedLines.join('\n').replace(/\n{3,}/g, '\n\n').trim()
+}

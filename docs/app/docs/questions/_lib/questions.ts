@@ -58,6 +58,10 @@ export function questionHref(question: Pick<Question, 'id'>): string {
   return `/docs/questions/${question.id.toLowerCase()}`
 }
 
+export function displayQuestionTitle(title: string): string {
+  return title.replace(/^\[คำถาม\]\s*/u, '')
+}
+
 export function getAnswerState(description: string): AnswerState {
   if (!/^##\s+คำตอบจากทีมทนาย\s*$/imu.test(description)) {
     return 'unanswered'

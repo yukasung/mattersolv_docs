@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import {
+  displayQuestionTitle,
   filterQuestions,
   getAnswerState,
   getFilterOptions,
@@ -11,6 +12,14 @@ import {
   getQuestions,
   questionHref
 } from './questions.ts'
+
+test('displayQuestionTitle removes the question prefix used by Linear', () => {
+  assert.equal(
+    displayQuestionTitle('[คำถาม] ลูกความเห็นข้อมูลอะไรได้บ้างในระบบ'),
+    'ลูกความเห็นข้อมูลอะไรได้บ้างในระบบ'
+  )
+  assert.equal(displayQuestionTitle('หัวข้อทั่วไป'), 'หัวข้อทั่วไป')
+})
 
 test('snapshot contains every Linear main issue and sub-issue exactly once', () => {
   const questions = getQuestions()

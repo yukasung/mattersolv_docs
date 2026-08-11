@@ -249,6 +249,21 @@ code.text-\[\.9em\] {
   padding-inline-start: 0.25rem;
 }
 
+.linear-description .linear-choice-list {
+  list-style: none;
+  padding-inline-start: 0;
+}
+
+.linear-description .linear-choice-list li {
+  padding-inline-start: 0;
+}
+
+.linear-choice-list label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .module-question-links {
   margin: 2rem 0;
   padding: 0.9rem 1rem;

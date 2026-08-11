@@ -21,27 +21,27 @@ export const metadata: Metadata = {
     'documentation'
   ],
   generator: 'Next.js',
-  applicationName: 'MatterSolv Documentation',
+  applicationName: 'MatterSolv Docs',
   appleWebApp: {
-    title: 'MatterSolv Documentation'
+    title: 'MatterSolv Docs'
   },
   title: {
-    default: 'MatterSolv Documentation',
-    template: '%s | MatterSolv Documentation'
+    default: 'MatterSolv Docs',
+    template: '%s | MatterSolv Docs'
   },
   openGraph: {
     url: './',
-    title: 'MatterSolv Documentation',
+    title: 'MatterSolv Docs',
     description:
       'Documentation for MatterSolv workflows, modules, and administration.',
-    siteName: 'MatterSolv Documentation',
+    siteName: 'MatterSolv Docs',
     images: ['/opengraph-image'],
     locale: 'th_TH',
     type: 'website'
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MatterSolv Documentation',
+    title: 'MatterSolv Docs',
     description:
       'Documentation for MatterSolv workflows, modules, and administration.',
     images: ['/opengraph-image']
@@ -58,7 +58,7 @@ const navbar = (
   <Navbar
     logo={
       <span className="x:text-sm x:font-semibold x:tracking-normal x:sm:text-base">
-        MatterSolv Documentation
+        MatterSolv Docs
       </span>
     }
   />
@@ -67,7 +67,7 @@ const navbar = (
 const footer = (
   <Footer>
     <p className="text-xs">
-      © {new Date().getFullYear()} MatterSolv Documentation.
+      © {new Date().getFullYear()} MatterSolv Docs.
     </p>
   </Footer>
 )

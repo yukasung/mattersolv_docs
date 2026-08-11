@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import {
+  displayQuestionTitle,
   getQuestionsForModule,
   moduleLabel,
   questionHref,
@@ -18,15 +19,11 @@ export function ModuleQuestionLinks({ module }: { module: ModuleId }) {
         Questions for lawyer meeting ({primary.length} primary
         {related.length > 0 ? `, ${related.length} related` : ''})
       </summary>
-      <p>
-        คำถาม Requirement Clarification ที่เกี่ยวข้องกับ {moduleLabel(module)}
-        โดยตรง แต่ละลิงก์เปิดรายละเอียดจาก Linear snapshot
-      </p>
       <ul>
         {primary.map((question) => (
           <li key={question.id}>
             <Link href={questionHref(question)}>
-              {question.id}: {question.title}
+              {question.id}: {displayQuestionTitle(question.title)}
             </Link>
           </li>
         ))}
@@ -38,7 +35,7 @@ export function ModuleQuestionLinks({ module }: { module: ModuleId }) {
             {related.map((question) => (
               <li key={question.id}>
                 <Link href={questionHref(question)}>
-                  {question.id}: {question.title}
+                  {question.id}: {displayQuestionTitle(question.title)}
                 </Link>
               </li>
             ))}
