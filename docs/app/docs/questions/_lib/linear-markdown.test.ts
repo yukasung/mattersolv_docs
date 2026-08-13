@@ -5,6 +5,7 @@ import test from 'node:test'
 import {
   displayHeading,
   extractMeetingQuestion,
+  linkInternalDocReferences,
   omitDecisionQuestionSection
 } from './meeting-content.ts'
 
@@ -42,6 +43,22 @@ test('omitDecisionQuestionSection removes only the repeated decision-question se
 
 ## ตัวเลือก
 * เห็นสถานะคดี`
+  )
+})
+
+test('internal module source paths become readable links without line numbers', () => {
+  assert.equal(
+    linkInternalDocReferences(
+      'docs/app/docs/modules/calendar/page.mdx บรรทัด 36 ระบุรายละเอียด'
+    ),
+    '[โมดูล Calendar](/docs/modules/calendar) ระบุรายละเอียด'
+  )
+
+  assert.equal(
+    linkInternalDocReferences(
+      'docs/app/docs/modules/billing/page.mdx บรรทัด 30 และ docs/app/docs/modules/finance/page.mdx บรรทัด 30 ระบุรายละเอียด'
+    ),
+    '[โมดูล Billing](/docs/modules/billing) และ [โมดูล Finance](/docs/modules/finance) ระบุรายละเอียด'
   )
 })
 

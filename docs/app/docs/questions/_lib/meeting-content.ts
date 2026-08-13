@@ -1,3 +1,5 @@
+import { MODULES } from './modules.ts'
+
 const meetingHeadings: Record<string, string> = {
   'เหตุผลที่ต้องสอบถาม': 'ทำไมต้องตัดสินใจ',
   คำถาม: 'คำถามที่ต้องตัดสินใจ',
@@ -8,6 +10,19 @@ const meetingHeadings: Record<string, string> = {
 
 export function displayHeading(heading: string) {
   return meetingHeadings[heading.trim()] ?? heading
+}
+
+export function linkInternalDocReferences(content: string) {
+  return content.replace(
+    /docs\/app\/docs\/modules\/([a-z-]+)\/page\.mdx(?:\s+บรรทัด\s+\d+(?:\s+และ\s+\d+)*)?/g,
+    (reference, moduleId: string) => {
+      const module = MODULES.find(({ id }) => id === moduleId)
+
+      return module?.href
+        ? `[โมดูล ${module.label}](${module.href})`
+        : reference
+    }
+  )
 }
 
 export function extractMeetingQuestion(content: string) {

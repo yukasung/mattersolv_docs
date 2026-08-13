@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import {
   displayHeading,
+  linkInternalDocReferences,
   omitDecisionQuestionSection
 } from '../_lib/meeting-content'
 
@@ -25,7 +26,9 @@ function inline(text: string): ReactNode[] {
 }
 
 export function LinearMarkdown({ content }: { content: string }) {
-  const normalizedContent = content.replace(/<issue[^>]*>(.*?)<\/issue>/g, '$1')
+  const normalizedContent = linkInternalDocReferences(
+    content.replace(/<issue[^>]*>(.*?)<\/issue>/g, '$1')
+  )
   const lines = omitDecisionQuestionSection(normalizedContent).split('\n')
   const blocks: ReactNode[] = []
   let paragraph: string[] = []
