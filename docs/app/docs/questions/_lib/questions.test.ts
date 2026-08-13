@@ -15,10 +15,14 @@ import {
   resolveAnswerState
 } from './questions.ts'
 
-test('displayQuestionTitle removes the question prefix used by Linear', () => {
+test('displayQuestionTitle removes question and topic prefixes used by Linear', () => {
   assert.equal(
     displayQuestionTitle('[คำถาม] ลูกความเห็นข้อมูลอะไรได้บ้างในระบบ'),
     'ลูกความเห็นข้อมูลอะไรได้บ้างในระบบ'
+  )
+  assert.equal(
+    displayQuestionTitle('[หัวข้อ] การสมัครใช้งาน'),
+    'การสมัครใช้งาน'
   )
   assert.equal(displayQuestionTitle('หัวข้อทั่วไป'), 'หัวข้อทั่วไป')
 })
@@ -57,14 +61,17 @@ test('question hub displays the latest comment time', async () => {
   assert.doesNotMatch(hub, /questions-notice|ข้อมูลจาก Linear แบบอ่านอย่างเดียว/)
 })
 
-test('snapshot contains every Linear main issue and sub-issue exactly once', () => {
+test('question catalog includes only actionable Linear sub-issues', () => {
   const questions = getQuestions()
   const ids = questions.map(({ id }) => id)
 
-  assert.equal(questions.length, 89)
-  assert.equal(new Set(ids).size, 89)
-  assert.equal(questions.filter(({ parentId }) => !parentId).length, 2)
-  assert.equal(questions.filter(({ parentId }) => parentId).length, 87)
+  assert.equal(questions.length, 87)
+  assert.equal(new Set(ids).size, 87)
+  assert.ok(questions.every(({ parentId }) => parentId))
+  assert.ok(!ids.includes('DEV-189'))
+  assert.ok(!ids.includes('DEV-181'))
+  assert.equal(getQuestionBySlug('dev-189'), undefined)
+  assert.equal(getQuestionBySlug('dev-181'), undefined)
 })
 
 test('primary classifications match the approved meeting groups', () => {
@@ -80,7 +87,7 @@ test('primary classifications match the approved meeting groups', () => {
     hr: 3,
     reports: 4,
     administration: 18,
-    other: 5
+    other: 3
   })
 })
 
@@ -89,6 +96,17 @@ test('detail lookup and href use a stable lowercase Linear identifier', () => {
 
   assert.equal(question?.id, 'DEV-145')
   assert.equal(questionHref(question!), '/docs/questions/dev-145')
+})
+
+test('DEV-160 explains outcome-based fees in plain Thai', () => {
+  const question = getQuestionBySlug('dev-160')
+
+  assert.equal(
+    question?.title,
+    '[คำถาม] ระบบต้องรองรับค่าบริการเมื่อคดีสำเร็จหรือไม่'
+  )
+  assert.match(question?.description ?? '', /ค่าบริการเมื่อคดีสำเร็จ/)
+  assert.doesNotMatch(question?.description ?? '', /Success Fee/)
 })
 
 test('related modules are based on the question subject, not incidental description words', () => {
@@ -135,14 +153,14 @@ test('meeting filters match Thai text and combine module, priority, and status',
   assert.ok(urgentMatters.every(({ status }) => status === 'Backlog'))
 })
 
-test('meeting groups follow module navigation order and contain every issue', () => {
+test('meeting groups follow module navigation order and contain every question', () => {
   const groups = getQuestionGroups(getQuestions())
 
   assert.equal(groups[0]?.module.id, 'clients')
   assert.equal(groups.at(-1)?.module.id, 'other')
   assert.equal(
     groups.reduce((total, group) => total + group.questions.length, 0),
-    89
+    87
   )
 })
 

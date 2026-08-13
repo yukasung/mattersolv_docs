@@ -38,6 +38,10 @@ interface QuestionSnapshot {
 
 const snapshot = snapshotData as QuestionSnapshot
 
+function isPublishedQuestion(question: Question): boolean {
+  return question.parentId !== null
+}
+
 export const questionSnapshot = {
   project: snapshot.project,
   projectId: snapshot.projectId,
@@ -46,12 +50,15 @@ export const questionSnapshot = {
 }
 
 export function getQuestions(): Question[] {
-  return snapshot.issues.slice()
+  return snapshot.issues.filter(isPublishedQuestion)
 }
 
 export function getQuestionBySlug(slug: string): Question | undefined {
   const normalized = slug.trim().toLowerCase()
-  return snapshot.issues.find(({ id }) => id.toLowerCase() === normalized)
+  return snapshot.issues.find(
+    (question) =>
+      isPublishedQuestion(question) && question.id.toLowerCase() === normalized
+  )
 }
 
 export function questionHref(question: Pick<Question, 'id'>): string {
@@ -59,7 +66,7 @@ export function questionHref(question: Pick<Question, 'id'>): string {
 }
 
 export function displayQuestionTitle(title: string): string {
-  return title.replace(/^\[คำถาม\]\s*/u, '')
+  return title.replace(/^\[(?:คำถาม|หัวข้อ)\]\s*/u, '')
 }
 
 export function getAnswerState(description: string): AnswerState {
@@ -87,7 +94,7 @@ export function getModuleCounts(): Record<ModuleId, number> {
     number
   >
 
-  for (const question of snapshot.issues) {
+  for (const question of getQuestions()) {
     counts[question.primaryModule] += 1
   }
 
@@ -118,7 +125,7 @@ export function getQuestionsForModule(
   module: ModuleId,
   { includeRelated = false }: { includeRelated?: boolean } = {}
 ): Question[] {
-  return snapshot.issues.filter(
+  return getQuestions().filter(
     (question) =>
       question.primaryModule === module ||
       (includeRelated && question.relatedModules.includes(module))
