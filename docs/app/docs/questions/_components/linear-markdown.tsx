@@ -1,3 +1,4 @@
+import { Link } from 'nextra-theme-docs'
 import type { ReactNode } from 'react'
 import {
   displayHeading,
@@ -16,9 +17,9 @@ function inline(text: string): ReactNode[] {
     const link = token.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
     if (link?.[1] && link[2]) {
       return (
-        <a key={index} href={link[2]} target="_blank" rel="noreferrer">
+        <Link key={index} href={link[2]}>
           {link[1]}
-        </a>
+        </Link>
       )
     }
     return token

@@ -62,6 +62,17 @@ test('internal module source paths become readable links without line numbers', 
   )
 })
 
+test('Linear markdown delegates link styling and navigation to Nextra', async () => {
+  const component = await readFile(
+    new URL('../_components/linear-markdown.tsx', import.meta.url),
+    'utf8'
+  )
+
+  assert.match(component, /import \{ Link \} from 'nextra-theme-docs'/)
+  assert.match(component, /<Link key=\{index\} href=\{link\[2\]\}>/)
+  assert.doesNotMatch(component, /<a key=\{index\}[^>]*target="_blank"/)
+})
+
 test('Linear description styles preserve heading hierarchy and visible bullet lists', async () => {
   const styles = await readFile(new URL('../../../globals.css', import.meta.url), 'utf8')
 

@@ -77,6 +77,9 @@ const RootLayout: FC<LayoutProps<'/'>> = async ({ children }) => {
   const pageMap = await getPageMap()
   return (
     <html lang="th" dir="ltr" suppressHydrationWarning>
+      <head>
+        <Head />
+      </head>
       <body>
         <Layout
           navbar={navbar}
