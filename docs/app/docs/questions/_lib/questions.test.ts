@@ -6,6 +6,7 @@ import {
   displayQuestionTitle,
   filterQuestions,
   getAnswerState,
+  getHtmlQuestionsForModule,
   getFilterOptions,
   getModuleCounts,
   getQuestionBySlug,
@@ -61,13 +62,17 @@ test('question hub displays the latest comment time', async () => {
   assert.doesNotMatch(hub, /questions-notice|ข้อมูลจาก Linear แบบอ่านอย่างเดียว/)
 })
 
-test('question catalog includes only actionable Linear sub-issues', () => {
+test('question catalog includes published Linear and HTML meeting questions', () => {
   const questions = getQuestions()
   const ids = questions.map(({ id }) => id)
 
-  assert.equal(questions.length, 87)
-  assert.equal(new Set(ids).size, 87)
-  assert.ok(questions.every(({ parentId }) => parentId))
+  assert.equal(questions.length, 92)
+  assert.equal(new Set(ids).size, 92)
+  assert.ok(ids.includes('DEV-190'))
+  assert.ok(ids.includes('DEV-191'))
+  assert.ok(ids.includes('DEV-192'))
+  assert.ok(ids.includes('DEV-193'))
+  assert.ok(ids.includes('DEV-194'))
   assert.ok(!ids.includes('DEV-189'))
   assert.ok(!ids.includes('DEV-181'))
   assert.equal(getQuestionBySlug('dev-189'), undefined)
@@ -76,7 +81,7 @@ test('question catalog includes only actionable Linear sub-issues', () => {
 
 test('primary classifications match the approved meeting groups', () => {
   assert.deepEqual(getModuleCounts(), {
-    clients: 6,
+    clients: 11,
     matters: 24,
     documents: 7,
     quotations: 11,
@@ -96,6 +101,17 @@ test('detail lookup and href use a stable lowercase Linear identifier', () => {
 
   assert.equal(question?.id, 'DEV-145')
   assert.equal(questionHref(question!), '/docs/questions/dev-145')
+})
+
+test('HTML meeting question has a detail route without a Linear source', () => {
+  const questions = ['dev-190', 'dev-191', 'dev-192', 'dev-193', 'dev-194'].map(getQuestionBySlug)
+  const question = questions[4]
+
+  assert.equal(question?.id, 'DEV-194')
+  assert.equal(question?.source, 'html')
+  assert.equal(questionHref(question!), '/docs/questions/dev-194')
+  assert.equal(question?.url, undefined)
+  assert.deepEqual(getHtmlQuestionsForModule('clients'), questions)
 })
 
 test('DEV-160 explains outcome-based fees in plain Thai', () => {
@@ -160,7 +176,7 @@ test('meeting groups follow module navigation order and contain every question',
   assert.equal(groups.at(-1)?.module.id, 'other')
   assert.equal(
     groups.reduce((total, group) => total + group.questions.length, 0),
-    87
+    92
   )
 })
 

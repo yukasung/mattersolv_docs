@@ -63,17 +63,21 @@ export function QuestionDetail() {
         onCommentPresenceChange={setHasComments}
       />
 
-      <section className="question-source-meta">
+      {(question.relatedModules.length > 0 || question.url) && (
+        <section className="question-source-meta">
         {question.relatedModules.length > 0 && (
           <p>
             <strong>โมดูลที่เกี่ยวข้อง:</strong>{' '}
             {question.relatedModules.map(moduleLabel).join(', ')}
           </p>
         )}
-        <a href={question.url} target="_blank" rel="noreferrer">
-          เปิด Issue ต้นทางใน Linear ↗
-        </a>
-      </section>
+        {question.url && (
+          <a href={question.url} target="_blank" rel="noreferrer">
+            เปิด Issue ต้นทางใน Linear ↗
+          </a>
+        )}
+        </section>
+      )}
     </article>
   )
 }

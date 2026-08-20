@@ -3,7 +3,8 @@ import type { ReactNode } from 'react'
 import {
   displayHeading,
   linkInternalDocReferences,
-  omitDecisionQuestionSection
+  omitDecisionQuestionSection,
+  thaiChoiceMarker
 } from '../_lib/meeting-content'
 
 export { displayHeading } from '../_lib/meeting-content'
@@ -44,13 +45,21 @@ export function LinearMarkdown({ content }: { content: string }) {
   }
   const flushList = () => {
     if (list.length) {
-      const items = list.map((item, index) => (
-        <li key={index}>{inline(item)}</li>
-      ))
+      const isMultiChoice = listIsChoice && list.length > 1
+      const items = list.map((item, index) =>
+        isMultiChoice ? (
+          <li className="choice-item" key={index}>
+            <span className="choice-marker">{thaiChoiceMarker(index)}</span>
+            <span>{inline(item)}</span>
+          </li>
+        ) : (
+          <li key={index}>{inline(item)}</li>
+        )
+      )
 
       blocks.push(
-        listIsChoice && list.length > 1 ? (
-          <ol key={`ol-${blocks.length}`}>{items}</ol>
+        isMultiChoice ? (
+          <ul className="choice-list" key={`ul-${blocks.length}`}>{items}</ul>
         ) : (
           <ul key={`ul-${blocks.length}`}>{items}</ul>
         )

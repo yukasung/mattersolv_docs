@@ -6,7 +6,8 @@ import {
   displayHeading,
   extractMeetingQuestion,
   linkInternalDocReferences,
-  omitDecisionQuestionSection
+  omitDecisionQuestionSection,
+  thaiChoiceMarker
 } from './meeting-content.ts'
 
 test('extractMeetingQuestion takes the decision question from a Linear description', () => {
@@ -81,7 +82,7 @@ test('Linear description styles preserve heading hierarchy and visible bullet li
   assert.match(styles, /\.linear-description ul\s*\{[^}]*padding-inline-start:/s)
 })
 
-test('choice sections with multiple items render as numbered lists without checkboxes', async () => {
+test('choice sections with multiple items render Thai letter markers without checkboxes', async () => {
   const [component, styles] = await Promise.all([
     readFile(
       new URL('../_components/linear-markdown.tsx', import.meta.url),
@@ -90,12 +91,17 @@ test('choice sections with multiple items render as numbered lists without check
     readFile(new URL('../../../globals.css', import.meta.url), 'utf8')
   ])
 
-  assert.match(component, /let listIsChoice = false/)
+  assert.deepEqual(
+    [0, 1, 2, 3, 4].map(thaiChoiceMarker),
+    ['ก.', 'ข.', 'ค.', 'ง.', 'จ.']
+  )
   assert.match(component, /listIsChoice && list\.length > 1/)
-  assert.match(component, /<ol key=\{`ol-\$\{blocks\.length\}`\}>/)
+  assert.match(component, /className="choice-list"/)
+  assert.match(component, /className="choice-marker"/)
+  assert.doesNotMatch(component, /<ol key=\{`ol-\$\{blocks\.length\}`\}>/)
   assert.doesNotMatch(component, /type="checkbox"/)
   assert.match(
     styles,
-    /\.linear-description ol\s*\{[^}]*list-style:\s*decimal/s
+    /ul\.choice-list\s*\{[^}]*list-style:\s*none/s
   )
 })

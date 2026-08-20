@@ -243,10 +243,21 @@ code.text-\[\.9em\] {
   list-style: disc;
 }
 
-.linear-description ol {
+ul.choice-list {
   margin: 0.5rem 0 1.25rem;
-  padding-inline-start: 1.5rem;
-  list-style: decimal;
+  padding: 0;
+  list-style: none;
+}
+
+.choice-list .choice-item {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  gap: 0.35rem;
+  padding: 0;
+}
+
+.choice-marker {
+  font-weight: 600;
 }
 
 .linear-description li {

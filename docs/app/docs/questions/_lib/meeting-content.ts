@@ -8,6 +8,12 @@ const meetingHeadings: Record<string, string> = {
   ที่มา: 'ข้อมูลอ้างอิง'
 }
 
+const thaiChoiceMarkers = ['ก.', 'ข.', 'ค.', 'ง.', 'จ.']
+
+export function thaiChoiceMarker(index: number): string {
+  return thaiChoiceMarkers[index] ?? `${index + 1}.`
+}
+
 export function displayHeading(heading: string) {
   return meetingHeadings[heading.trim()] ?? heading
 }

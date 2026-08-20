@@ -9,7 +9,7 @@ export interface Question {
   title: string
   description: string
   priority: string
-  url: string
+  url?: string
   createdAt: string
   updatedAt: string
   status: string
@@ -18,6 +18,7 @@ export interface Question {
   labels: string[]
   primaryModule: ModuleId
   relatedModules: ModuleId[]
+  source?: 'html'
 }
 
 export interface QuestionFilters {
@@ -38,6 +39,178 @@ interface QuestionSnapshot {
 
 const snapshot = snapshotData as QuestionSnapshot
 
+const htmlQuestions: Question[] = [
+  {
+    id: 'DEV-190',
+    title:
+      '[คำถาม] กรณีหนึ่งคดีมีลูกความหลายราย การออกใบเสนอราคาและใบวางบิลควรออกในนามใคร?',
+    description: `## เหตุผลที่ต้องสอบถาม
+
+หนึ่งคดีอาจมีลูกความหลายราย จึงต้องกำหนดผู้รับใบเสนอราคาและใบวางบิลให้ชัดเจน
+
+## คำถาม
+
+กรณีหนึ่งคดีมีลูกความหลายราย การออกใบเสนอราคาและใบวางบิลควรออกในนามใคร?
+
+## ตัวเลือก
+
+* ออกในนามลูกความหลักเพียงรายเดียว
+* แยกออกให้ลูกความแต่ละราย
+* สามารถเลือกได้ว่าจะออกให้รายใด หรือแบ่งออกหลายราย
+
+## ผลกระทบ
+
+* การออกใบเสนอราคาและใบวางบิล
+* การกำหนดผู้ชำระเงินของคดี`,
+    priority: 'High',
+    createdAt: '',
+    updatedAt: '',
+    status: 'Backlog',
+    statusType: 'backlog',
+    parentId: 'html',
+    labels: ['ลูกความ', 'ใบเสนอราคา', 'ใบวางบิล'],
+    primaryModule: 'clients',
+    relatedModules: ['quotations', 'billing'],
+    source: 'html'
+  },
+  {
+    id: 'DEV-191',
+    title:
+      '[คำถาม] ลูกความหลายรายที่อยู่ในคดีเดียวกัน สามารถเห็นข้อมูลคดีได้เหมือนกันทั้งหมดหรือไม่?',
+    description: `## เหตุผลที่ต้องสอบถาม
+
+คดีหนึ่งอาจมีลูกความหลายราย จึงต้องกำหนดขอบเขตการเข้าดูข้อมูลคดีของลูกความแต่ละรายให้ชัดเจน
+
+## คำถาม
+
+ลูกความหลายรายที่อยู่ในคดีเดียวกัน สามารถเห็นข้อมูลคดีได้เหมือนกันทั้งหมดหรือไม่?
+
+## ตัวเลือก
+
+* เห็นข้อมูลทั้งหมดเหมือนกัน
+* เห็นเฉพาะข้อมูลที่เกี่ยวข้องกับตนเอง
+* กำหนดสิทธิ์การเข้าถึงแยกเป็นรายบุคคล
+* ลูกความไม่สามารถเข้าดูข้อมูลคดีโดยตรง
+
+## ผลกระทบ
+
+* การรักษาความลับของข้อมูลคดี
+* สิทธิ์การเข้าถึงข้อมูลของลูกความ
+* การออกแบบหน้าลูกความสำหรับติดตามคดี`,
+    priority: 'High',
+    createdAt: '',
+    updatedAt: '',
+    status: 'Backlog',
+    statusType: 'backlog',
+    parentId: 'html',
+    labels: ['ลูกความ', 'สิทธิ์การเข้าถึง', 'ข้อมูลคดี'],
+    primaryModule: 'clients',
+    relatedModules: [],
+    source: 'html'
+  },
+  {
+    id: 'DEV-192',
+    title: '[คำถาม] หากลูกความรายหนึ่งถอนตัวออกจากคดี ควรจัดการอย่างไร?',
+    description: `## เหตุผลที่ต้องสอบถาม
+
+คดีหนึ่งอาจมีลูกความหลายราย จึงต้องกำหนดผลของการถอนตัวของลูกความรายหนึ่งต่อสถานะของคดีให้ชัดเจน
+
+## คำถาม
+
+หากลูกความรายหนึ่งถอนตัวออกจากคดี ควรจัดการอย่างไร?
+
+## ตัวเลือก
+
+* ถอนเฉพาะลูกความรายนั้น และคดียังคงดำเนินต่อ
+* ปิดคดีทั้งหมด
+* ให้ทนายหรือผู้ดูแลเป็นผู้กำหนดว่าจะดำเนินการต่อหรือปิดคดี
+
+## ผลกระทบ
+
+* สถานะของลูกความและคดี
+* การมอบหมายงานให้ทนายและผู้ดูแล
+* ประวัติการดำเนินคดีของลูกความ`,
+    priority: 'High',
+    createdAt: '',
+    updatedAt: '',
+    status: 'Backlog',
+    statusType: 'backlog',
+    parentId: 'html',
+    labels: ['ลูกความ', 'คดี', 'สถานะคดี'],
+    primaryModule: 'clients',
+    relatedModules: [],
+    source: 'html'
+  },
+  {
+    id: 'DEV-193',
+    title: '[คำถาม] ลูกความแต่ละรายควรมีรหัสลูกความแยกกันหรือไม่?',
+    description: `## เหตุผลที่ต้องสอบถาม
+
+ต้องกำหนดหลักเกณฑ์การออกรหัสลูกความให้ชัดเจน เพื่อระบุตัวตนและเชื่อมข้อมูลของลูกความแต่ละรายได้อย่างถูกต้อง
+
+## คำถาม
+
+ลูกความแต่ละรายควรมีรหัสลูกความแยกกันหรือไม่?
+
+## ตัวเลือก
+
+* แยกรหัสลูกความคนละรหัสเสมอ
+* ใช้รหัสเดียวกันหากอยู่ในคดีเดียวกัน
+* ขึ้นอยู่กับประเภทลูกความ เช่น บุคคล/บริษัท
+* ไม่จำเป็นต้องมีรหัสลูกความ
+
+## ผลกระทบ
+
+* การระบุตัวตนและค้นหาข้อมูลลูกความ
+* การเชื่อมลูกความเข้ากับคดีและเอกสาร
+* รายงานข้อมูลลูกความ`,
+    priority: 'High',
+    createdAt: '',
+    updatedAt: '',
+    status: 'Backlog',
+    statusType: 'backlog',
+    parentId: 'html',
+    labels: ['ลูกความ', 'รหัสลูกความ'],
+    primaryModule: 'clients',
+    relatedModules: [],
+    source: 'html'
+  },
+  {
+    id: 'DEV-194',
+    title:
+      '[คำถาม] ลูกความหลายรายที่อยู่ในคดีเดียวกัน ควรใช้หมายเลขคดี/เลขที่งานอย่างไร?',
+    description: `## เหตุผลที่ต้องสอบถาม
+
+คดีหนึ่งอาจมีลูกความหลายราย จึงต้องกำหนดความสัมพันธ์ระหว่างหมายเลขคดี เลขที่งาน และลูกความแต่ละรายให้ชัดเจน
+
+## คำถาม
+
+ลูกความหลายรายที่อยู่ในคดีเดียวกัน ควรใช้หมายเลขคดี/เลขที่งานอย่างไร?
+
+## ตัวเลือก
+
+* ใช้หมายเลขคดีหรือเลขที่งานเดียวกันทั้งหมด
+* แยกเลขที่งานตามลูกความแต่ละราย
+* ใช้หมายเลขคดีเดียวกัน แต่มีเลขที่งานย่อยแยกตามลูกความ
+
+## ผลกระทบ
+
+* การค้นหาและอ้างอิงคดี
+* การเชื่อมข้อมูลลูกความกับคดี
+* รายงานสถานะและภาระงาน`,
+    priority: 'High',
+    createdAt: '',
+    updatedAt: '',
+    status: 'Backlog',
+    statusType: 'backlog',
+    parentId: 'html',
+    labels: ['ลูกความ', 'หมายเลขคดี', 'เลขที่งาน'],
+    primaryModule: 'clients',
+    relatedModules: [],
+    source: 'html'
+  }
+]
+
 function isPublishedQuestion(question: Question): boolean {
   return question.parentId !== null
 }
@@ -50,15 +223,18 @@ export const questionSnapshot = {
 }
 
 export function getQuestions(): Question[] {
-  return snapshot.issues.filter(isPublishedQuestion)
+  return [...snapshot.issues.filter(isPublishedQuestion), ...htmlQuestions]
 }
 
 export function getQuestionBySlug(slug: string): Question | undefined {
   const normalized = slug.trim().toLowerCase()
-  return snapshot.issues.find(
-    (question) =>
-      isPublishedQuestion(question) && question.id.toLowerCase() === normalized
+  return getQuestions().find(
+    (question) => question.id.toLowerCase() === normalized
   )
+}
+
+export function getHtmlQuestionsForModule(module: ModuleId): Question[] {
+  return htmlQuestions.filter(({ primaryModule }) => primaryModule === module)
 }
 
 export function questionHref(question: Pick<Question, 'id'>): string {

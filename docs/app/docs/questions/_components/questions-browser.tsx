@@ -18,7 +18,7 @@ export interface BrowserQuestion {
   primaryModule: ModuleId
   labels: string[]
   href: string
-  linearUrl: string
+  linearUrl: string | undefined
   latestCommentAt: string | null
 }
 
@@ -147,9 +147,11 @@ export function QuestionsBrowser({
                         ความเห็นล่าสุด {formatLatestCommentDate(question.latestCommentAt)}
                       </span>
                     )}
-                    <a href={question.linearUrl} target="_blank" rel="noreferrer">
-                      เปิดใน Linear ↗
-                    </a>
+                    {question.linearUrl && (
+                      <a href={question.linearUrl} target="_blank" rel="noreferrer">
+                        เปิดใน Linear ↗
+                      </a>
+                    )}
                   </div>
                 </article>
               ))}
