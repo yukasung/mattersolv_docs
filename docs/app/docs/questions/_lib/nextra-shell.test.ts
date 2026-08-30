@@ -42,11 +42,12 @@ test('questions is the final item in the documentation sidebar', async () => {
   assert.ok(questionsItem > apiItem)
 })
 
-test('root layout renders Nextra Head variables for theme colors', async () => {
+test('root layout lets Nextra Head own the document head', async () => {
   const layout = await readFile(
     new URL('../../../layout.tsx', import.meta.url),
     'utf8'
   )
 
-  assert.match(layout, /<head>\s*<Head \/>\s*<\/head>/)
+  assert.match(layout, /<Head \/>/)
+  assert.doesNotMatch(layout, /<head>/)
 })
