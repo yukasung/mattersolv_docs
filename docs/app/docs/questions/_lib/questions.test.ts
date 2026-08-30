@@ -62,17 +62,19 @@ test('question hub displays the latest comment time', async () => {
   assert.doesNotMatch(hub, /questions-notice|ข้อมูลจาก Linear แบบอ่านอย่างเดียว/)
 })
 
-test('question catalog includes published Linear and HTML meeting questions', () => {
+test('question catalog includes published Linear and local HTML questions', () => {
   const questions = getQuestions()
   const ids = questions.map(({ id }) => id)
 
-  assert.equal(questions.length, 92)
-  assert.equal(new Set(ids).size, 92)
+  assert.equal(questions.length, 112)
+  assert.equal(new Set(ids).size, 112)
   assert.ok(ids.includes('DEV-190'))
   assert.ok(ids.includes('DEV-191'))
   assert.ok(ids.includes('DEV-192'))
   assert.ok(ids.includes('DEV-193'))
   assert.ok(ids.includes('DEV-194'))
+  assert.ok(ids.includes('DEV-195'))
+  assert.ok(ids.includes('DEV-214'))
   assert.ok(!ids.includes('DEV-189'))
   assert.ok(!ids.includes('DEV-181'))
   assert.equal(getQuestionBySlug('dev-189'), undefined)
@@ -89,6 +91,7 @@ test('primary classifications match the approved meeting groups', () => {
     tasks: 2,
     billing: 5,
     finance: 1,
+    employees: 20,
     hr: 3,
     reports: 4,
     administration: 18,
@@ -112,6 +115,40 @@ test('HTML meeting question has a detail route without a Linear source', () => {
   assert.equal(questionHref(question!), '/docs/questions/dev-194')
   assert.equal(question?.url, undefined)
   assert.deepEqual(getHtmlQuestionsForModule('clients'), questions)
+})
+
+test('Employees HTML questions are complete, sequential, and unanswered', () => {
+  const questions = getHtmlQuestionsForModule('employees')
+  const expectedIds = Array.from(
+    { length: 20 },
+    (_, index) => `DEV-${195 + index}`
+  )
+
+  assert.deepEqual(
+    questions.map(({ id }) => id),
+    expectedIds
+  )
+
+  for (const question of questions) {
+    assert.equal(question.primaryModule, 'employees')
+    assert.equal(question.source, 'html')
+    assert.equal(question.status, 'Backlog')
+    assert.equal(getAnswerState(question.description), 'unanswered')
+    assert.equal(
+      questionHref(question),
+      `/docs/questions/${question.id.toLowerCase()}`
+    )
+
+    for (const section of [
+      'เหตุผลที่ต้องสอบถาม',
+      'คำถาม',
+      'ตัวเลือก',
+      'ผลกระทบ',
+      'ที่มา'
+    ]) {
+      assert.match(question.description, new RegExp(`^## ${section}$`, 'm'))
+    }
+  }
 })
 
 test('DEV-160 explains outcome-based fees in plain Thai', () => {
@@ -176,7 +213,7 @@ test('meeting groups follow module navigation order and contain every question',
   assert.equal(groups.at(-1)?.module.id, 'other')
   assert.equal(
     groups.reduce((total, group) => total + group.questions.length, 0),
-    92
+    112
   )
 })
 

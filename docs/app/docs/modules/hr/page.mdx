@@ -2,9 +2,9 @@ import { ModuleQuestionLinks } from '../../questions/_components/module-question
 
 # Human Resources
 
-โมดูลทรัพยากรบุคคลดูแลข้อมูลบุคลากรของสำนักงาน การคำนวณเงินเดือน
-และการลาออนไลน์ เพื่อให้งานบุคคลอยู่ในระบบเดียวกับงานกฎหมาย
-และส่งข้อมูลต่อให้งานบัญชีได้
+โมดูลทรัพยากรบุคคลใช้ทะเบียนจาก [Employees](/docs/modules/employees)
+เพื่อคำนวณเงินเดือนและจัดการการลาออนไลน์ ทำให้งานบุคคลอยู่ในระบบเดียวกับ
+งานกฎหมายและส่งข้อมูลต่อให้งานบัญชีได้
 
 ผู้ใช้หลักคือทีม HR และผู้ดูแลระบบของสำนักงาน ส่วนพนักงานเข้าใช้เพื่อยื่นใบลา
 และดู payslip ของตนเอง
@@ -25,7 +25,10 @@ import { ModuleQuestionLinks } from '../../questions/_components/module-question
 
 ## Boundary
 
-โมดูลนี้ครอบคลุมงานเงินเดือนและการลา ส่วนการบันทึกเวลาทำงานของทนาย
+โมดูลนี้ครอบคลุมงานเงินเดือนและการลา ส่วนทะเบียน โปรไฟล์ ตำแหน่ง
+คุณสมบัติวิชาชีพ และสถานะของบุคลากรอยู่ใน [Employees](/docs/modules/employees)
+
+การบันทึกเวลาทำงานของทนาย
 เพื่อนำไปเรียกเก็บเงินจากลูกความอยู่ใน [Matters](/docs/modules/matters)
 เพราะเป็นคนละวัตถุประสงค์กัน
 
@@ -36,6 +39,7 @@ import { ModuleQuestionLinks } from '../../questions/_components/module-question
 ## Related Documents
 
 - [Scope](/docs/scope) — ขอบเขตเริ่มต้นของระบบ
+- [Employees](/docs/modules/employees) — ทะเบียนและโปรไฟล์บุคลากรของสำนักงาน
 - [Administration](/docs/modules/administration) — การจัดการผู้ใช้งานและสิทธิ์
 - [Feature Comparison](/docs/plans/feature-comparison) — ฟีเจอร์ที่เปิดในแต่ละแผน
 - [Permissions](/docs/roles/permissions) — ผู้ใช้คนใดเข้าถึงข้อมูลบุคลากรได้

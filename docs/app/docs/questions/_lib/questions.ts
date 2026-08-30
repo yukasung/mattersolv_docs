@@ -1,4 +1,5 @@
 import snapshotData from '../_data/questions.snapshot.json' with { type: 'json' }
+import { employeeQuestions } from './employees.questions.ts'
 import { MODULES, type ModuleId } from './modules.ts'
 
 export { MODULES, type ModuleId } from './modules.ts'
@@ -211,6 +212,8 @@ const htmlQuestions: Question[] = [
   }
 ]
 
+const localQuestions: Question[] = [...htmlQuestions, ...employeeQuestions]
+
 function isPublishedQuestion(question: Question): boolean {
   return question.parentId !== null
 }
@@ -223,7 +226,7 @@ export const questionSnapshot = {
 }
 
 export function getQuestions(): Question[] {
-  return [...snapshot.issues.filter(isPublishedQuestion), ...htmlQuestions]
+  return [...snapshot.issues.filter(isPublishedQuestion), ...localQuestions]
 }
 
 export function getQuestionBySlug(slug: string): Question | undefined {
@@ -234,7 +237,7 @@ export function getQuestionBySlug(slug: string): Question | undefined {
 }
 
 export function getHtmlQuestionsForModule(module: ModuleId): Question[] {
-  return htmlQuestions.filter(({ primaryModule }) => primaryModule === module)
+  return localQuestions.filter(({ primaryModule }) => primaryModule === module)
 }
 
 export function questionHref(question: Pick<Question, 'id'>): string {

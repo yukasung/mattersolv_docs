@@ -11,6 +11,7 @@ const moduleIds = [
   'tasks',
   'billing',
   'finance',
+  'employees',
   'hr',
   'reports',
   'administration'

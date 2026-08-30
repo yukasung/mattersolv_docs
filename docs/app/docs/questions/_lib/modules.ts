@@ -7,6 +7,7 @@ export const MODULES = [
   { id: 'tasks', label: 'Tasks', href: '/docs/modules/tasks' },
   { id: 'billing', label: 'Billing', href: '/docs/modules/billing' },
   { id: 'finance', label: 'Finance', href: '/docs/modules/finance' },
+  { id: 'employees', label: 'Employees', href: '/docs/modules/employees' },
   { id: 'hr', label: 'Human Resources', href: '/docs/modules/hr' },
   { id: 'reports', label: 'Reports', href: '/docs/modules/reports' },
   {

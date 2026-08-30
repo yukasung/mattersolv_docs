@@ -84,7 +84,7 @@ Workflow ที่ไม่ใช่ CRUD ใช้ custom Django permissions �
 | วางบิลและการชำระเงิน | ใบวางบิล | `billing.invoice` | `billing.approve_invoice_adjustment`, `billing.export_invoice`, `billing.cancel_invoice` |
 | วางบิลและการชำระเงิน | การชำระเงิน | `billing.payment` | `billing.approve_payment_refund`, `billing.export_payment` |
 | การเงินและบัญชี | ข้อมูลการเงินตั้งต้น | `finance.finance_setting` | `finance.export_finance_setting` |
-| บุคลากรและเงินเดือน | บุคลากร | `hr.employee` | — |
+| บุคลากร | พนักงาน | `employees.employee` | — |
 | บุคลากรและเงินเดือน | คำขอลา | `hr.leave_request` | `hr.submit_leave_request`, `hr.approve_leave_request` |
 | บุคลากรและเงินเดือน | เงินเดือน | `hr.payroll` | `hr.approve_payroll`, `hr.export_payroll` |
 | รายงานและแดชบอร์ด | รายงาน (อ่านอย่างเดียว) | `reports.report` เฉพาะ `view` | `reports.export_report` |
