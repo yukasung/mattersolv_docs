@@ -66,8 +66,8 @@ test('question catalog includes published Linear and local HTML questions', () =
   const questions = getQuestions()
   const ids = questions.map(({ id }) => id)
 
-  assert.equal(questions.length, 112)
-  assert.equal(new Set(ids).size, 112)
+  assert.equal(questions.length, 113)
+  assert.equal(new Set(ids).size, 113)
   assert.ok(ids.includes('DEV-190'))
   assert.ok(ids.includes('DEV-191'))
   assert.ok(ids.includes('DEV-192'))
@@ -75,6 +75,7 @@ test('question catalog includes published Linear and local HTML questions', () =
   assert.ok(ids.includes('DEV-194'))
   assert.ok(ids.includes('DEV-195'))
   assert.ok(ids.includes('DEV-214'))
+  assert.ok(ids.includes('DEV-215'))
   assert.ok(!ids.includes('DEV-189'))
   assert.ok(!ids.includes('DEV-181'))
   assert.equal(getQuestionBySlug('dev-189'), undefined)
@@ -91,7 +92,7 @@ test('primary classifications match the approved meeting groups', () => {
     tasks: 2,
     billing: 5,
     finance: 1,
-    employees: 20,
+    employees: 21,
     hr: 3,
     reports: 4,
     administration: 18,
@@ -120,7 +121,7 @@ test('HTML meeting question has a detail route without a Linear source', () => {
 test('Employees HTML questions are complete, sequential, and unanswered', () => {
   const questions = getHtmlQuestionsForModule('employees')
   const expectedIds = Array.from(
-    { length: 20 },
+    { length: 21 },
     (_, index) => `DEV-${195 + index}`
   )
 
@@ -213,7 +214,7 @@ test('meeting groups follow module navigation order and contain every question',
   assert.equal(groups.at(-1)?.module.id, 'other')
   assert.equal(
     groups.reduce((total, group) => total + group.questions.length, 0),
-    112
+    113
   )
 })
 
