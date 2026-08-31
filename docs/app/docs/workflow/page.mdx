@@ -31,7 +31,7 @@ flowchart TD
   D --> E["สร้าง User, Workspace,<br/>Owner Membership และ Subscription"]
   B -->|แผนเสียเงิน| F["กรอกข้อมูลผู้ซื้อและเรียกเก็บเงิน"]
   F --> G["ตรวจยอดและชำระผ่าน Hosted Checkout"]
-  G --> H{"ได้รับ webhook ที่ตรวจสอบแล้วหรือไม่"}
+  G --> H{"ระบบยืนยันผลการชำระเงินแล้วหรือยัง"}
   H -->|ไม่สำเร็จ| I["แก้ไขข้อมูลและลองชำระใหม่"]
   I --> G
   H -->|สำเร็จ| J["สร้าง Subscription, Workspace<br/>และคำเชิญ Owner"]
