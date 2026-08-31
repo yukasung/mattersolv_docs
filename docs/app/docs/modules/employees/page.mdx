@@ -13,6 +13,8 @@ import { ModuleQuestionLinks } from '../../questions/_components/module-question
 
 ## Employee Workflow
 
+<div className="employees-workflow-diagram" aria-label="Employee workflow diagram">
+
 ```mermaid
 flowchart TD
   A["สร้างทะเบียนพนักงาน"] --> B["บันทึกข้อมูลส่วนตัวและข้อมูลติดต่อ"]
@@ -27,6 +29,8 @@ flowchart TD
   I -->|ใช่| J["ปรับปรุงโปรไฟล์และข้อมูลการทำงาน"]
   I -->|ไม่ใช่| K["Deactivate โดยเก็บประวัติที่เกี่ยวข้อง"]
 ```
+
+</div>
 
 Employee record กับ User account เป็นคนละสิ่งกัน พนักงานหนึ่งคนมีทะเบียนบุคลากรได้
 แม้ยังไม่มีบัญชีเข้าใช้ระบบ ส่วนการเชิญเข้าใช้ การปิดบัญชี และการกำหนดนโยบาย Role
@@ -100,7 +104,7 @@ Employee record กับ User account เป็นคนละสิ่งก�
 Employees ไม่คำนวณเวลาทำงาน ยอดเรียกเก็บ หรือ Performance ซ้ำเอง
 แต่ใช้ Employee ID เป็นจุดเชื่อมและแสดงผลจากโมดูลเจ้าของข้อมูล
 
-## Boundary with Human Resources
+## ขอบเขตงานร่วมกับฝ่ายทรัพยากรบุคคล
 
 Employees เป็นเจ้าของทะเบียนและโปรไฟล์ของบุคลากร ส่วน
 [Human Resources](/docs/modules/hr) ใช้ทะเบียนนั้นเป็นข้อมูลตั้งต้นสำหรับ Payroll
@@ -113,7 +117,7 @@ Employees เป็นเจ้าของทะเบียนและโป�
 - คำขอลา ยอดวันลาคงเหลือ ลำดับอนุมัติ และปฏิทินการลา
 - การนิยาม Permission catalogue และนโยบายความปลอดภัยระดับระบบ
 
-## Open Decisions
+## ประเด็นที่ต้องตัดสินใจ
 
 - รูปแบบรหัสพนักงาน วันที่เริ่มงาน/สิ้นสุดงาน ประเภทการจ้าง หัวหน้างาน
   และเหตุผลการ Deactivate ยังไม่มี requirement ที่ยืนยัน

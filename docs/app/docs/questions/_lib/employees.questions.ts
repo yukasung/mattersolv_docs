@@ -52,39 +52,6 @@ Employee record กับ User account ควรเป็น entity เดีย
     relatedModules: ['administration']
   }),
   employeeQuestion({
-    id: 'DEV-196',
-    title: '[คำถาม] API และการบันทึกข้อมูล Employees ต้องรองรับ operation ใดบ้าง?',
-    description: `## เหตุผลที่ต้องสอบถาม
-
-frontend เรียก API เฉพาะรายการพนักงาน ขณะที่ add/edit ยังไม่บันทึกจริง การลบเกิดเฉพาะใน state ของหน้า และข้อมูล edit บางส่วนเป็นข้อมูลจำลอง จึงยังไม่มี contract ที่นำไปพัฒนา backend และเชื่อม flow ได้ครบ
-
-## คำถาม
-
-API และ persistence contract สำหรับ list, create, detail, update, deactivate, upload และ export ต้องมี endpoint, payload, validation และ error behavior อย่างไร?
-
-## ตัวเลือก
-
-* กำหนด REST endpoints แยกตาม operation พร้อม schema และ error code
-* ใช้ command endpoint เดียวสำหรับ lifecycle และแยก query endpoints
-* ส่งมอบเฉพาะ list/create/edit ในระยะแรก และจัดลำดับ deactivate/upload/export ในระยะถัดไป
-
-## ผลกระทบ
-
-* การเชื่อมหน้า list/add/edit กับข้อมูลจริง
-* การจัดการ loading, validation, error และ refetch หลัง mutation
-* ขอบเขต backend และ acceptance criteria ของ Employees
-
-## ที่มา
-
-* \`frontend/src/modules/entities/employees/api/employeeApi.ts\`: มีเฉพาะ GET \`/employees\`
-* \`frontend/src/modules/entities/employees/pages/EmployeeFormPage.tsx\`: submit ตรวจ validation แต่ยังไม่มี mutation หรือ navigation
-* \`frontend/src/modules/entities/employees/hooks/employeeEditDraft.ts\` และ \`useEmployeeTableController.ts\`: edit เติมข้อมูลจำลอง และ delete/bulk delete เปลี่ยนเฉพาะ local state
-* \`requirements/source/MTS_Feature Detail(2).pdf\` หน้า 6–7: ระบุ add/edit/delete และ Onboard/Deactivate แต่ไม่ได้กำหนด API contract`,
-    priority: 'Critical',
-    labels: ['พนักงาน', 'API', 'การบันทึกข้อมูล'],
-    relatedModules: ['administration']
-  }),
-  employeeQuestion({
     id: 'DEV-197',
     title: '[คำถาม] Delete, Archive และ Deactivate พนักงานมีความหมายและผลต่างกันอย่างไร?',
     description: `## เหตุผลที่ต้องสอบถาม
@@ -98,7 +65,7 @@ API และ persistence contract สำหรับ list, create, detail, upda
 ## ตัวเลือก
 
 * ไม่ให้ลบถาวร ใช้ Deactivate และเก็บประวัติทั้งหมด
-* Archive ใช้ซ่อนจากงานประจำ ส่วน Deactivate ใช้ปิดบัญชีผู้ใช้
+* กำหนดให้ Archive เก็บข้อมูลไว้เป็นประวัติ ซ่อนจากรายการใช้งานและรายงานปัจจุบัน แต่ยังแสดงในประวัติย้อนหลัง ส่วน Deactivate ใช้ปิดบัญชีผู้ใช้และไม่ให้เข้าสู่ระบบ
 * อนุญาต hard delete เฉพาะข้อมูลที่ยังไม่เคยถูกอ้างอิงและเฉพาะผู้ดูแลระบบ
 
 ## ผลกระทบ
@@ -117,91 +84,26 @@ API และ persistence contract สำหรับ list, create, detail, upda
     relatedModules: ['matters', 'billing', 'reports', 'administration']
   }),
   employeeQuestion({
-    id: 'DEV-198',
-    title: '[คำถาม] สิทธิ์ Employees ต้องแยกตาม action และควบคุมทั้ง route กับปุ่มใดบ้าง?',
-    description: `## เหตุผลที่ต้องสอบถาม
-
-permission matrix แยก view/create/edit/delete/approve แต่ frontend มีเพียง add_employee กับ view_employee, ใช้สิทธิ์ add กับหน้า edit และยังแสดงปุ่ม edit/delete โดยไม่ gate ตาม action
-
-## คำถาม
-
-Employees ต้องมี permission actions ใดบ้าง และแต่ละ action ต้องควบคุม route, ปุ่ม, bulk action, export และ field-sensitive access อย่างไร?
-
-## ตัวเลือก
-
-* ใช้ view/create/edit/delete ตาม permission matrix และเพิ่ม deactivate/export หากจำเป็น
-* ใช้ manage permission เดียวสำหรับการเปลี่ยนแปลงทั้งหมด
-* ใช้ role preset เป็นค่าเริ่มต้น แต่อนุญาต override permission รายผู้ใช้
-
-## ผลกระทบ
-
-* route guard และการแสดง action ในหน้า list/detail/form
-* API authorization และการป้องกันการเรียกตรง
-* permission matrix, test cases และ audit log
-
-## ที่มา
-
-* \`requirements/source/ข้อมูลเก่าจาก ALTPro/Role and Permission Alternate Pro_1.xlsx\` ชีต \`Role & Permission\` แถว 1, 21, 43, 64, 86, 108: action vocabulary และสิทธิ์เมนูทนายต่างกันตาม persona
-* \`frontend/src/modules/entities/employees/permissions.ts\` และ \`routes.tsx\`: มี add_employee/view_employee และหน้า edit ใช้ add_employee
-* \`frontend/src/modules/entities/employees/components/employeeTableColumns.tsx\` และ \`EmployeeTableToolbarActions.tsx\`: action edit/delete/export ยังไม่ถูก gate ราย action`,
-    priority: 'Critical',
-    labels: ['พนักงาน', 'สิทธิ์', 'RBAC'],
-    relatedModules: ['administration']
-  }),
-  employeeQuestion({
-    id: 'DEV-199',
-    title: '[คำถาม] Position, Security Role และ Matter Assignment Role ต้องแยก catalog กันหรือไม่?',
-    description: `## เหตุผลที่ต้องสอบถาม
-
-เอกสารใช้คำเรียกโครงสร้างทีม persona สำหรับสิทธิ์ และบทบาทในคดีคนละบริบท แต่ frontend มีชุด Position และ Role ที่ทับซ้อนกันบางส่วน จึงเสี่ยงใช้ค่าหนึ่งแทนหลายความหมาย
-
-## คำถาม
-
-Position, security role และ matter assignment role เป็น master data แยกกันหรือไม่ ใครเป็นผู้ดูแล และค่าใดมีผลต่อสิทธิ์โดยอัตโนมัติ?
-
-## ตัวเลือก
-
-* แยกสาม catalog ชัดเจนและเชื่อมด้วย rule ที่กำหนดได้
-* Position กำหนด security role เริ่มต้น แต่ assignment role เลือกต่อคดี
-* ใช้ catalog เดียว โดยกำหนดความหมายและข้อจำกัดร่วมกัน
-
-## ผลกระทบ
-
-* โครงสร้างข้อมูลพนักงานและ permission assignment
-* การมอบหมายทีมใน Matter และรายงานตามตำแหน่ง
-* การย้ายตำแหน่งโดยไม่เปลี่ยนสิทธิ์หรือประวัติคดีโดยไม่ตั้งใจ
-
-## ที่มา
-
-* \`requirements/source/MTS_Feature Detail(2).pdf\` หน้า 7: โครงสร้างทีม Partner/Associate/Support
-* \`requirements/source/ข้อมูลเก่าจาก ALTPro/Role and Permission Alternate Pro_1.xlsx\` ชีต \`Role & Permission\` แถว 2–8: persona Owner/Admin/Partner/Managing Partner/Senior Lawyer/Junior Lawyer/Accounting
-* \`requirements/source/รวม Alternate Architecture.xlsx\` ชีต \`Requirement\` แถว 76: Matter assignment role ต้องรอรายการจาก Product และผู้ใช้เพิ่มเองไม่ได้
-* \`frontend/src/modules/entities/employees/components/EmployeeInformationSection.tsx\`: Position และ Role ใช้ชุดค่าคนละชุดแต่มีชื่อทับซ้อน`,
-    priority: 'Critical',
-    labels: ['พนักงาน', 'ตำแหน่ง', 'บทบาท'],
-    relatedModules: ['matters', 'administration']
-  }),
-  employeeQuestion({
     id: 'DEV-200',
-    title: '[คำถาม] พนักงานหนึ่งคนมีได้สูงสุดสามตำแหน่งอย่างไร?',
+    title: '[คำถาม] พนักงานหนึ่งคนควรมีได้หลายตำแหน่งหรือไม่?',
     description: `## เหตุผลที่ต้องสอบถาม
 
-mockup ระบุว่าสามารถเลือกได้สูงสุดสามตำแหน่ง แต่ frontend เก็บ position เป็นค่าเดียว จึงยังไม่ทราบว่าต้องมีตำแหน่งหลัก ลำดับ หรือช่วงเวลาการดำรงตำแหน่งหรือไม่
+แบบร่างหน้าจอระบุว่าพนักงานเลือกตำแหน่งได้สูงสุด 3 ตำแหน่ง แต่หน้าเว็บปัจจุบันเก็บได้เพียงตำแหน่งเดียว จึงยังไม่ชัดเจนว่าต้องมีตำแหน่งหลัก ลำดับ หรือช่วงเวลาของแต่ละตำแหน่งหรือไม่
 
 ## คำถาม
 
-หากพนักงานมีได้สูงสุดสามตำแหน่ง ต้องกำหนดตำแหน่งหลัก ลำดับ วันที่เริ่ม/สิ้นสุด และประวัติการเปลี่ยนตำแหน่งอย่างไร?
+หากพนักงานมีได้ไม่เกิน 3 ตำแหน่ง ต้องเลือกตำแหน่งหลักหรือไม่ และต้องบันทึกช่วงเวลาและประวัติการเปลี่ยนตำแหน่งอย่างไร?
 
 ## ตัวเลือก
 
-* เก็บหลายตำแหน่งพร้อมระบุตำแหน่งหลักหนึ่งรายการ
-* เก็บหลายตำแหน่งเท่าเทียมกันโดยไม่มีตำแหน่งหลัก
-* ระยะแรกเก็บตำแหน่งเดียว และเลื่อนการรองรับหลายตำแหน่ง
+* เก็บได้หลายตำแหน่ง และกำหนดตำแหน่งหลัก 1 ตำแหน่ง
+* เก็บได้หลายตำแหน่ง โดยทุกตำแหน่งมีความสำคัญเท่ากัน
+* ระยะแรกเก็บได้เพียงตำแหน่งเดียว แล้วค่อยรองรับหลายตำแหน่งภายหลัง
 
 ## ผลกระทบ
 
-* schema และ component เลือกตำแหน่ง
-* permission default, การแสดงชื่อ และรายงานบุคลากร
+* รูปแบบการเก็บข้อมูลและหน้าสำหรับเลือกตำแหน่ง
+* สิทธิ์เริ่มต้น การแสดงชื่อ และรายงานบุคลากร
 * ประวัติการย้ายตำแหน่งและข้อมูลย้อนหลัง
 
 ## ที่มา
@@ -214,26 +116,26 @@ mockup ระบุว่าสามารถเลือกได้สูง�
   }),
   employeeQuestion({
     id: 'DEV-201',
-    title: '[คำถาม] Department, Team และ Supervisor ต้องใช้ master data และความสัมพันธ์แบบใด?',
+    title: '[คำถาม] บุคลากรควรสังกัดแผนก ทีมคดี และมีผู้ดูแลอย่างไร?',
     description: `## เหตุผลที่ต้องสอบถาม
 
-mockup มีแผนก แต่ไม่ได้กำหนด catalog หรือโครงสร้างทีม ขณะที่ frontend hardcode รายการแผนก จึงยังไม่รองรับชื่อจริงของสำนักงาน การย้ายทีม หรือหัวหน้างานอย่างเป็นระบบ
+ปัจจุบันหน้าเว็บกำหนดรายชื่อแผนกไว้ตายตัว และยังไม่ได้กำหนดรายการทีมคดีหรือความสัมพันธ์กับหัวหน้าทีม จึงไม่รองรับโครงสร้างจริงของสำนักงาน การย้ายทีมคดี หรือการระบุผู้ดูแลอย่างเป็นระบบ
 
 ## คำถาม
 
-Department, team และ supervisor ต้องเป็น master data ระดับสำนักงานหรือไม่ พนักงานอยู่ได้หลายทีมไหม และต้องเก็บประวัติการย้ายหรือไม่?
+บุคลากร 1 คนควรสังกัดได้กี่แผนกและกี่ทีมคดี? ควรระบุหัวหน้าทีมหรือหุ้นส่วนผู้ดูแลเพียง 1 คนหรือไม่ และต้องเก็บประวัติเมื่อย้ายแผนกหรือทีมคดีไหม?
 
 ## ตัวเลือก
 
-* หนึ่ง department หนึ่ง primary team และหนึ่ง supervisor ต่อพนักงาน
-* รองรับหลาย team พร้อมกำหนดสัดส่วนหรือทีมหลัก
-* ใช้ department เท่านั้นในระยะแรก และเพิ่ม team/supervisor ภายหลัง
+* บุคลากร 1 คนสังกัด 1 แผนก 1 ทีมหลัก และมีหัวหน้าทีมหรือหุ้นส่วนผู้ดูแล 1 คน
+* บุคลากรทำงานได้หลายทีมคดี พร้อมระบุทีมหลักหรือสัดส่วนการทำงานของแต่ละทีม
+* ระยะแรกใช้เฉพาะแผนก แล้วค่อยเพิ่มทีมคดีและหัวหน้าทีมภายหลัง
 
 ## ผลกระทบ
 
-* หน้าจัดการ master data และ validation ในฟอร์มพนักงาน
-* การมอบหมายงาน การอนุมัติ และรายงานตามหน่วยงาน
-* ประวัติองค์กรเมื่อพนักงานย้ายทีม
+* หน้าตั้งค่าแผนกและทีมคดี และการตรวจสอบข้อมูลในฟอร์มบุคลากร
+* การมอบหมายงานคดี การอนุมัติ และรายงานตามหน่วยงาน
+* ประวัติการทำงานเมื่อบุคลากรย้ายแผนกหรือทีมคดี
 
 ## ที่มา
 
@@ -259,7 +161,7 @@ mockup รายละเอียดใช้รูปแบบ LAW-00001 แ�
 
 * ระบบสร้างอัตโนมัติแบบลำดับเดียวต่อสำนักงาน
 * ระบบสร้างตามประเภทหรือตำแหน่ง เช่น LAW และ STAFF
-* ให้ผู้ใช้กรอกเองแต่ตรวจ uniqueness ภายใน tenant
+* ให้ผู้ใช้กรอกรหัสเอง แต่ระบบต้องตรวจว่ารหัสไม่ซ้ำกันภายในสำนักงานเดียวกัน
 
 ## ผลกระทบ
 
@@ -277,88 +179,26 @@ mockup รายละเอียดใช้รูปแบบ LAW-00001 แ�
     relatedModules: ['administration']
   }),
   employeeQuestion({
-    id: 'DEV-203',
-    title: '[คำถาม] เอกสารยืนยันตัวตนต้องรองรับหลายประเภทและกฎตามประเทศอย่างไร?',
-    description: `## เหตุผลที่ต้องสอบถาม
-
-mockup แสดงเลขบัตรประชาชนและหนังสือเดินทางพร้อมกัน แต่ frontend บังคับเลือกอย่างใดอย่างหนึ่งและยังไม่มีประเทศหรือสัญชาติสำหรับกำหนด validation
-
-## คำถาม
-
-พนักงานหนึ่งคนเก็บเอกสารยืนยันตัวตนได้กี่รายการ และ required fields/รูปแบบเลข/วันหมดอายุต้องเปลี่ยนตามประเทศหรือสัญชาติอย่างไร?
-
-## ตัวเลือก
-
-* รองรับบัตรประชาชนและ passport พร้อมกัน โดยเลือกเอกสารหลักหนึ่งรายการ
-* คนไทยใช้บัตรประชาชน ต่างชาติใช้ passport ตามสัญชาติ
-* รองรับ identity document แบบหลายประเภทจาก master data พร้อมประเทศผู้ออก
-
-## ผลกระทบ
-
-* schema, validation และการตรวจข้อมูลซ้ำ
-* required fields สำหรับคนไทยและต่างชาติ
-* การปกปิดข้อมูลสำคัญและการแจ้งเตือนวันหมดอายุ
-
-## ที่มา
-
-* \`requirements/source/รายงาน/แก้ไขข้อมูลทนาย.pdf\` หน้า 1: แสดงเลขบัตรประชาชนและหนังสือเดินทางในข้อมูลพนักงาน
-* \`frontend/src/modules/entities/employees/components/EmployeeInformationSection.tsx\` และ \`hooks/useEmployeeCreateForm.ts\`: เลือก identity type อย่างใดอย่างหนึ่งและบังคับเลขเอกสาร แต่ไม่มี country/nationality`,
-    priority: 'High',
-    labels: ['พนักงาน', 'เอกสารยืนยันตัวตน', 'ข้อมูลส่วนบุคคล'],
-    relatedModules: ['administration']
-  }),
-  employeeQuestion({
-    id: 'DEV-204',
-    title: '[คำถาม] ช่องทางติดต่อและที่อยู่ใดเป็นข้อมูลบังคับ และต้องรองรับต่างประเทศหรือไม่?',
-    description: `## เหตุผลที่ต้องสอบถาม
-
-mockup มีเบอร์ต่อ WeChat หมู่ และที่อยู่สองชุด แต่ frontend ไม่มีบางฟิลด์และบังคับซอยซึ่ง mockup ไม่ได้ระบุว่าจำเป็น อีกทั้ง address model ดูเป็นรูปแบบประเทศไทยเท่านั้น
-
-## คำถาม
-
-Phone extension, LINE, WeChat, ที่อยู่ตามทะเบียน และที่อยู่ปัจจุบัน ฟิลด์ใดบังคับ และต้องใช้ address format ตามประเทศหรือเฉพาะประเทศไทย?
-
-## ตัวเลือก
-
-* รองรับไทยเท่านั้นและกำหนด required fields ชุดเดียว
-* รองรับ country-aware address และ validation ตามประเทศ
-* เก็บที่อยู่เป็นข้อความอิสระสำหรับต่างประเทศ พร้อม structured address สำหรับไทย
-
-## ผลกระทบ
-
-* form fields, validation และ API schema
-* การค้นหา ส่งเอกสาร และแสดงข้อมูลติดต่อ
-* migration ของข้อมูลที่ frontend รองรับอยู่แล้ว
-
-## ที่มา
-
-* \`requirements/source/รายงาน/แก้ไขข้อมูลทนาย.pdf\` หน้า 1: มีเบอร์ต่อ, LINE, WeChat, หมู่ และที่อยู่ตามทะเบียน/ปัจจุบัน
-* \`frontend/src/modules/entities/employees/components/EmployeeContactInformationSection.tsx\` และ \`EmployeeAddressFieldset.tsx\`: ไม่มี WeChat/เบอร์ต่อ/หมู่ และบังคับซอยใน address form`,
-    priority: 'High',
-    labels: ['พนักงาน', 'ข้อมูลติดต่อ', 'ที่อยู่'],
-    relatedModules: []
-  }),
-  employeeQuestion({
     id: 'DEV-205',
-    title: '[คำถาม] ใบอนุญาต ความเชี่ยวชาญ และอัตราค่าบริการวิชาชีพใช้กับพนักงานใดบ้าง?',
+    title: '[คำถาม] ใบอนุญาต ความเชี่ยวชาญ และอัตราค่าบริการ ควรเก็บสำหรับใครบ้าง?',
     description: `## เหตุผลที่ต้องสอบถาม
 
-requirements ระบุ license และ specialized skills ส่วน mockup เพิ่มสถานะใบอนุญาต เอกสารแนบ และ professional rate แต่ employee draft ปัจจุบันยังไม่มีข้อมูลเหล่านี้ จึงต้องกำหนด scope และความหมายก่อนออกแบบข้อมูล
+เอกสารระบุเรื่องใบอนุญาตและความเชี่ยวชาญ รวมถึงข้อมูลสถานะใบอนุญาต เอกสารแนบ และอัตราค่าบริการรายชั่วโมง แต่ข้อมูลพนักงานปัจจุบันยังไม่มีข้อมูลเหล่านี้ จึงต้องกำหนดขอบเขตและความหมายให้ชัดเจนก่อน
 
 ## คำถาม
 
-ข้อมูล professional licenses, expertise และ professional rate ต้องใช้กับตำแหน่งใด เก็บได้กี่รายการ และ rate หมายถึงต้นทุนภายใน อัตราเรียกเก็บลูกความ หรือทั้งสองอย่าง?
+ควรเก็บใบอนุญาต ความเชี่ยวชาญ และอัตราค่าบริการของบุคลากรกลุ่มใดบ้าง? บุคลากร 1 คนมีรายการเหล่านี้ได้กี่รายการ และอัตราค่าบริการหมายถึงต้นทุนของสำนักงาน ค่าบริการที่เรียกลูกค้า หรือทั้งสองอย่าง?
 
 ## ตัวเลือก
 
-* ใช้เฉพาะทนาย และแยก cost rate กับ billing rate
-* ใช้กับทุกวิชาชีพ โดยประเภท license/skill กำหนดจาก master data
-* เก็บเฉพาะ license และ expertise ใน Employees ส่วน rate จัดการใน Billing
+* เก็บเฉพาะทนาย และแยกต้นทุนของสำนักงานออกจากค่าบริการที่เรียกลูกค้า
+* เก็บสำหรับทุกวิชาชีพ โดยผู้ดูแลกำหนดประเภทใบอนุญาตและความเชี่ยวชาญได้
+* เก็บใบอนุญาตและความเชี่ยวชาญในข้อมูลพนักงาน ส่วนอัตราค่าบริการจัดการในระบบวางบิล
 
 ## ผลกระทบ
 
-* employee schema และเงื่อนไขแสดงฟอร์มตามตำแหน่ง
-* quotation/billing calculation และสิทธิ์เห็นอัตรา
+* ข้อมูลพนักงานและเงื่อนไขการแสดงฟอร์มตามตำแหน่ง
+* การคำนวณใบเสนอราคา/ใบวางบิล และสิทธิ์ในการดูอัตราค่าบริการ
 * การค้นหาทนายจากความเชี่ยวชาญและรายงานคุณสมบัติ
 
 ## ที่มา
@@ -434,92 +274,27 @@ mockup ระบุไฟล์สูงสุด 50 MB แต่ frontend จ�
     relatedModules: ['documents']
   }),
   employeeQuestion({
-    id: 'DEV-208',
-    title: '[คำถาม] Employee tags เป็น requirement จริงหรือ metadata ที่ไม่จำเป็น?',
-    description: `## เหตุผลที่ต้องสอบถาม
-
-frontend มี tags เช่น สำคัญ เร่งด่วน และเอกสารครบ แต่ไม่พบ employee tags ใน requirements หรือ mockup และชุดคำดูคล้าย metadata จากโมดูลอื่น จึงเสี่ยงสร้างข้อมูลที่ไม่มีเจ้าของหรือวัตถุประสงค์
-
-## คำถาม
-
-Employee tags ต้องมีจริงหรือไม่ หากมี ใครสร้างและจัดการ tag ใช้กับ filter/report/workflow ใด และต้องจำกัดเป็นรายสำนักงานหรือไม่?
-
-## ตัวเลือก
-
-* ตัด tags ออกจาก Employees เพราะไม่มี requirement
-* ใช้ tags แบบ free-form ระดับสำนักงานเพื่อค้นหาและกรอง
-* ใช้ controlled tags จาก master data พร้อมสีและสิทธิ์จัดการ
-
-## ผลกระทบ
-
-* ความซับซ้อนของ employee schema และ list filters
-* การจัดการ master data และข้อมูลซ้ำ
-* ความชัดเจนของความหมาย เช่น “เร่งด่วน” สำหรับพนักงาน
-
-## ที่มา
-
-* \`frontend/src/modules/entities/employees/components/EmployeeInformationSection.tsx\` และ \`employeeTableColumns.tsx\`: ให้เลือกและแสดง employee tags
-* \`frontend/src/modules/entities/employees/locales/th.ts\`: มี tags สำคัญ/เร่งด่วน/ติดตาม/เอกสารครบ
-* \`requirements/source/รายงาน/แก้ไขข้อมูลทนาย.pdf\` หน้า 1: มีหมายเหตุและเอกสารแนบ แต่ไม่พบ employee tags`,
-    priority: 'Medium',
-    labels: ['พนักงาน', 'แท็ก', 'ข้อมูลเสริม'],
-    relatedModules: ['reports']
-  }),
-  employeeQuestion({
-    id: 'DEV-209',
-    title: '[คำถาม] Employee list ต้องมีคอลัมน์ ตัวกรอง pagination และ export contract อย่างไร?',
-    description: `## เหตุผลที่ต้องสอบถาม
-
-frontend มีคอลัมน์และตัวกรองบางส่วน พร้อมปุ่ม export ที่ยังไม่มี behavior แต่ source ไม่ได้กำหนด list contract จึงยังตัดสินไม่ได้ว่าการค้นหา แบ่งหน้า และ export ต้องทำที่ client หรือ server
-
-## คำถาม
-
-รายการ Employees ต้องแสดงและกรองข้อมูลใด ใช้ server-side pagination/sort/search หรือไม่ และ export ต้องมี format, field set และนโยบายข้อมูลสำคัญอย่างไร?
-
-## ตัวเลือก
-
-* server-side list พร้อม filter/sort/pagination และ export ตาม filter ปัจจุบัน
-* client-side list สำหรับข้อมูลขนาดเล็ก และ export ข้อมูลที่โหลดแล้ว
-* กำหนด saved views/เลือกคอลัมน์ได้ และ export ตามสิทธิ์ราย field
-
-## ผลกระทบ
-
-* list API query contract และประสิทธิภาพ
-* UX ของ search/filter/pagination และจำนวนผลลัพธ์
-* ความปลอดภัยของข้อมูลในไฟล์ export
-
-## ที่มา
-
-* \`frontend/src/modules/entities/employees/components/employeeTableColumns.tsx\`: คอลัมน์รหัส ชื่อ โทรศัพท์ ตำแหน่ง tags และ actions
-* \`frontend/src/modules/entities/employees/employeeTableFilters.ts\`: filter รหัส ชื่อ ตำแหน่ง และ role
-* \`frontend/src/modules/entities/employees/components/EmployeeTableToolbarActions.tsx\`: มีปุ่ม export แต่ไม่มี handler
-* \`requirements/source/MTS_Feature Detail(2).pdf\` หน้า 6–7: ระบุการจัดการบุคลากร แต่ไม่กำหนด list/export contract`,
-    priority: 'High',
-    labels: ['พนักงาน', 'รายการข้อมูล', 'ส่งออกข้อมูล'],
-    relatedModules: ['reports', 'administration']
-  }),
-  employeeQuestion({
     id: 'DEV-210',
-    title: '[คำถาม] Employee detail endpoint และหน้ารายละเอียดต้องแสดงข้อมูลใดในระยะแรก?',
+    title: '[คำถาม] หน้ารายละเอียดพนักงานควรแสดงข้อมูลใดในระยะแรก?',
     description: `## เหตุผลที่ต้องสอบถาม
 
-หน้า edit ปัจจุบันเติมข้อมูลสำคัญบางส่วนขึ้นเอง และหน้า detail แสดงเพียงข้อมูลติดต่อพื้นฐาน ขณะที่ mockup รายละเอียดมีข้อมูลส่วนตัว วิชาชีพ อัตรา และแท็บที่เชื่อมหลายโมดูล
+หน้าแก้ไขปัจจุบันสร้างข้อมูลสำคัญบางส่วนขึ้นมาเอง และหน้ารายละเอียดแสดงเพียงข้อมูลติดต่อพื้นฐาน ขณะที่ข้อมูลที่ต้องการยังมีประวัติส่วนตัว ข้อมูลวิชาชีพ อัตราค่าบริการ และข้อมูลจากโมดูลอื่น
 
 ## คำถาม
 
-detail endpoint ต้องคืนข้อมูลชุดใด หน้ารายละเอียด v1 ต้องแสดง section/tab ใด และข้อมูลคำนวณหรือข้อมูลสำคัญควรคืนเป็น projection แบบใด?
+ในระยะแรก หน้ารายละเอียดพนักงานควรแสดงข้อมูลส่วนใดบ้าง? ระบบควรส่งข้อมูลทั้งหมดมาในครั้งเดียว หรือแยกโหลดข้อมูลคดี งาน ปฏิทิน และเอกสารเมื่อเปิดแต่ละแท็บ?
 
 ## ตัวเลือก
 
-* endpoint เดียวคืน employee profile ครบทุก section ตามสิทธิ์
-* แยก profile endpoint กับ endpoints ของ matters/work/calendar/documents
-* ส่งมอบข้อมูลพื้นฐานและวิชาชีพก่อน แล้วเพิ่ม linked tabs ภายหลัง
+* ส่งข้อมูลประวัติพนักงานครบทุกส่วนในครั้งเดียว โดยแสดงตามสิทธิ์ของผู้ใช้
+* แยกข้อมูลประวัติพนักงานออกจากข้อมูลคดี งาน ปฏิทิน และเอกสาร
+* แสดงข้อมูลพื้นฐานและข้อมูลวิชาชีพก่อน แล้วค่อยเพิ่มแท็บข้อมูลที่เชื่อมโยงภายหลัง
 
 ## ผลกระทบ
 
-* API response size, authorization และ loading state ราย section
-* ความถูกต้องของหน้า detail/edit ที่ต้องเลิกใช้ข้อมูลจำลอง
-* ขอบเขต MVP และ dependency กับโมดูลอื่น
+* ปริมาณข้อมูลที่ระบบส่ง การตรวจสิทธิ์ และการแสดงผลของแต่ละส่วน
+* ความถูกต้องของหน้ารายละเอียดและหน้าแก้ไขที่ต้องเลิกใช้ข้อมูลจำลอง
+* ขอบเขตงานระยะแรกและการเชื่อมกับโมดูลอื่น
 
 ## ที่มา
 
@@ -531,154 +306,26 @@ detail endpoint ต้องคืนข้อมูลชุดใด หน้
     relatedModules: ['matters', 'calendar', 'documents', 'billing']
   }),
   employeeQuestion({
-    id: 'DEV-211',
-    title: '[คำถาม] แท็บข้อมูลที่เชื่อมโยงควรอยู่หน้า Detail หรือ Edit และเปิดใช้งานเมื่อใด?',
-    description: `## เหตุผลที่ต้องสอบถาม
-
-mockup วางแท็บคดี งาน ปฏิทิน และเอกสารไว้ในรายละเอียดทนาย แต่ frontend ใช้ component เดียวใน Create/Edit และแสดงแท็บเหล่านี้พร้อมข้อความให้บันทึกก่อนแม้กำลังแก้ไขข้อมูลที่มีอยู่แล้ว
-
-## คำถาม
-
-linked tabs ควรอยู่หน้า Detail, Edit หรือทั้งสองหน้า และหลังสร้างพนักงานสำเร็จควร redirect/เปิดใช้งานแท็บอย่างไร?
-
-## ตัวเลือก
-
-* อยู่หน้า Detail เท่านั้น และ Create redirect ไป Detail หลังบันทึก
-* อยู่ทั้ง Detail และ Edit แต่ Edit แก้เฉพาะ profile ส่วนแท็บเป็น read-only links
-* ใช้หน้าเดียวแบบ profile workspace และเปิดแท็บเมื่อมี employee ID
-
-## ผลกระทบ
-
-* route structure และ navigation หลัง create/save
-* การ reuse component และการโหลดข้อมูลจากหลายโมดูล
-* ความสับสนระหว่างการแก้ profile กับการจัดการงานที่เชื่อมโยง
-
-## ที่มา
-
-* \`requirements/source/ทนายความ/การเรียงข้อมูลในหน้ารายละเอียด/รายละเอียดทนายความ - 1.pdf\` หน้า 1: มีแท็บคดี งานทั้งหมด ปฏิทิน และเอกสารในหน้ารายละเอียด
-* \`frontend/src/modules/entities/employees/components/EmployeeContactInformationSection.tsx\` และ \`pages/EmployeeFormPage.tsx\`: Create/Edit ใช้ component เดียวและแท็บแจ้งให้บันทึกก่อนในทั้งสอง mode
-* \`frontend/src/modules/entities/employees/pages/EmployeeViewPage.tsx\`: detail ปัจจุบันมีเฉพาะแท็บข้อมูลติดต่อ`,
-    priority: 'High',
-    labels: ['พนักงาน', 'รายละเอียดพนักงาน', 'การนำทาง'],
-    relatedModules: ['matters', 'tasks', 'calendar', 'documents']
-  }),
-  employeeQuestion({
-    id: 'DEV-212',
-    title: '[คำถาม] Workload และ Performance เป็นหน้าที่ของ Employees หรือ Reports?',
-    description: `## เหตุผลที่ต้องสอบถาม
-
-requirements ของ Lawyer Management กล่าวถึง workload, performance, billable rate และ hours ขณะที่ mockup รายงานทีมมี metric เหล่านี้แยกต่างหาก แต่ frontend Employees ยังไม่มีข้อมูลดังกล่าว
-
-## คำถาม
-
-Employees ควรคำนวณและแสดง workload/performance เอง หรือแสดง summary/link จาก Reports และ metric ใดต้องเห็นได้ตามช่วงเวลาและสิทธิ์ใด?
-
-## ตัวเลือก
-
-* Employees แสดง summary และลิงก์ไป Reports ซึ่งเป็น source of truth
-* Employees มี dashboard รายบุคคล ส่วน Reports รวมระดับทีม
-* เก็บเฉพาะข้อมูลพื้นฐานใน Employees และย้าย metric ทั้งหมดไป Reports
-
-## ผลกระทบ
-
-* ownership ของสูตรคำนวณและ API aggregation
-* การใช้ timesheet/matter/billing data และความสอดคล้องของตัวเลข
-* สิทธิ์เข้าถึงข้อมูลประสิทธิภาพรายบุคคล
-
-## ที่มา
-
-* \`requirements/source/MTS_Feature Detail(2).pdf\` หน้า 7: Lawyer Management มี workload, performance review, billable rate และ hours
-* \`requirements/source/รายงาน/ภาระงานและประสิทธิภาพทีม.pdf\` หน้า 1: มีรายงาน metric ภาระงานและประสิทธิภาพทีม
-* \`frontend/src/modules/entities/employees/\`: หน้า list/add/edit/detail ปัจจุบันยังไม่มี workload หรือ performance`,
-    priority: 'High',
-    labels: ['พนักงาน', 'ภาระงาน', 'ประสิทธิภาพ'],
-    relatedModules: ['reports', 'matters', 'billing']
-  }),
-  employeeQuestion({
-    id: 'DEV-213',
-    title: '[คำถาม] ข้อมูลสำคัญของพนักงานต้อง mask, audit และเก็บรักษาอย่างไร?',
-    description: `## เหตุผลที่ต้องสอบถาม
-
-Employees เก็บเลขเอกสาร ที่อยู่ ข้อมูลติดต่อ อัตราวิชาชีพ และสิทธิ์ระบบ แต่ source ยังรอยืนยันเรื่อง access control/sensitive data ขณะที่ frontend แสดงข้อมูลเหล่านี้ใน form เดียวโดยยังไม่เห็นกติกา mask หรือ audit
-
-## คำถาม
-
-ข้อมูล field ใดถือว่า sensitive ใครดูค่าเต็มได้ ต้อง mask/reveal อย่างไร action ใดต้อง audit และเมื่อพนักงานออกต้องเก็บ ลบ หรือ anonymize หลังระยะเวลาเท่าใด?
-
-## ตัวเลือก
-
-* ใช้ field-level permission พร้อม mask ค่าเริ่มต้นและบันทึกทุก reveal/export/change
-* ใช้สิทธิ์ระดับ section และ audit เฉพาะการแก้ไข/ส่งออก
-* จำกัด Employees ให้ HR/Admin เท่านั้นและไม่ทำ field-level masking ในระยะแรก
-
-## ผลกระทบ
-
-* PDPA, security model และ audit storage
-* detail/list/export API และ UI reveal flow
-* retention job, anonymization และการรักษาประวัติคดี/การเงิน
-
-## ที่มา
-
-* \`requirements/source/ข้อมูลเก่าจาก ALTPro/ALT Pro - P3 (MatterSolv).xlsx\` ชีต \`Sub-Module\` แถว 248–264: individual permissions, audit, PDPA และ retention
-* \`requirements/source/รวม Alternate Architecture.xlsx\` ชีต \`Requirement\` แถว 170 และ 178: Access Control และ Sensitive Data ยังเป็น Waiting to Confirm
-* \`frontend/src/modules/entities/employees/\`: identity, address และ permissions อยู่ใน employee flow โดยยังไม่พบ masking/audit behavior`,
-    priority: 'High',
-    labels: ['พนักงาน', 'ข้อมูลสำคัญ', 'การตรวจสอบย้อนหลัง'],
-    relatedModules: ['administration', 'reports']
-  }),
-  employeeQuestion({
-    id: 'DEV-214',
-    title: '[คำถาม] เมื่อ requirement register กับ PDF หรือ mockup ขัดกัน ต้องยึดแหล่งใดเป็นหลัก?',
-    description: `## เหตุผลที่ต้องสอบถาม
-
-Feature Detail อธิบาย RBAC และการกำหนดสิทธิ์เสมือนเป็น requirement แล้ว แต่ architecture register ยังระบุว่า Access Control และ Sensitive Data รอยืนยัน จึงมีความเสี่ยงที่ทีมพัฒนาจะใช้ baseline คนละชุด
-
-## คำถาม
-
-เมื่อ requirement register, Feature Detail, spreadsheet, PDF/mockup และ frontend behavior ขัดกัน แหล่งใดเป็น source of truth และรายการ Waiting to Confirm ต้องหยุดพัฒนาจนอนุมัติหรือใช้สมมติฐานชั่วคราวได้?
-
-## ตัวเลือก
-
-* Requirement register ที่อนุมัติล่าสุดมีลำดับสูงสุด เอกสารอื่นเป็นหลักฐานประกอบ
-* Mockup/Feature Detail ที่ Product ส่งล่าสุดใช้เป็น baseline จนกว่า register จะอัปเดต
-* ใช้ decision log รายประเด็น พร้อม owner/version/date และห้ามอนุมานจาก frontend
-
-## ผลกระทบ
-
-* acceptance criteria และการตัดสินข้อ DEV-195–DEV-213
-* การป้องกัน rework ของ schema, permissions และ sensitive data
-* traceability ระหว่าง requirement, design และ implementation
-
-## ที่มา
-
-* \`requirements/source/MTS_Feature Detail(2).pdf\` หน้า 7: อธิบาย RBAC และ auto permission เป็น requirement
-* \`requirements/source/รวม Alternate Architecture.xlsx\` ชีต \`Requirement\` แถว 170 และ 178: Access Control และ Sensitive Data ยังเป็น Waiting to Confirm
-* \`frontend/src/modules/entities/employees/\`: มี behavior หลายส่วนที่ยังไม่พบข้อสรุปตรงกันใน source`,
-    priority: 'High',
-    labels: ['พนักงาน', 'แหล่งอ้างอิง', 'การตัดสินใจ'],
-    relatedModules: ['administration']
-  }),
-  employeeQuestion({
     id: 'DEV-215',
-    title: '[คำถาม] หน้าเพิ่มและแก้ไข Employees ต้องรองรับพนักงานทุกประเภทในบริษัทหรือไม่?',
+    title: '[คำถาม] แบบฟอร์มบุคลากรของสำนักงานทนายควรรองรับใครบ้าง?',
     description: `## เหตุผลที่ต้องสอบถาม
 
-เอกสารและ mockup เดิมบางส่วนอ้างอิงข้อมูลทนายความ แต่ Employees ถูกใช้เป็นทะเบียนบุคลากรของสำนักงานหรือบริษัท จึงต้องยืนยันว่าหน้าเพิ่มและแก้ไขใช้กับพนักงานทุกประเภท ไม่ได้จำกัดเฉพาะทนาย
+สำนักงานทนายมีทั้งหุ้นส่วน ทนาย ผู้ช่วยทนาย ทีมธุรการ ฝ่ายการเงิน และบุคลากรสนับสนุน เอกสารบางส่วนมีข้อมูลเฉพาะทนาย แต่ระบบ Employees ใช้เป็นทะเบียนบุคลากรของสำนักงานทั้งหมด จึงต้องกำหนดว่าแบบฟอร์มเพิ่มและแก้ไขควรใช้กับใครบ้าง
 
 ## คำถาม
 
-หน้าเพิ่มและแก้ไข Employees ต้องรองรับพนักงานทุกประเภทในบริษัทหรือไม่ และข้อมูลเฉพาะทนาย เช่น ใบอนุญาตทนาย ความเชี่ยวชาญ และอัตราค่าวิชาชีพ ควรแสดงตามประเภทพนักงานหรือตำแหน่งอย่างไร?
+แบบฟอร์มเพิ่มและแก้ไขบุคลากรควรใช้กับบุคลากรทุกประเภทในสำนักงานหรือไม่? ข้อมูลเฉพาะทนาย เช่น ใบอนุญาต ความเชี่ยวชาญ และอัตราค่าบริการ ควรแสดงเฉพาะบุคลากรที่ต้องใช้ข้อมูลเหล่านี้หรือไม่?
 
 ## ตัวเลือก
 
-* ใช้ฟอร์ม Employees ชุดเดียวสำหรับทุกพนักงาน และแสดงข้อมูลวิชาชีพตามประเภทพนักงานหรือตำแหน่ง
-* ใช้ฟอร์มพื้นฐานร่วมกัน แล้วแยกขั้นตอนหรือ section เฉพาะสำหรับทนายและวิชาชีพอื่น
-* จำกัดฟอร์มระยะแรกไว้เฉพาะทนาย แล้วเพิ่มพนักงานประเภทอื่นในระยะถัดไป
+* ใช้แบบฟอร์มชุดเดียวสำหรับบุคลากรทุกประเภท และแสดงข้อมูลวิชาชีพเฉพาะผู้ที่ต้องใช้
+* ใช้ข้อมูลพื้นฐานร่วมกัน แล้วเพิ่มส่วนเฉพาะสำหรับทนายและวิชาชีพอื่น
+* ระยะแรกใช้แบบฟอร์มเฉพาะทนาย แล้วค่อยเพิ่มบุคลากรประเภทอื่นในระยะถัดไป
 
 ## ผลกระทบ
 
-* ชื่อและขอบเขตของ Employees รวมถึง create/edit flow
-* schema, validation และเงื่อนไขแสดงข้อมูลวิชาชีพ
+* ขอบเขตของระบบ Employees และขั้นตอนเพิ่ม/แก้ไขข้อมูลบุคลากร
+* ข้อมูลที่ต้องเก็บ การตรวจสอบข้อมูล และเงื่อนไขแสดงข้อมูลวิชาชีพ
 * การนำข้อมูลไปใช้กับ HR, การมอบหมายงาน และการกำหนดสิทธิ์
 
 ## ที่มา

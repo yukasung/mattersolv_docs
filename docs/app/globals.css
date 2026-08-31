@@ -384,6 +384,20 @@ main div[aria-label] svg {
   margin-inline: auto;
 }
 
+.employees-workflow-diagram {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  overflow-x: auto;
+}
+
+.employees-workflow-diagram svg {
+  flex: 0 0 auto;
+  width: 40rem !important;
+  max-width: none !important;
+  height: auto;
+}
+
 .workflow-step-explanation-title {
   margin-top: 1.5rem;
   font-size: 1.25rem;

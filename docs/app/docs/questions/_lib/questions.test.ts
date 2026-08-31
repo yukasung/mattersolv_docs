@@ -66,20 +66,41 @@ test('question catalog includes published Linear and local HTML questions', () =
   const questions = getQuestions()
   const ids = questions.map(({ id }) => id)
 
-  assert.equal(questions.length, 113)
-  assert.equal(new Set(ids).size, 113)
+  assert.equal(questions.length, 102)
+  assert.equal(new Set(ids).size, 102)
   assert.ok(ids.includes('DEV-190'))
   assert.ok(ids.includes('DEV-191'))
   assert.ok(ids.includes('DEV-192'))
   assert.ok(ids.includes('DEV-193'))
   assert.ok(ids.includes('DEV-194'))
   assert.ok(ids.includes('DEV-195'))
-  assert.ok(ids.includes('DEV-214'))
   assert.ok(ids.includes('DEV-215'))
+  assert.ok(!ids.includes('DEV-196'))
+  assert.ok(!ids.includes('DEV-198'))
+  assert.ok(!ids.includes('DEV-199'))
+  assert.ok(!ids.includes('DEV-203'))
+  assert.ok(!ids.includes('DEV-204'))
+  assert.ok(!ids.includes('DEV-208'))
+  assert.ok(!ids.includes('DEV-209'))
+  assert.ok(!ids.includes('DEV-211'))
+  assert.ok(!ids.includes('DEV-212'))
+  assert.ok(!ids.includes('DEV-213'))
+  assert.ok(!ids.includes('DEV-214'))
   assert.ok(!ids.includes('DEV-189'))
   assert.ok(!ids.includes('DEV-181'))
   assert.equal(getQuestionBySlug('dev-189'), undefined)
   assert.equal(getQuestionBySlug('dev-181'), undefined)
+  assert.equal(getQuestionBySlug('dev-196'), undefined)
+  assert.equal(getQuestionBySlug('dev-198'), undefined)
+  assert.equal(getQuestionBySlug('dev-199'), undefined)
+  assert.equal(getQuestionBySlug('dev-203'), undefined)
+  assert.equal(getQuestionBySlug('dev-204'), undefined)
+  assert.equal(getQuestionBySlug('dev-208'), undefined)
+  assert.equal(getQuestionBySlug('dev-209'), undefined)
+  assert.equal(getQuestionBySlug('dev-211'), undefined)
+  assert.equal(getQuestionBySlug('dev-212'), undefined)
+  assert.equal(getQuestionBySlug('dev-213'), undefined)
+  assert.equal(getQuestionBySlug('dev-214'), undefined)
 })
 
 test('primary classifications match the approved meeting groups', () => {
@@ -92,7 +113,7 @@ test('primary classifications match the approved meeting groups', () => {
     tasks: 2,
     billing: 5,
     finance: 1,
-    employees: 21,
+    employees: 10,
     hr: 3,
     reports: 4,
     administration: 18,
@@ -123,7 +144,7 @@ test('Employees HTML questions are complete, sequential, and unanswered', () => 
   const expectedIds = Array.from(
     { length: 21 },
     (_, index) => `DEV-${195 + index}`
-  )
+  ).filter((id) => !['DEV-196', 'DEV-198', 'DEV-199', 'DEV-203', 'DEV-204', 'DEV-208', 'DEV-209', 'DEV-211', 'DEV-212', 'DEV-213', 'DEV-214'].includes(id))
 
   assert.deepEqual(
     questions.map(({ id }) => id),
@@ -214,7 +235,7 @@ test('meeting groups follow module navigation order and contain every question',
   assert.equal(groups.at(-1)?.module.id, 'other')
   assert.equal(
     groups.reduce((total, group) => total + group.questions.length, 0),
-    113
+    102
   )
 })
 
