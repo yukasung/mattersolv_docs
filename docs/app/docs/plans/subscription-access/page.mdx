@@ -17,17 +17,123 @@
 User หนึ่งบัญชีมี Membership ได้หลายรายการ จึงเข้าถึงได้หลาย Workspace
 โดยสิทธิ์ในแต่ละ Workspace แยกจากกัน
 
-### Setup Example
+## Target Signup Flow
 
-ลำดับการตั้งค่าเริ่มต้นของสำนักงานที่รับงานคดีแรงงานหนึ่งแห่ง
+MatterSolv ใช้แนวคิดจาก Odoo เรื่อง recurring plan, online checkout,
+Subscription lifecycle และ customer account มาปรับเป็น flow ของผลิตภัณฑ์
+MatterSolv เอง ลำดับหน้าจอของ Odoo แต่ละระบบอาจต่างกันตามการตั้งค่า
 
-| ลำดับ | เหตุการณ์                                                                  | คำที่เกี่ยวข้อง |
-| ----: | -------------------------------------------------------------------------- | --------------- |
-|     1 | ผู้สมัครสร้างบัญชีและยืนยันอีเมล                                           | User            |
-|     2 | ระบบสร้างพื้นที่เก็บแฟ้มงานกฎหมาย ลูกความ และเอกสารของสำนักงาน             | Workspace       |
-|     3 | สำนักงานเลือกแผน PRO ทำให้ Time Tracking และ Conflict Checking เปิดใช้ได้   | Subscription    |
-|     4 | ผู้สมัครเชิญทนายในทีมเข้า Workspace                                        | Membership      |
-|     5 | ผู้ดูแลกำหนดให้ทนายในทีมสร้างและแก้ไขแฟ้มงานได้ แต่ไม่ให้อนุมัติใบเสนอราคา | Access Profile  |
+<div aria-label="MatterSolv signup and onboarding flow diagram">
+
+```mermaid
+flowchart TD
+  A["Pricing: เลือกแผน"] --> B{"เส้นทางที่เลือก"}
+
+  B -->|แผนฟรีหรือ Trial| T1["กรอกข้อมูลผู้สมัครและสำนักงาน"]
+  T1 --> T2["ส่งอีเมลยืนยัน"]
+  T2 --> T3{"ลิงก์ยังใช้ได้หรือไม่"}
+  T3 -->|ไม่ได้| T4["แจ้งลิงก์หมดอายุและขอส่งใหม่"]
+  T4 --> T2
+  T3 -->|ได้| T5["ตั้งรหัสผ่านและยอมรับเงื่อนไข"]
+  T5 --> Provision["สร้าง User, Workspace,<br/>Owner Membership และ Subscription"]
+
+  B -->|แผนเสียเงินแบบ Self-service| P1["เลือกแผนและรอบบิล"]
+  P1 --> P2["กรอกข้อมูลผู้ซื้อ สำนักงาน<br/>ที่อยู่เรียกเก็บเงิน และข้อมูลภาษี"]
+  P2 --> P3["ตรวจยอดและชำระผ่าน Hosted Checkout"]
+  P3 --> P4{"ได้รับ webhook ที่ตรวจสอบแล้วหรือไม่"}
+  P4 -->|ยังไม่ได้หรือไม่สำเร็จ| P5["แสดง Pending หรือ Failed<br/>และให้ลองชำระใหม่"]
+  P5 --> P3
+  P4 -->|ได้รับและสำเร็จ| P6["สร้าง Subscription, Workspace<br/>และคำเชิญ Owner"]
+  P6 --> P7["ส่งอีเมลให้ Owner ตั้งรหัสผ่าน"]
+  P7 --> P8["เปิดใช้งาน User"]
+  P8 --> Onboarding
+
+  B -->|ENTERPRISE หรือขอใบเสนอราคา| Q1["ส่งคำขอใบเสนอราคา"]
+  Q1 --> Q2["ฝ่ายขายจัดทำและส่งใบเสนอราคา"]
+  Q2 --> Q3["ลูกค้ายอมรับและชำระเงิน<br/>หรือยืนยันเงื่อนไขเครดิต"]
+  Q3 --> P6
+
+  Provision --> Onboarding["Onboarding"]
+  Onboarding --> O1["ยืนยันข้อมูลสำนักงานและตั้งค่าเริ่มต้น"]
+  O1 --> O2["เชิญสมาชิกและกำหนด Access Profile"]
+  O2 --> O3["เข้าสู่ Workspace"]
+```
+
+</div>
+
+### Free Plan or Trial
+
+แผนฟรีและ Trial ไม่ต้องใช้บัตรเครดิต ผู้สมัครกรอกข้อมูลและยืนยันอีเมลก่อนระบบ
+สร้าง Workspace เพราะยังไม่มีการชำระเงินเป็นสัญญาณยืนยัน หลังเปิดลิงก์ ผู้สมัคร
+ตั้งรหัสผ่าน แล้วระบบสร้าง User, Workspace, Owner Membership และ Subscription
+พร้อมกัน ผู้สมัครจึงเข้าสู่ Onboarding ได้ แผนฟรีมีสถานะ `active` ส่วน Trial
+มีสถานะ `trialing` และวันหมดอายุตามเงื่อนไขที่กำหนด
+
+ระบบต้องใช้ลิงก์แบบครั้งเดียวและมีอายุจำกัด หากลิงก์หมดอายุ ผู้สมัครขอส่งใหม่ได้
+โดยยังไม่ได้สิทธิ์เข้าถึง Workspace จนกว่ายืนยันสำเร็จ
+
+### Self-service Paid Plan
+
+ผู้ซื้อเลือกแผนและรอบบิล กรอกข้อมูลบัญชี ข้อมูลสำนักงาน ข้อมูลเรียกเก็บเงิน
+และข้อมูลภาษี ก่อนตรวจยอดรวมและชำระเงิน ระบบคำนวณราคาอีกครั้งที่ Server
+ข้อมูลราคาใน URL หรือ Browser ไม่ใช่ยอดที่ใช้เรียกเก็บจริง
+
+การชำระเงินเกิดก่อนการเปิดใช้บัญชี เพื่อให้ผู้ซื้ออยู่ใน Checkout ต่อเนื่อง
+ระบบสร้าง Subscription และ Workspace เมื่อได้รับ webhook ที่ตรวจสอบแล้วเท่านั้น
+จากนั้นจึงส่งอีเมลให้ Owner ตั้งรหัสผ่าน ซึ่งเป็นการยืนยันว่า Owner เข้าถึงอีเมล
+นั้นได้
+
+### Enterprise or Quotation-assisted Plan
+
+ลูกค้าส่งข้อมูลสำนักงาน ผู้ติดต่อ จำนวนสมาชิกโดยประมาณ และความต้องการให้ฝ่ายขาย
+จัดทำใบเสนอราคา เมื่อลูกค้ายอมรับและชำระเงินหรือได้รับอนุมัติเงื่อนไขเครดิตแล้ว
+ระบบใช้ขั้นตอนสร้าง Workspace และ Owner ชุดเดียวกับแผน Self-service
+
+เส้นทางนี้เพิ่มขั้นตอนทางการขายได้ แต่ต้องไม่สร้าง User, Workspace หรือ
+Subscription คนละรูปแบบกับเส้นทางอื่น
+
+## Provisioning Boundary
+
+การยืนยัน Free Plan หรือรายการทางการค้าที่สำเร็จต้องสร้างข้อมูลที่เกี่ยวข้องเป็น
+ธุรกรรมเดียว หากส่วนใดล้มเหลว ระบบต้องย้อนกลับหรือเก็บสถานะที่กู้คืนได้
+
+| ข้อมูล | สร้างเมื่อ | หน้าที่ |
+| --- | --- | --- |
+| Pending Signup | รับแบบฟอร์มแผนฟรีหรือ Trial | เก็บข้อมูลผู้สมัครและสถานะยืนยันโดยยังไม่ให้สิทธิ์ Workspace |
+| Checkout Session | เริ่มซื้อแผนเสียเงิน | เก็บแผน รอบบิล ยอด และสถานะชำระเงินที่ Server ยืนยัน |
+| Payment Transaction | เริ่มชำระเงิน | เชื่อมรายการกับ Payment Provider โดยไม่เก็บข้อมูลบัตรดิบ |
+| User | ยืนยัน Free Plan หรือตั้งรหัสผ่าน Owner สำเร็จ | ใช้พิสูจน์ตัวตนด้วยอีเมลที่ยืนยันแล้ว |
+| Workspace | ยืนยัน Free Plan หรือรายการทางการค้าสำเร็จ | เป็นขอบเขตข้อมูลของสำนักงาน |
+| Membership | สร้าง Workspace | เชื่อม User คนแรกเป็น Owner และสมาชิกที่เชิญภายหลัง |
+| Subscription | สร้าง Workspace | เก็บแผน สถานะ รอบบิล และข้อมูลต่ออายุ |
+| Entitlements | เปิด Subscription หรือเปลี่ยนแผน | ระบุ Module และข้อจำกัดที่ Workspace ใช้ได้ |
+
+## Subscription States
+
+<div aria-label="Subscription lifecycle diagram">
+
+```mermaid
+stateDiagram-v2
+  [*] --> pending
+  pending --> active: ยืนยันแผนฟรี
+  pending --> trialing: ยืนยัน Trial
+  pending --> active: ยืนยันการชำระหรือข้อตกลง
+  pending --> failed: ชำระไม่สำเร็จหรือ Checkout หมดอายุ
+  trialing --> active: เปลี่ยนเป็นแผนเสียเงิน
+  trialing --> expired: สิทธิ์ทดลองหมดอายุ
+  active --> past_due: ต่ออายุไม่สำเร็จ
+  past_due --> active: ชำระสำเร็จภายในระยะผ่อนผัน
+  past_due --> suspended: สิ้นสุดระยะผ่อนผัน
+  suspended --> active: ชำระและเปิดใช้งานใหม่
+  active --> canceled: การยกเลิกมีผล
+  expired --> active: ซื้อแผนภายหลัง
+  canceled --> [*]
+```
+
+</div>
+
+นโยบายการเข้าถึงข้อมูลในสถานะ `expired`, `suspended` และ `canceled`
+ต้องกำหนดแยกก่อนพัฒนา Billing โดย Backend เป็นผู้บังคับใช้
 
 ### Access Evaluation Order
 
@@ -50,9 +156,8 @@ User หนึ่งบัญชีมี Membership ได้หลายรา
 - Owner เชิญสมาชิกเพิ่มได้ทุกแผน เพราะทุกแผนไม่จำกัดจำนวนสมาชิก
 - Workspace ที่เริ่มจากสมาชิกหนึ่งคนเพิ่มสมาชิกภายหลังได้โดยไม่ต้องย้ายข้อมูล
 
-ลำดับขั้นตอนตั้งแต่สร้างบัญชี เลือกแผน ชำระเงิน จนเชิญสมาชิก อยู่ใน
-[Business Workflow](/docs/workflow) ขั้นที่ 1 หน้านี้อธิบายเฉพาะกติกา
-การชำระเงินและการกำหนดสิทธิ์ที่ใช้ในขั้นตอนนั้น
+ภาพรวมการสมัครในกระบวนการธุรกิจทั้งหมดอยู่ใน
+[Business Workflow](/docs/workflow) ขั้นที่ 1
 
 ## Payment Rules
 
@@ -62,6 +167,21 @@ User หนึ่งบัญชีมี Membership ได้หลายรา
 - หน้า Payment Success ไม่ใช่หลักฐานเปิดใช้งาน
 - ระบบเปิดหรือต่ออายุ Subscription เมื่อได้รับ webhook ที่ตรวจสอบแล้ว
 - Webhook เดิมที่ถูกส่งซ้ำต้องไม่สร้าง Subscription หรือรายการชำระเงินซ้ำ
+
+## Failure and Recovery
+
+- หากอีเมลมี User อยู่แล้ว ให้เจ้าของอีเมลเข้าสู่ระบบแล้วทำรายการต่อ
+  ห้ามสร้าง User ซ้ำ
+- หากลิงก์ยืนยันหมดอายุ ให้ส่งลิงก์ใหม่แบบจำกัดความถี่
+- หากชำระไม่สำเร็จ ห้ามสร้าง Active Subscription และต้องให้ลองใหม่ได้โดยไม่
+  สร้าง Payment Transaction ซ้ำผิดรายการ
+- หากชำระสำเร็จแต่ผู้ซื้อปิด Browser ระบบยังต้องสร้าง Workspace จาก webhook
+  และส่งอีเมลเปิดใช้ Owner
+- Webhook ที่ส่งซ้ำต้องประมวลผลแบบ idempotent โดยอ้างอิง Provider Event ID
+- หากสร้างข้อมูลได้เพียงบางส่วน ต้องย้อนธุรกรรมหรือเข้าสถานะกู้คืนที่ชัดเจน
+  ห้ามเหลือ Active Subscription ที่ไม่มี Workspace
+- หากลิงก์เปิดใช้ Owner หมดอายุ ต้องออกลิงก์ใหม่ได้หลังตรวจความสัมพันธ์กับ
+  Checkout หรือ Subscription
 
 ## Member Access
 
@@ -88,3 +208,10 @@ Admin ไม่สามารถเปิด Module ที่ Subscription ไ�
 - [Pricing](/docs/plans/pricing)
 - [Plan Rules](/docs/plans/plan-rules)
 - [Users & Access](/docs/roles)
+
+## Odoo References
+
+- [Odoo Pricing](https://www.odoo.com/pricing)
+- [Odoo Subscriptions](https://www.odoo.com/documentation/18.0/applications/sales/subscriptions.html)
+- [Odoo Customer Accounts](https://www.odoo.com/documentation/18.0/applications/websites/ecommerce/customer_accounts.html)
+- [Odoo Automatic Payments](https://www.odoo.com/documentation/18.0/applications/sales/subscriptions/automatic_payments.html)
