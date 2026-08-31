@@ -1,21 +1,82 @@
 # Requirement Register
 
-ทะเบียน requirement ต้นทางของระบบ 181 ข้อ ใช้ตรวจว่าความสามารถหนึ่งถูกระบุ
-ไว้อย่างไร อยู่ในรอบไหน และมีเงื่อนไขอะไรกำกับ
+ทะเบียน requirement ต้นทางของระบบ ใช้ตรวจว่าความสามารถหนึ่งถูกระบุไว้อย่างไร
+ได้รับการยืนยันแล้วหรือไม่ และมีความพร้อมด้าน Design, Development และ User Test
+เพียงใด โดยแยก **สถานะการยืนยัน requirement** ออกจาก **สถานะความพร้อมส่งมอบ**
+เสมอ
 
 คอลัมน์ **แถว** คือหมายเลขแถวในไฟล์ต้นทาง ใช้อ้างอิงย้อนกลับได้
 ส่วนคอลัมน์เลขข้อในไฟล์ต้นทางไม่ถูกนำมาแสดงเพราะ Excel เก็บ `1.10` เป็น `1.1`
 ทำให้ซ้ำกับข้อ `1.1` จริง
 
-## สรุปตามกลุ่มงาน
+ตรวจเทียบ source ล่าสุดเมื่อ **14 August 2026**
+
+## Source Control
+
+| Source | ขอบเขตที่ใช้ | จำนวนรายการและสถานะ |
+| --- | --- | --- |
+| `รวม Alternate Architecture.xlsx` ชีต `Requirement` ช่วง `A1:H192` | Requirement baseline, phase และหมายเหตุที่ตกลงไว้เดิม | 181 requirements: `Passed` 164, `Waiting to Confirm` 17 |
+| `Action Plan MatterSolv Project.xlsx` ชีต `Action Plan MatterSolv` ช่วง `A3:W239` | ความพร้อมของ Design, Development และ User Test ณ วันที่จัดทำ Action Plan | 168 assessments: `Not Pass` 79, `Partially Pass` 73, `Not Applicable` 16, `Pass` 0 |
+
+หาก source file หรือ version เปลี่ยน ต้องตรวจจำนวนรายการ สถานะ การจับคู่
+และเนื้อหาในหน้านี้ใหม่ก่อนเผยแพร่
+
+## Status Model
+
+| แกนสถานะ | ค่า | ความหมาย |
+| --- | --- | --- |
+| Requirement decision | `Passed` | Requirement ได้รับการตกลงใน baseline แล้ว ไม่ได้หมายความว่าพัฒนา ทดสอบ หรือเปิดใช้งานเสร็จ |
+| Requirement decision | `Waiting to Confirm` | Requirement ยังขาดคำยืนยันหรือรายละเอียด ห้ามนำไปกำหนด production behavior โดยการคาดเดา |
+| Delivery readiness | `Pass` | Design, Development และ User Test ผ่านตามหลักฐานของ Action Plan |
+| Delivery readiness | `Partially Pass` | มีงานหรือหลักฐานบางส่วน แต่ยังไม่ครบทุกขั้นที่ Action Plan ประเมิน |
+| Delivery readiness | `Not Pass` | ยังไม่ผ่านการประเมินความพร้อมส่งมอบ ไม่ได้หมายความว่า requirement ถูกปฏิเสธ |
+| Delivery readiness | `Not Applicable` | ขั้นหรือการประเมินนั้นยังไม่ใช้กับรายการดังกล่าว ต้องไม่ตีความเป็นผ่านหรือยกเลิก requirement |
+
+> `Passed` ใน Requirement baseline ไม่เท่ากับ `Pass` ใน Action Plan และห้ามใช้
+> สถานะจากแกนหนึ่งเขียนทับอีกแกนหนึ่ง
+
+## Reconciliation Rules
+
+- รักษา 181 baseline requirements ด้านล่างไว้จนกว่าจะมี approved decision เปลี่ยน
+  scope หรือยกเลิกรายการ
+- Action Plan มีระดับรายละเอียดและตำแหน่งแถวต่างจาก baseline จึงยังไม่ถือว่า
+  จับคู่กันแบบหนึ่งต่อหนึ่ง
+- ก่อนรวมสถานะรายข้อ ต้องบันทึกอย่างน้อย `Canonical Requirement ID`, baseline
+  row, Action Plan row, domain, requirement decision, delivery readiness,
+  mapping status และ decision/evidence reference
+- ใช้สถานะ `Unmapped`, `Candidate` และ `Confirmed` สำหรับการจับคู่ โดยมีเฉพาะ
+  `Confirmed` ที่นำไปสรุป coverage ราย requirement ได้
+- ห้ามสรุปว่าฟีเจอร์พร้อม release จาก `Passed` เพียงค่าเดียว และห้ามสรุปว่า
+  requirement ถูกตัดออกจาก `Not Pass` หรือ `Not Applicable` เพียงค่าเดียว
+
+## Requirement Baseline Summary
 
 | กลุ่มงาน | ข้อ | รอบที่ 1 | รอบที่ 2 | รอยืนยัน |
 | --- | ---: | ---: | ---: | ---: |
-| None | 181 | 151 | 35 | 17 |
+| 1. การสร้างเอกสารอัตโนมัติ (Document Automation) | 24 | 24 | 0 | 0 |
+| 2. การสร้างจัดเก็บใบเสนอราคา และขอบเขตการทำงาน (Quotation System & Service Fee Definition) | 22 | 22 | 0 | 0 |
+| 3. บันทึกเวลาทำงานของทนาย (Time Tracking & Timesheets) | 22 | 22 | 0 | 0 |
+| 4. การจัดการคดี (Case Management) | 19 | 19 | 0 | 0 |
+| 5. การจัดการลูกความ และสำนักงาน (ลูกค้า) (Client Management) | 18 | 18 | 0 | 0 |
+| 6. การจัดการเวลาและตารางนัดหมาย (Calendar & Scheduling) | 17 | 8 | 10 | 0 |
+| 7. การบริหารจัดการงานและทีม (Task & Team Management) | 14 | 14 | 0 | 0 |
+| 8. จัดเก็บและจัดการเอกสารทางกฎหมาย (Document Management) | 19 | 15 | 8 | 0 |
+| 9. การรักษาความปลอดภัย (Security & Compliance) | 17 | 0 | 17 | 17 |
+| 10. การติดต่อและสื่อสาร (Communication Module) | 9 | 9 | 0 | 0 |
 | **รวม** | **181** | **151** | **35** | **17** |
 
-สถานะ `Passed` คือ requirement ที่ตกลงแล้ว ส่วน `Waiting to Confirm`
-คือยังไม่ยืนยัน ปัจจุบันข้อที่ยังไม่ยืนยันทั้งหมดอยู่ในกลุ่มการรักษาความปลอดภัย
+ข้อที่เป็น `Waiting to Confirm` ทั้ง 17 ข้ออยู่ในกลุ่มการรักษาความปลอดภัย
+ส่วนสถานะความพร้อมส่งมอบจาก Action Plan ต้องอ่านแยกตาม Status Model ด้านบน
+
+## Delivery Readiness Summary
+
+| สถานะจาก Action Plan | จำนวน | ใช้ตัดสิน requirement ได้หรือไม่ |
+| --- | ---: | --- |
+| `Pass` | 0 | ไม่ได้ ต้องมี requirement decision แยกต่างหาก |
+| `Partially Pass` | 73 | ไม่ได้ ใช้ติดตามงานที่ยังไม่ครบ |
+| `Not Pass` | 79 | ไม่ได้ ใช้ติดตามงานที่ยังไม่ผ่าน |
+| `Not Applicable` | 16 | ไม่ได้ ต้องตรวจเหตุผลและขอบเขตเป็นรายข้อ |
+| **รวม** | **168** | — |
 
 ## กฎธุรกิจที่ต้องรู้
 
@@ -61,7 +122,7 @@ requirement ที่ระบุไว้แล้วแต่ยังต้�
 ## ทะเบียนทั้งหมด
 
 <details>
-<summary>None (181 ข้อ)</summary>
+<summary>1. การสร้างเอกสารอัตโนมัติ (Document Automation) (24 ข้อ)</summary>
 
 | แถว | หัวข้อ | Requirement | สถานะ | รอบ | หมายเหตุ |
 | ---: | --- | --- | --- | :-: | --- |
@@ -89,6 +150,14 @@ requirement ที่ระบุไว้แล้วแต่ยังต้�
 | 24 | Export & Sharing | ส่งหรือแชร์ไฟล์เอกสารผ่านอีเมล | Passed | 1 | — |
 | 25 | Integrations Module | เชื่อมกับ Module X: Case Management - ดึงข้อมูลคดีและลูกความมาใช้ในเอกสารอัตโนมัติ | Passed | 1 | — |
 | 26 | Integrations Module | เชื่อมกับ Module X: Time Tracking & Billing - แนบเอกสารไปกับใบแจ้งหนี้และสรุปเวลาทำงาน | Passed | 1 | — |
+
+</details>
+
+<details>
+<summary>2. การสร้างจัดเก็บใบเสนอราคา และขอบเขตการทำงาน (Quotation System & Service Fee Definition) (22 ข้อ)</summary>
+
+| แถว | หัวข้อ | Requirement | สถานะ | รอบ | หมายเหตุ |
+| ---: | --- | --- | --- | :-: | --- |
 | 28 | Quotation Generation & Customization | สร้างใบเสนอราคาอัตโนมัติ โดยเลือกจาก Standard Template | Passed | 1 | — |
 | 29 | Quotation Generation & Customization | ระบบดึงข้อมูลลูกค้าและค่าบริการมาให้ | Passed | 1 | — |
 | 30 | Quotation Generation & Customization | สามารถระบุประเภทของบริการได้ เช่น คำปรึกษากฎหมาย, การร่างสัญญา, คดีความ ฯลฯ | Passed | 1 | กำหนดประเภทบริการไว้ หรือ สามารถเพิ่มได้ |
@@ -111,6 +180,14 @@ requirement ที่ระบุไว้แล้วแต่ยังต้�
 | 47 | Reports & Analytics | มีรายงานใบเสนอราคาที่ได้รับการอนุมัติ/ปฏิเสธ และประวัติของอัตราการตอบรับจากลูกค้า | Passed | 1 | — |
 | 48 | Reports & Analytics | สรุปประเภทบริการที่ถูกเสนอราคาบ่อยที่สุด – ดูว่างานประเภทใดสร้างรายได้สูงสุด | Passed | 1 | — |
 | 49 | Reports & Analytics | Dashboard วิเคราะห์ค่าบริการและแนวโน้มรายได้ – ช่วยให้สำนักงานสามารถปรับกลยุทธ์การตั้งราคาได้ดีขึ้น | Passed | 1 | ค้างชำระหรือชำระแล้ว |
+
+</details>
+
+<details>
+<summary>3. บันทึกเวลาทำงานของทนาย (Time Tracking & Timesheets) (22 ข้อ)</summary>
+
+| แถว | หัวข้อ | Requirement | สถานะ | รอบ | หมายเหตุ |
+| ---: | --- | --- | --- | :-: | --- |
 | 51 | Time Entry & Tracking | ทนายสามารถจับเวลาการทำงานได้ โดยกดเริ่ม/หยุดจับเวลา เมื่อทำงานกับคดีหรือกิจกรรมใดกิจกรรมหนึ่ง | Passed | 1 | — |
 | 52 | Time Entry & Tracking | สามารถเพิ่มเวลาที่ใช้ไปย้อนหลังได้ พร้อมรายละเอียดของงาน เป็นการบันทึกเวลา Manual | Passed | 1 | — |
 | 53 | Time Entry & Tracking | กำหนดเวลาเริ่มและจบของงานแต่ละรายการเอง | Passed | 1 | — |
@@ -133,6 +210,14 @@ requirement ที่ระบุไว้แล้วแต่ยังต้�
 | 70 | Integrations Module | เชื่อมกับ Module 2: Billing Management - นำเวลาทำงานไปใช้ในการออกใบแจ้งหนี้ | Passed | 1 | — |
 | 71 | Integrations Module | เชื่อมกับ Module 7: ปฏิทิน (Calendar Sync) - บันทึกเวลาการประชุมและกิจกรรมอัตโนมัติ | Passed | 1 | — |
 | 72 | Integrations Module | เชื่อมกับ Export ข้อมูล (Export to Excel/PDF/CSV) - ดาวน์โหลดรายงานเวลาเพื่อใช้งานต่อ | Passed | 1 | — |
+
+</details>
+
+<details>
+<summary>4. การจัดการคดี (Case Management) (19 ข้อ)</summary>
+
+| แถว | หัวข้อ | Requirement | สถานะ | รอบ | หมายเหตุ |
+| ---: | --- | --- | --- | :-: | --- |
 | 74 | Case Registration & Management | สร้างและลงทะเบียนคดีใหม่ – กรอกข้อมูลพื้นฐานของคดี เช่น ชื่อคดี, หมายเลขคดี, ประเภทคดี (แพ่ง, อาญา, แรงงาน ฯลฯ) | Passed | 1 | — |
 | 75 | Case Registration & Management | แนบลูกความ (Client Management) – เชื่อมโยงคดีกับลูกความ, ฝ่ายตรงข้าม และบุคคลที่เกี่ยวข้อง | Passed | 1 | — |
 | 76 | Case Registration & Management | บันทึกข้อมูลทนายผู้รับผิดชอบ – ระบุทีมทนายและบทบาทของแต่ละคนในคดี | Passed | 1 | กำหนดบทบาทของทนาย ไม่สามารถเพิ่มเติมได้ *ขอรายชื่อบทบาททนาย* |
@@ -152,6 +237,14 @@ requirement ที่ระบุไว้แล้วแต่ยังต้�
 | 90 | Integrations Module | เชื่อมต่อกับ Module 3: Time Tracking – จัดการเวลาการทำงาน | Passed | 1 | — |
 | 91 | Integrations Module | เชื่อมต่อกับ Module 2: Billing – การเรียกเก็บเงินโดยอัตโนมัติ | Passed | 1 | — |
 | 92 | Integrations Module | Export ข้อมูล – ส่งออกข้อมูลเป็น PDF, Excel | Passed | 1 | — |
+
+</details>
+
+<details>
+<summary>5. การจัดการลูกความ และสำนักงาน (ลูกค้า) (Client Management) (18 ข้อ)</summary>
+
+| แถว | หัวข้อ | Requirement | สถานะ | รอบ | หมายเหตุ |
+| ---: | --- | --- | --- | :-: | --- |
 | 94 | Client Registration & Database Management | ลงทะเบียนลูกความใหม่ – กรอกข้อมูลพื้นฐานของลูกความ เช่น ชื่อ, ที่อยู่, เบอร์โทร, อีเมล, รหัสลูกความ, เลขบัตรประชาชน/เลขทะเบียนนิติบุคคล | Passed | 1 | — |
 | 95 | Client Registration & Database Management | Public URL ส่งให้ลูกค้ากรอก เพื่อให้ข้อมูลลูกความเข้ามาในระบบ | Passed | 1 | Ref. ข้อ 4.13 |
 | 96 | Client Registration & Database Management | แยกประเภทลูกความ (Client Categorization) – ลูกความส่วนบุคคล, ลูกค้านิติบุคคล, บริษัท, องค์กรภาครัฐ ฯลฯ | Passed | 1 | กำหนดประเภทลูกความ ไม่สามารถเพิ่มเติมได้ *ขอรายชื่อประเภทลูกความ* |
@@ -170,6 +263,14 @@ requirement ที่ระบุไว้แล้วแต่ยังต้�
 | 109 | Integrations Module | เชื่อมกับ Module 4: Case Management - ดึงข้อมูลลูกค้าจากคดีที่เกี่ยวข้อง | Passed | 1 | — |
 | 110 | Integrations Module | เชื่อมกับ Module 2: Billing & Finance Management - ติดตามค่าบริการและสถานะการชำระเงินของลูกค้า | Passed | 1 | — |
 | 111 | Integrations Module | เชื่อมกับ Module 3: Time Tracking & Timesheets - ตรวจสอบชั่วโมงการทำงานของทนายที่ให้บริการลูกค้า | Passed | 1 | — |
+
+</details>
+
+<details>
+<summary>6. การจัดการเวลาและตารางนัดหมาย (Calendar & Scheduling) (17 ข้อ)</summary>
+
+| แถว | หัวข้อ | Requirement | สถานะ | รอบ | หมายเหตุ |
+| ---: | --- | --- | --- | :-: | --- |
 | 113 | Appointment Scheduling & Management | สร้างตารางนัดหมายอัตโนมัติ โดยเลือกประเภทของงาน เช่น การประชุม, การขึ้นศาล, การยื่นเอกสาร ฯลฯ | Passed | 1 | — |
 | 114 | Appointment Scheduling & Management | ตั้งค่ากำหนดการนัดหมายเป็นประจำ (Recurring Appointments) – ตั้งค่านัดหมายรายวัน, รายสัปดาห์, รายเดือน (เช่น weekly meeting) | Passed | 1 | — |
 | 115 | Appointment Scheduling & Management | แนบลูกความและคดีที่เกี่ยวข้องกับนัดหมาย – เชื่อมโยงกับข้อมูลลูกค้าและคดีเพื่อให้ค้นหาง่ายขึ้น | Passed | 1 | — |
@@ -187,6 +288,14 @@ requirement ที่ระบุไว้แล้วแต่ยังต้�
 | 127 | Integrations Module | เชื่อมกับ Module 4: Case Management – ดึงข้อมูลคดีมาแสดงในปฏิทินนัดหมาย | Passed | 2 | — |
 | 128 | Integrations Module | เชื่อมกับ Module 2: Billing Management – สร้างรายการเรียกเก็บเงินอัตโนมัติสำหรับการนัดหมายแบบมีค่าใช้จ่าย | Passed | 2 | — |
 | 129 | Integrations Module | เชื่อมกับ Module 3: Time Tracking & Timesheets – บันทึกเวลาทำงานอัตโนมัติจากตารางนัดหมาย | Passed | 2 | — |
+
+</details>
+
+<details>
+<summary>7. การบริหารจัดการงานและทีม (Task & Team Management) (14 ข้อ)</summary>
+
+| แถว | หัวข้อ | Requirement | สถานะ | รอบ | หมายเหตุ |
+| ---: | --- | --- | --- | :-: | --- |
 | 131 | Task Creation & Management | สร้างงานใหม่ได้ง่ายและรวดเร็ว – กำหนดชื่อ, รายละเอียด, วันที่เริ่มต้น/สิ้นสุด | Passed | 1 | — |
 | 132 | Task Creation & Management | กำหนดประเภทของงาน (Task Categorization) – งานด้านกฎหมาย, งานบริหาร, งานการเงิน ฯลฯ | Passed | 1 | มี Default งานเริ่มต้น, สามารถเพิ่มเติมเองได้? |
 | 133 | Task Creation & Management | เชื่อมโยงงานกับคดีและลูกค้า (Case & Client Association) – สามารถดูว่างานนี้เกี่ยวข้องกับคดีใดหรือลูกค้าคนไหน | Passed | 1 | — |
@@ -201,6 +310,14 @@ requirement ที่ระบุไว้แล้วแต่ยังต้�
 | 142 | Integrations Module | เชื่อมกับ Module 4: Case Management – ให้แต่ละงานเชื่อมโยงกับคดีที่เกี่ยวข้อง | Passed | 1 | — |
 | 143 | Integrations Module | เชื่อมกับ Module 3: Time Tracking & Timesheets – คำนวณเวลาที่ใช้ในแต่ละงานโดยอัตโนมัติ | Passed | 1 | — |
 | 144 | Integrations Module | เชื่อมกับ Module 2: Billing Management – แปลงงานที่ทำเสร็จเป็นรายการค่าบริการได้ | Passed | 1 | — |
+
+</details>
+
+<details>
+<summary>8. จัดเก็บและจัดการเอกสารทางกฎหมาย (Document Management) (19 ข้อ)</summary>
+
+| แถว | หัวข้อ | Requirement | สถานะ | รอบ | หมายเหตุ |
+| ---: | --- | --- | --- | :-: | --- |
 | 146 | Document Storage & Organization | อัปโหลดเอกสารได้หลายประเภท – รองรับไฟล์ PDF, Word, Excel, รูปภาพ และอื่น ๆ | Passed | 1 | — |
 | 147 | Document Storage & Organization | ระบบจัดหมวดหมู่เอกสาร (Document Categorization) – จัดกลุ่มเอกสารตามประเภท เช่น สัญญา, คำฟ้อง, บันทึกการประชุม | Passed | 1 | — |
 | 148 | Document Storage & Organization | แท็ก (Tags) – เพิ่มแท็กเพื่อให้ค้นหาเอกสารได้เร็วขึ้น | Passed | 1 | สามารถเพิ่มเองได้ในตั้งค่า |
@@ -220,6 +337,14 @@ requirement ที่ระบุไว้แล้วแต่ยังต้�
 | 162 | Backup & Compliance | สำรองข้อมูลอัตโนมัติ (Automated Backups) – ป้องกันข้อมูลสูญหาย | Passed | 1 | — |
 | 163 | Backup & Compliance | การเข้ารหัสเอกสาร (Document Encryption) – ป้องกันการเข้าถึงโดยไม่ได้รับอนุญาต | Passed | 1 | — |
 | 164 | Backup & Compliance | รองรับมาตรฐานความปลอดภัย (Compliance Standards) – เช่น GDPR/PDPA, ISO 27001->OWASP | Passed | 1 | — |
+
+</details>
+
+<details>
+<summary>9. การรักษาความปลอดภัย (Security & Compliance) (17 ข้อ)</summary>
+
+| แถว | หัวข้อ | Requirement | สถานะ | รอบ | หมายเหตุ |
+| ---: | --- | --- | --- | :-: | --- |
 | 166 | Data Security | การเข้ารหัสข้อมูล (Data Encryption) – ข้อมูลทั้งหมดในระบบจะได้รับการเข้ารหัสทั้งในระหว่างการส่งข้อมูลและในขณะเก็บข้อมูล | Waiting to Confirm | 2 | อาจจะกระทบ Flow |
 | 167 | Data Security | การเข้ารหัสเอกสาร (Document Encryption) – เอกสารที่สำคัญและมีความลับจะถูกเข้ารหัสเพื่อป้องกันการเข้าถึงโดยไม่ได้รับอนุญาต | Waiting to Confirm | 2 | อาจจะกระทบ Flow |
 | 168 | Data Security | การจัดการรหัสผ่าน (Password Management) – การบังคับใช้การตั้งรหัสผ่านที่แข็งแกร่ง และการเปลี่ยนรหัสผ่านอัตโนมัติ | Waiting to Confirm | 2 | — |
@@ -237,6 +362,14 @@ requirement ที่ระบุไว้แล้วแต่ยังต้�
 | 180 | Backup & Data Recovery | การจัดการการกู้คืนข้อมูล (Data Recovery Management) – สามารถกู้คืนข้อมูลในกรณีที่เกิดเหตุการณ์ไม่คาดคิด เช่น การโจมตีจากแฮกเกอร์ หรือข้อมูลสูญหาย | Waiting to Confirm | 2 | — |
 | 181 | Backup & Data Recovery | การทดสอบการกู้คืนข้อมูล (Backup Testing) – ทดสอบการกู้คืนข้อมูลเพื่อให้แน่ใจว่าแผนการกู้คืนทำงานได้อย่างมีประสิทธิภาพ | Waiting to Confirm | 2 | — |
 | 182 | Security Audits & Vulnerability Scanning | การตรวจสอบความปลอดภัยภายในระบบ (Internal Security Audits) – ทดสอบความปลอดภัยของระบบอย่างสม่ำเสมอ | Waiting to Confirm | 2 | — |
+
+</details>
+
+<details>
+<summary>10. การติดต่อและสื่อสาร (Communication Module) (9 ข้อ)</summary>
+
+| แถว | หัวข้อ | Requirement | สถานะ | รอบ | หมายเหตุ |
+| ---: | --- | --- | --- | :-: | --- |
 | 184 | Email & Notifications | ส่งและรับอีเมลผ่านระบบ (Email Integration) – เชื่อมต่ออีเมลกับคดีและลูกค้า | Passed | 1 | รับอีเมลไม่ได้ |
 | 185 | Email & Notifications | แจ้งเตือนอัตโนมัติเมื่อมีข้อความใหม่ (Automated Notifications) – ผ่านอีเมล, ระบบ, หรือ LINE | Passed | 1 | — |
 | 186 | Email & Notifications | ระบบแจ้งเตือนคดีสำคัญ (Case Alerts) – แจ้งเตือนกำหนดส่งเอกสาร นัดหมายศาล ฯลฯ | Passed | 1 | — |

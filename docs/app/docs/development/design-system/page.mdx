@@ -1,0 +1,73 @@
+---
+title: Design System
+description: มาตรฐานสีและ token สำหรับงานออกแบบและพัฒนา MatterSolv
+---
+
+# Design System
+
+หน้านี้เป็นแหล่งอ้างอิงกลางของสี MatterSolv สำหรับทีม Product, Design และ
+Development ทุกหน้าจอใหม่และงานแก้ไขที่เกี่ยวข้องต้องใช้ token ที่กำหนดไว้
+แทนการใส่รหัสสีโดยตรงใน component หรือ stylesheet
+
+## Brand palette
+
+| Token | สี | บทบาทหลัก |
+| --- | --- | --- |
+| `brand-navy` | `#0C1C3C` | สีเข้มของแบรนด์ ใช้กับ header, navigation, ข้อความหรือพื้นผิวที่ต้องการน้ำหนักสูง |
+| `brand-primary` | `#1464EC` | สีหลักสำหรับ action สำคัญ, ปุ่มหลัก, link, active state และ focus |
+| `brand-accent` | `#3CC4EB` | สีเน้นหรือสีสนับสนุนสำหรับข้อมูลประกอบ, highlight และ decorative element |
+
+## Frontend tokens
+
+ใน frontend ให้ประกาศและใช้สีผ่าน `src/styles/index.css` เท่านั้น โดยเรียกใน
+Tailwind เป็น `bg-brand-primary`, `text-brand-navy` หรือ `border-brand-accent`
+
+| Token | ค่า | การใช้งาน |
+| --- | --- | --- |
+| `brand-50` | `#E8F0FF` | พื้นหลังอ่อนของสถานะ active หรือ selected |
+| `brand-400` | `#3CC4EB` | accent, disabled state และข้อความบนพื้นหลังเข้ม |
+| `brand-500` | `#1464EC` | action และ interactive state มาตรฐาน |
+| `brand-600` | `#0C1C3C` | hover หรือ active state ที่ต้องการ contrast สูง |
+
+## Dashboard launcher accents
+
+สีชุดนี้ใช้กับ icon ของ module launcher บน Dashboard ตามลำดับที่กำหนดเท่านั้น
+เพื่อให้สีสลับกันแบบหน้า File Manager ของ admin template สีไม่ได้สื่อถึงสถานะ
+permission หรือความพร้อมใช้งานของ module
+
+| Token | ค่า | บทบาท |
+| --- | --- | --- |
+| `brand-500` | `#1464EC` | primary blue ของลำดับ icon Dashboard |
+| `success-500` | `#12B76A` | success green ของลำดับ icon Dashboard; ใช้เป็น semantic success ได้ตามปกติ |
+| `purple-500` | `#7A5AF8` | decorative accent ของ icon Dashboard |
+| `orange-500` | `#FB6514` | decorative accent ของ icon Dashboard |
+| `warning-500` | `#F79009` | warning yellow ของลำดับ icon Dashboard; ใช้เป็น semantic warning ได้ตามปกติ |
+| `pink-500` | `#EE46BC` | decorative accent ของ icon Dashboard |
+
+ลำดับต้องเป็น `brand`, `success`, `purple`, `orange`, `warning`, `pink` และวนซ้ำ
+เมื่อมี module ถัดไป พื้น icon ใช้ token `500/[0.08]` พร้อมสี icon `500` ใน light
+mode และใช้พื้น `500/10` ใน dark mode
+
+ตัวอย่าง:
+
+```tsx
+<button className="bg-brand-primary text-white hover:bg-brand-600">
+  บันทึก
+</button>
+```
+
+## Rules
+
+- ห้ามใช้สีหลักเดิมหรือใส่รหัส `#0C1C3C`, `#1464EC`, `#3CC4EB` ซ้ำใน component
+  โดยตรง ให้ใช้ token ที่ตรงกับบทบาท
+- หาก component CSS ไม่ใช้ Tailwind ให้ใช้ CSS variable เช่น
+  `var(--color-brand-primary)`
+- `brand-accent` ไม่ใช้แทนสีของ destructive action, error, warning หรือ success;
+  สถานะเหล่านี้ต้องมี semantic token ของตนเอง
+- เมื่อจำเป็นต้องเพิ่มเฉดสีหรือ semantic token ใหม่ ให้บันทึกเหตุผล, ค่า และ
+  บทบาทในหน้านี้พร้อมกับการแก้ `src/styles/index.css`
+
+## Source of truth
+
+- Frontend implementation: `frontend/src/styles/index.css`
+- Team reference: หน้านี้

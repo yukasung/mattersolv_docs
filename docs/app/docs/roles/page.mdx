@@ -1,38 +1,113 @@
 # Roles
 
-Roles ใช้กำหนดว่าสมาชิกแต่ละคนเข้าถึงข้อมูลและทำอะไรในสำนักงานได้บ้าง
-โดยแยกออกจากแผนราคาอย่างชัดเจน
+Roles ใช้กำหนดว่าสมาชิกแต่ละคน **ทำอะไรได้** ในสำนักงาน ส่วน Data Scope
+กำหนดว่าสมาชิกทำรายการนั้นกับ **ข้อมูลใดได้บ้าง** ทั้งสองอย่างเป็นคนละหน้าที่
+และต้องผ่านเงื่อนไขของแผนกับ workflow เพิ่มเติม
+
+สิทธิ์ผูกกับบัญชี User และสมาชิกภาพของสำนักงาน ไม่ได้ผูกกับ Employee
+หรือตำแหน่งงานโดยอัตโนมัติ Employee เป็นข้อมูลบุคลากรเท่านั้น หาก Employee
+ไม่มี User ที่เชื่อมอยู่ บุคคลนั้นจะไม่มีบัญชีสำหรับเข้าสู่ระบบ
+
+## ภาพจำของระบบสิทธิ์
+
+<div aria-label="ลำดับการตรวจสิทธิ์ของสมาชิก">
+
+```mermaid
+flowchart TB
+  Member["User / Office Member"]
+  Group["Role / Group<br/>กำหนดว่าทำอะไรได้"]
+  Permission["Permission<br/>ดู เพิ่ม แก้ไข ลบ หรืออนุมัติ"]
+  Plan["Plan<br/>เปิดโมดูลหรือฟีเจอร์"]
+  Scope["Data Scope<br/>จำกัด record ที่เข้าถึงได้"]
+  Workflow["Workflow<br/>สถานะรองรับ action"]
+  Decision{"ผ่านทุกเงื่อนไข?"}
+  Allow["อนุญาต"]
+  Deny["ปฏิเสธ"]
+
+  Member --> Group --> Permission --> Decision
+  Plan --> Decision
+  Scope --> Decision
+  Workflow --> Decision
+  Decision -->|ผ่าน| Allow
+  Decision -->|ไม่ผ่าน| Deny
+```
+
+</div>
+
+สมาชิกที่มีหลาย Role จะได้รับ Permission จากทุก Group รวมกันแบบ additive
+หากไม่มี Group ใดให้ Permission ที่ต้องใช้ ระบบต้องปฏิเสธเป็นค่าเริ่มต้น
+
+## ส่วนประกอบของระบบสิทธิ์ MatterSolv
+
+MatterSolv แบ่งหน้าที่ของระบบสิทธิ์ออกเป็นส่วนที่ตรวจสอบและทดสอบแยกกันได้:
+
+| ส่วนประกอบ | Implementation | หน้าที่ |
+| --- | --- | --- |
+| บัญชีและสมาชิกภาพ | Django User + Office Member | บัญชีที่เข้าสู่ระบบและรับ Role ของสำนักงาน |
+| บทบาท | Office Role + Django Group | รวม Permission ตามหน้าที่งาน |
+| สิทธิ์ดำเนินการ | Django CRUD และ custom Permission | กำหนดว่าอ่าน เพิ่ม แก้ไข ลบ หรือทำ action ใดได้ |
+| ขอบเขตข้อมูล | Data Scope ใน authorization service | จำกัด record ตามสำนักงาน ทีม คดี หรือผู้รับผิดชอบ |
+| การแสดงผล | React permission gate | ซ่อนหรือแสดงเมนูและปุ่มเพื่อ UX เท่านั้น |
+| โมดูลตามแผน | Plan entitlement | กำหนดว่า Workspace เปิดใช้โมดูลหรือฟีเจอร์นั้นหรือไม่ |
+
+### ตัวอย่าง Employee และ User
+
+สมชายอาจมี Employee record สำหรับเก็บแผนก ตำแหน่ง และข้อมูลบุคลากร
+แต่สิทธิ์ใช้งานมาจาก User ที่เชื่อมกับ Employee:
+
+<div aria-label="ความสัมพันธ์ระหว่าง Employee User และสิทธิ์">
+
+```mermaid
+flowchart LR
+  Employee["Employee<br/>ข้อมูลบุคลากร"]
+  NoLogin["ไม่มี User<br/>เข้าสู่ระบบไม่ได้"]
+  User["User<br/>บัญชีเข้าสู่ระบบ"]
+  Groups["Roles / Groups"]
+  Permissions["Permissions"]
+
+  Employee -. "ยังไม่เชื่อม" .-> NoLogin
+  Employee -. "linked user" .-> User
+  User --> Groups --> Permissions
+```
+
+</div>
+
+การเปลี่ยนตำแหน่ง Employee เป็น “HR Manager” ไม่ให้สิทธิ์เพิ่มเอง ต้องมอบหมาย
+Role/Group ให้ User อย่างชัดเจน
 
 ## Django Group Contract
 
 บทบาทที่สำนักงานใช้งานจริงหนึ่งรายการเท่ากับ Django `Group` หนึ่งรายการ
+หน้าจออาจใช้คำว่า Access Profile แต่หมายถึง Role/Group contract เดียวกัน
 และรายการสิทธิ์ของบทบาทเท่ากับความสัมพันธ์ `Group.permissions` ระบบใช้
 Django `Permission` เดิมทั้งสิทธิ์มาตรฐานและสิทธิ์พิเศษ โดยไม่ปรับแก้
 `django.contrib.auth` รายละเอียด codename และเงื่อนไข scope อยู่ใน
 [Permissions](/docs/roles/permissions)
 
-## Access Model
+### สมาชิกที่มีหลาย Role
 
-<div aria-label="Member access model">
+สมาชิกหนึ่งคนรับหลาย Role ได้เมื่อทำหน้าที่มากกว่าหนึ่งด้าน Permission จาก
+ทุก Group จะรวมกัน แต่ Data Scope และ Workflow ยังจำกัดการใช้งานตามเดิม
+
+<div aria-label="การรวมสิทธิ์จากหลายบทบาท">
 
 ```mermaid
-flowchart TB
-  Plan["Plan<br/>กำหนดโมดูลที่สำนักงานใช้ได้"]
-  Profile["บทบาท<br/>กำหนดสิทธิ์พื้นฐานของสมาชิก"]
-  Permission["Individual Permission<br/>ปรับสิทธิ์เฉพาะบุคคล"]
-  Scope["Data Scope<br/>กำหนดข้อมูลที่เข้าถึงได้"]
-  Access["Member Access"]
+flowchart LR
+  User["สมชาย"]
+  Lawyer["Lawyer Group"]
+  Manager["Manager Group"]
+  View["matters.view_matter"]
+  Change["matters.change_matter"]
+  Approve["matters.approve_matter"]
 
-  Plan --> Access
-  Profile --> Access
-  Permission --> Access
-  Scope --> Access
+  User --> Lawyer
+  User --> Manager
+  Lawyer --> View
+  Lawyer --> Change
+  Manager --> Approve
 ```
 
 </div>
-
-สมาชิกเข้าใช้งานได้เมื่อแผนเปิดโมดูลนั้น และสิทธิ์ของสมาชิกอนุญาตให้ดำเนินการ
-กับข้อมูลที่อยู่ในขอบเขตของตน
 
 ## บทบาทเริ่มต้น
 
@@ -101,8 +176,11 @@ flowchart TD
 - ผู้สมัครคนเดียวใช้สำนักงานเดียวกับบริษัทที่มีสมาชิกคนเดียว
 - ผู้ดูแลสำนักงานเลือกบทบาทให้สมาชิกแต่ละคน
 - สมาชิกหนึ่งคนมีได้มากกว่าหนึ่งบทบาทเมื่อมีหน้าที่หลายด้าน
-- ผู้ดูแลสำนักงานปรับสิทธิ์รายบุคคลเพิ่มเติมหรือลดจากค่าพื้นฐานได้
-  เมื่อใช้แผน PRO ขึ้นไป
+- กรณีสมาชิกต้องมี Permission แตกต่างจาก Role เดิม ให้สร้าง Role เพิ่มแล้ว
+  มอบหมายให้สมาชิก ไม่เพิ่มหรือลด CRUD Permission ที่ตัว User โดยตรง
+- ตั้งแต่แผน PRO ขึ้นไป ผู้ดูแลกำหนด Individual Data Scope เพิ่มเติมได้ เช่น
+  จำกัดตามทีม คดี เอกสาร หรือรายการที่ได้รับมอบหมาย Data Scope ไม่ให้
+  Permission ใหม่และไม่สามารถข้าม Plan หรือ Workflow
 - ตำแหน่งงานไม่ให้สิทธิ์โดยอัตโนมัติ ต้องเลือกตามหน้าที่จริง
 - การอนุมัติและข้อมูลสำคัญต้องกำหนดขอบเขตให้ชัดเจน
 - บทบาทของสำนักงานหนึ่งใช้ได้เฉพาะสมาชิกของสำนักงานนั้น
@@ -117,9 +195,9 @@ flowchart TD
 
 - แผนกำหนดว่าสำนักงานเปิดใช้โมดูลหรือฟีเจอร์ใด
 - บทบาทกำหนดว่าสมาชิกทำอะไรในโมดูลที่เปิดแล้วได้บ้าง และใช้ได้ทุกแผน
-- การปรับสิทธิ์รายบุคคลเพิ่มจากบทบาทเปิดใช้ตั้งแต่แผน PRO ขึ้นไป
+- การกำหนด Individual Data Scope เพิ่มเติมเปิดใช้ตั้งแต่แผน PRO ขึ้นไป
 - หากแผนไม่รองรับโมดูล สมาชิกจะเข้าโมดูลนั้นไม่ได้แม้มีสิทธิ์อยู่
-- การ Upgrade หรือ Downgrade ไม่เปลี่ยนบทบาทและสิทธิ์รายบุคคล
+- การ Upgrade หรือ Downgrade ไม่เปลี่ยนบทบาทหรือ Data Scope
   โดยอัตโนมัติ
 - เมื่อเปิดโมดูลใหม่ ผู้ดูแลสำนักงานควรตรวจสิทธิ์สมาชิกก่อนเริ่มใช้งาน
 

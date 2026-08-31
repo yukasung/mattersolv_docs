@@ -2,7 +2,7 @@
 
 หน้านี้แสดงฟีเจอร์ทั้งหมด 216 รายการใน 8 โมดูล เพื่อเปรียบเทียบว่าแต่ละแผน
 เปิดใช้งานรายการใด ตารางนี้ใช้สำหรับตรวจสอบแผนของ Workspace ส่วนการเข้าถึง
-ของสมาชิกกำหนดผ่าน Access Profile หรือสิทธิ์รายบุคคล
+ของสมาชิกกำหนด action ผ่าน Access Profile และจำกัด record ผ่าน Data Scope
 
 ## Status Guide
 
@@ -537,7 +537,7 @@ INTERFACE**
 | Feature                                                  | STANDARD | ESSENTIALS |   PRO    | ADVANCED | ENTERPRISE |
 | -------------------------------------------------------- | :------: | :--------: | :------: | :------: | :--------: |
 | การตั้งค่าการเข้าถึงตามบทบาท (Role-Based Access Control) | Baseline |  Baseline  | Baseline | Baseline |  Baseline  |
-| การกำหนดสิทธิ์เฉพาะบุคคล (Individual Permissions)        | Not Included |  Not Included  | Included | Included |  Included  |
+| การกำหนดขอบเขตข้อมูลเฉพาะบุคคล (Individual Data Scope; Requirement 171) | Not Included | Not Included | Included | Included | Included |
 
 **การตรวจสอบและติดตามกิจกรรม (AUDIT TRAIL & MONITORING)**
 
@@ -613,7 +613,7 @@ INTERFACE**
 - TBD ไม่ถือเป็น Included และห้ามเปิดใช้งานจนกว่าจะมีการอนุมัติ
 - Baseline ด้านความปลอดภัย การตรวจสอบ และการสำรองข้อมูลห้ามลดตามราคาแผน
 - การเปิดฟีเจอร์ไม่เปลี่ยนสิทธิ์สมาชิกโดยอัตโนมัติ Workspace Admin ยังคงกำหนด
-  Access Profile หรือสิทธิ์รายบุคคล
+  Access Profile และ Data Scope
 
 ## Related Documents
 

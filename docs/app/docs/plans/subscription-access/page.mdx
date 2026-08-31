@@ -69,17 +69,16 @@ User หนึ่งบัญชีมี Membership ได้หลายรา
 Manager ชุดเหล่านี้เป็นค่าเริ่มต้น ไม่ใช่ Role ที่บังคับทุกบริษัท
 และใช้ได้ทุกแผนเพราะการกำหนดสิทธิ์ตามบทบาทเป็นความสามารถพื้นฐานของระบบ
 
-**การปรับสิทธิ์รายบุคคลเพิ่มเติมจาก Access Profile เปิดใช้ตั้งแต่แผน PRO ขึ้นไป**
-โดย Admin กำหนดให้สมาชิกแต่ละคนได้ว่า
+Role/Group ใน Access Profile กำหนด action เช่น ดู เพิ่ม แก้ไข ลบ อนุมัติ
+หรือ Export และใช้ได้ทุกแผน หากสมาชิกต้องมี action ต่างจาก Role เดิม ให้ Admin
+สร้าง Role เพิ่มแล้วมอบหมาย ไม่แก้ CRUD permission ที่ User โดยตรง
 
-- เข้า Module ใดได้
-- ดูอย่างเดียวหรือสร้างและแก้ไขได้
-- อนุมัติ ลบ หรือ Export ได้หรือไม่
-- เข้าถึงข้อมูลของตนเอง งานที่ได้รับมอบหมาย ทีม หรือทั้ง Workspace
+**การกำหนด Individual Data Scope เพิ่มเติมเปิดใช้ตั้งแต่แผน PRO ขึ้นไป**
+โดย Admin จำกัดข้อมูลของสมาชิกตามทีม คดี เอกสาร หรือรายการที่ได้รับมอบหมาย
+Data Scope ไม่ให้ action ใหม่และไม่สามารถเปิด Module ที่ Subscription ไม่มี
 
-Workspace ที่ใช้แผน STANDARD หรือ ESSENTIALS กำหนดสิทธิ์ผ่าน Access Profile
-ได้อย่างเดียว หากต้องปรับสิทธิ์ต่างจาก Access Profile ต้องเปลี่ยนเป็นแผน PRO
-ขึ้นไป
+Workspace ที่ใช้แผน STANDARD หรือ ESSENTIALS ใช้ Role และ Scope พื้นฐานของระบบ
+ส่วน tenant isolation, Workspace filter และ default-deny บังคับใช้กับทุกแผนเสมอ
 
 Admin ไม่สามารถเปิด Module ที่ Subscription ไม่มี หรือให้สิทธิ์ข้าม Workspace
 

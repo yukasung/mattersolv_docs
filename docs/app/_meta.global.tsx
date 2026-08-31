@@ -22,7 +22,7 @@ export default {
       reference: { title: 'Reference', items: { 'menu-map': 'Application Menu Map', courts: 'Courts & Court Forms', requirements: 'Requirement Register' } },
       _technical: { type: 'separator', title: <Section>Technical</Section> },
       architecture: { title: 'Architecture', items: { index: 'Overview', 'technology-stack': 'Technology Stack', 'scalability-capacity': 'Scalability & Capacity' } },
-      development: { title: 'Development', items: { workflow: 'Development Workflow', rules: 'Development Rules' } },
+      development: { title: 'Development', items: { workflow: 'Development Workflow', rules: 'Development Rules', 'design-system': 'Design System' } },
       database: { title: 'Database' },
       api: { title: 'API' },
       questions: { title: 'Questions' }

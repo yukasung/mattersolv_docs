@@ -9,7 +9,7 @@
 
 1. บัญชีสมาชิกและสมาชิกภาพของสำนักงานยังใช้งานได้
 2. แผนของสำนักงานเปิดโมดูลหรือฟีเจอร์นั้น
-3. Django Group หรือสิทธิ์รายบุคคลมี permission ที่ต้องใช้
+3. อย่างน้อยหนึ่ง Django Group ของสมาชิกมี permission ที่ต้องใช้
 4. ข้อมูลอยู่ในสำนักงาน ทีม สำนวน หรือขอบเขตที่ได้รับมอบหมาย
 5. สถานะ workflow และระดับอนุมัติรองรับการดำเนินการ
 
@@ -24,6 +24,14 @@
 
 บทบาทหนึ่งรายการใน MatterSolv เท่ากับ Django `Group` หนึ่งรายการของสำนักงาน
 สมาชิกหนึ่งคนอยู่ได้หลาย Group และได้รับ permission จากทุก Group รวมกัน
+
+Role/Group เป็นแหล่ง CRUD และ custom permission หลัก ระบบไม่เพิ่มหรือลด
+permission เหล่านี้ที่ User รายบุคคล หากสมาชิกต้องมีสิทธิ์ต่างจาก Role เดิม
+ให้สร้าง Role ที่เหมาะสมแล้วมอบหมายเพิ่ม วิธีนี้ทำให้ตรวจสอบได้ว่าสิทธิ์มาจาก
+Group ใดอย่างชัดเจน
+
+Data Scope รายบุคคลไม่ใช่ permission override: Scope จำกัดว่า permission
+ที่มีอยู่แล้วใช้กับ record ใดได้ แต่ไม่สามารถสร้าง action ใหม่ให้สมาชิก
 
 ### สิทธิ์มาตรฐาน
 
@@ -110,15 +118,61 @@ Workflow ที่ไม่ใช่ CRUD ใช้ custom Django permissions �
 
 ## Data Scope and Workflow
 
-Backend ต้องตรวจ permission และเงื่อนไขธุรกิจร่วมกัน:
+Permission, Data Scope และ Workflow ตอบคนละคำถาม:
+
+| ชั้น | คำถาม | ตัวอย่าง |
+| --- | --- | --- |
+| Permission | สมาชิกทำ action นี้ได้หรือไม่ | `matters.change_matter` |
+| Data Scope | ทำ action กับ record นี้ได้หรือไม่ | อยู่ในทีมคดีหรือเป็นผู้รับผิดชอบ |
+| Workflow | สถานะปัจจุบันรองรับ action หรือไม่ | อนุมัติได้เฉพาะรายการที่ส่งตรวจแล้ว |
+
+Backend ต้องตรวจทุกชั้นร่วมกัน:
+
+<div aria-label="ลำดับการตรวจ Permission Data Scope และ Workflow">
+
+```mermaid
+flowchart TD
+  Request["สมชายขอแก้ไขคดี A"]
+  Permission{"มี<br/>matters.change_matter?"}
+  Scope{"คดี A อยู่ใน<br/>Data Scope?"}
+  Workflow{"สถานะคดี<br/>แก้ไขได้?"}
+  Allow["อนุญาต"]
+  Deny["ปฏิเสธ"]
+
+  Request --> Permission
+  Permission -->|ไม่มี| Deny
+  Permission -->|มี| Scope
+  Scope -->|ไม่อยู่| Deny
+  Scope -->|อยู่| Workflow
+  Workflow -->|ไม่ได้| Deny
+  Workflow -->|ได้| Allow
+```
+
+</div>
+
+เขียนเป็น authorization contract ได้ดังนี้:
 
 ```text
-allowed = has_office_perm(user, office, permission)
-  AND plan_allows(module)
-  AND object_is_in_office(object, user)
+allowed = active_account
+  AND active_office_membership
+  AND plan_allows_module
+  AND group_grants_permission
   AND data_scope_allows(user, object)
   AND workflow_allows(action, object.status)
 ```
+
+`group_grants_permission` ต้องคำนวณผ่าน
+`has_office_perm(user, office, permission)` และ office-scoped role assignment
+ไม่ใช้ชื่อ Role และไม่ใช้ `user.has_perm()` สำหรับสิทธิ์รายสำนักงาน
+
+Individual Data Scope ตั้งแต่แผน PRO ขึ้นไปใช้กำหนดขอบเขตตามสมาชิก ทีม คดี
+เอกสาร หรือรายการที่ได้รับมอบหมาย เป็นการนำ
+[Requirement 171](/docs/reference/requirements)
+“Individual Permissions” มาใช้ในความหมายเดียวกับ record-level access
+ไม่ใช่ CRUD allow/deny override ที่ User
+
+Tenant isolation, Workspace filter และกฎ default-deny เป็น security baseline
+ของทุกแผน ไม่ใช่ความสามารถที่ปิดได้ตามราคา
 
 - Lawyer และ Assistant เห็นข้อมูลตามสำนวน ทีม หรือรายการที่ได้รับมอบหมาย
 - Finance เห็นเฉพาะข้อมูลที่จำเป็นต่อ quotation, billing, payment และบัญชี
@@ -127,6 +181,13 @@ allowed = has_office_perm(user, office, permission)
 - Admin ตั้งค่าและตรวจสอบระบบ แต่ไม่ควรได้สิทธิ์เนื้อหางานกฎหมายทั้งหมดโดยค่าเริ่มต้น
 - การลบ ส่งออก อนุมัติ เปลี่ยนสิทธิ์ และแก้ข้อมูลการเงินต้องสร้าง audit event
 - กฎ deny by default: เมื่อไม่มี permission หรือ scope ที่ชัดเจนให้ปฏิเสธ
+
+## Frontend Gates
+
+React ใช้ permission ที่ Backend ส่งมาเพื่อซ่อนหรือแสดง route เมนู ปุ่ม และ field
+ให้ตรงกับสิทธิ์ของสมาชิก แต่ frontend gate เป็นเพียง UX control ผู้ใช้สามารถแก้
+JavaScript ใน browser ได้ Backend จึงต้องตรวจ Permission, Data Scope, Plan และ
+Workflow ซ้ำในทุก request รวมถึง bulk operation, export, report และ background job
 
 ## Frontend Fixture Scope
 
