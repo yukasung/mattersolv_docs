@@ -34,12 +34,61 @@ flowchart TD
 
 Employee record กับ User account เป็นคนละสิ่งกัน พนักงานหนึ่งคนมีทะเบียนบุคลากรได้
 แม้ยังไม่มีบัญชีเข้าใช้ระบบ ส่วนการเชิญเข้าใช้ การปิดบัญชี และการกำหนดนโยบาย Role
-หรือ Permission อยู่ภายใต้ [Administration](/docs/modules/administration)
+หรือ Permission อยู่ภายใต้ [User Accounts](/docs/modules/administration/user-accounts)
+
+## Workflow อีเมลพนักงานและบัญชีผู้ใช้
+
+MatterSolv แยกข้อมูลสำหรับเข้าสู่ระบบ การติดต่องาน และการติดต่อส่วนตัวออกจากกัน
+เพื่อให้แต่ละข้อมูลมีเจ้าของ วัตถุประสงค์ และ Permission ที่ชัดเจน แม้ค่าอีเมล
+สำหรับเข้าสู่ระบบกับอีเมลที่ทำงานอาจเหมือนกันในวันแรก แต่ระบบต้องเก็บเป็น
+คนละข้อมูลและเปลี่ยนแปลงแยกกัน
+
+| ข้อมูล | เจ้าของ | ใช้ทำอะไร | กฎสำคัญ |
+| --- | --- | --- | --- |
+| Login Email | User account | เข้าสู่ระบบ รับคำเชิญ และยืนยันความเป็นเจ้าของบัญชี | ต้องเป็นอีเมลที่ถูกต้องและไม่ซ้ำ ใช้เฉพาะผู้ที่ได้รับสิทธิ์เข้า Workspace |
+| Work Email | Employee record | ติดต่อเรื่องงานและแสดงในข้อมูลบุคลากรของสำนักงาน | ใช้เป็นค่าเริ่มต้นของ Login Email ได้ แต่ไม่ใช่ตัวเชื่อมบัญชี |
+| Private Email | Employee record | ติดต่อส่วนตัวและใช้ในกระบวนการ HR ที่ได้รับอนุญาต | เป็นข้อมูลอ่อนไหว ไม่ใช้เข้าสู่ระบบหรือสื่อสารงานทั่วไป |
+
+<div className="employees-workflow-diagram" aria-label="Employee email and user access workflow diagram">
+
+```mermaid
+flowchart TD
+  A["สร้าง Employee record"] --> B["บันทึก Work Email<br/>และ Private Email ตามสิทธิ์"]
+  B --> C{"พนักงานต้องเข้าใช้ Workspace หรือไม่"}
+  C -->|ไม่ต้อง| D["เก็บเฉพาะ Employee record<br/>ไม่มี User account"]
+  C -->|ต้อง| E{"มี User account อยู่แล้วหรือไม่"}
+  E -->|มี| F["เลือก User ที่ถูกต้อง<br/>และเชื่อมด้วย User ID"]
+  E -->|ไม่มี| G["กำหนด Login Email ที่ไม่ซ้ำ<br/>โดยเสนอ Work Email เป็นค่าเริ่มต้น"]
+  G --> H["ส่งคำเชิญไปยัง Login Email<br/>เพื่อยืนยันและตั้งรหัสผ่าน"]
+  H --> F
+  F --> I["สร้าง Membership<br/>และกำหนด Role / Permission"]
+  I --> J["เปิดใช้บัญชีและเข้า Workspace"]
+```
+
+</div>
+
+### กฎการใช้งาน
+
+1. **สร้าง Employee ก่อน:** สำนักงานสร้างทะเบียนบุคลากรได้โดยไม่ต้องสร้างบัญชีผู้ใช้
+   เหมาะกับบุคลากรที่ยังไม่เริ่มงานหรือไม่จำเป็นต้องเข้า Workspace
+2. **เก็บอีเมลตามวัตถุประสงค์:** Work Email ใช้ติดต่องาน ส่วน Private Email
+   ใช้เฉพาะงานบุคคลและต้องถูกจำกัดด้วย Field-level Permission
+3. **สร้างหรือเชื่อม User เมื่อจำเป็น:** หากพนักงานต้องเข้าใช้ระบบ ผู้ดูแลเลือก
+   User เดิมหรือสร้าง User ใหม่ แล้วเชื่อม Employee กับ User ด้วย ID ที่คงที่
+   ไม่เชื่อมบัญชีด้วยการเทียบข้อความอีเมล
+4. **เสนอ Work Email เป็นค่าเริ่มต้น:** เมื่อสร้าง User ใหม่ ระบบเสนอ Work Email
+   เป็น Login Email เพื่อลดการกรอกซ้ำ แต่ผู้ดูแลต้องตรวจความถูกต้องและความไม่ซ้ำ
+   ก่อนส่งคำเชิญ
+5. **เปลี่ยนข้อมูลแยกกัน:** การเปลี่ยน Work Email หรือ Private Email ไม่เปลี่ยน
+   Login Email โดยอัตโนมัติ การเปลี่ยน Login Email ต้องทำผ่านการจัดการบัญชีผู้ใช้
+   และไม่แก้ข้อมูล HR ที่ไม่เกี่ยวข้อง
+6. **ปิดสถานะแยกกัน:** การ Deactivate Employee และการปิด User account เป็น
+   คนละ action เพื่อรักษาประวัติบุคลากร งาน และ Audit Log โดยไม่เปิดสิทธิ์เข้าใช้ต่อ
 
 ## ความสัมพันธ์กับ System Settings และ Users
 
 ผู้ดูแลสำนักงานดูแลข้อมูลบุคลากรจาก Employees และดูแลการเข้าใช้ระบบจาก
-[Administration](/docs/modules/administration) โดยแยกการตัดสินใจออกจากกัน:
+[User Accounts](/docs/modules/administration/user-accounts) โดยแยกการตัดสินใจออกจากกัน:
 
 | ข้อมูล | เจ้าของ | ใช้ทำอะไร |
 | --- | --- | --- |
@@ -66,7 +115,7 @@ Employee record กับ User account เป็นคนละสิ่งก�
 ### โปรไฟล์พนักงาน
 
 - เก็บรูปโปรไฟล์ แผนก คำนำหน้า ชื่อ นามสกุล และหลายตำแหน่งภายในสำนักงาน
-- เก็บข้อมูลติดต่อ เช่น โทรศัพท์ อีเมล LINE ID และ WeChat
+- เก็บข้อมูลติดต่อ เช่น โทรศัพท์, Work Email, Private Email, LINE ID และ WeChat
 - เก็บที่อยู่ตามเอกสารประจำตัวและที่อยู่ติดต่อ โดยเลือกใช้ที่อยู่เดียวกันได้
 - เก็บภาษา ทักษะ ความเชี่ยวชาญ หมายเหตุ และไฟล์แนบที่เกี่ยวข้อง
 - ข้อมูลอ่อนไหว เช่น เลขประจำตัว หนังสือเดินทาง ที่อยู่ และเอกสารใบอนุญาต
@@ -144,7 +193,7 @@ Employees เป็นเจ้าของทะเบียนและโป�
 ## Related Documents
 
 - [Human Resources](/docs/modules/hr) — เงินเดือนและการลาที่อ้างอิงทะเบียนพนักงาน
-- [Administration](/docs/modules/administration) — บัญชีผู้ใช้ Role และ Permission
+- [User Accounts](/docs/modules/administration/user-accounts) — บัญชีผู้ใช้ Role และ Permission
 - [Matters](/docs/modules/matters) — ทีมผู้รับผิดชอบและ Timesheet ของงานกฎหมาย
 - [Reports](/docs/modules/reports) — รายงาน Workload และ Performance
 - [Permissions](/docs/roles/permissions) — หลักการกำหนดสิทธิ์และขอบเขตข้อมูล

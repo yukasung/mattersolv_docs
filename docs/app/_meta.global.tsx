@@ -18,7 +18,7 @@ export default {
       workflow: 'Business Workflow',
       plans: { title: 'Plans & Pricing', items: { index: 'Overview', pricing: 'Pricing', 'subscription-access': 'Signup & Access', 'feature-comparison': 'Feature Comparison', 'plan-rules': 'Plan Rules' } },
       roles: { title: 'Roles', items: { index: 'Overview', roles: 'User Roles', permissions: 'Permissions' } },
-      modules: { title: 'Modules', items: { index: 'Overview', clients: 'Clients', matters: 'Matters', documents: 'Documents', quotations: 'Quotations', calendar: 'Calendar', tasks: 'Tasks', billing: 'Billing', finance: 'Finance', employees: 'Employees', hr: 'Human Resources', reports: 'Reports', administration: 'Administration' } },
+      modules: { title: 'Modules', items: { index: 'Overview', clients: 'Clients', matters: 'Matters', documents: 'Documents', quotations: 'Quotations', calendar: 'Calendar', tasks: 'Tasks', billing: 'Billing', finance: 'Finance', employees: 'Employees', hr: 'Human Resources', reports: 'Reports', administration: { title: 'Administration', items: { index: 'Overview', 'user-accounts': 'User Accounts' } } } },
       reference: { title: 'Reference', items: { 'menu-map': 'Application Menu Map', courts: 'Courts & Court Forms', requirements: 'Requirement Register' } },
       _technical: { type: 'separator', title: <Section>Technical</Section> },
       architecture: { title: 'Architecture', items: { index: 'Overview', 'technology-stack': 'Technology Stack', 'scalability-capacity': 'Scalability & Capacity' } },
