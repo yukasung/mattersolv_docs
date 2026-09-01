@@ -1,0 +1,97 @@
+---
+title: Component Library
+description: แนวทางเชื่อมต่อ shared component library กับ MatterSolv frontend
+---
+
+# Component Library
+
+MatterSolv frontend ใช้ `@yukasung/react-components` สำหรับ UI control เฉพาะทาง
+ที่ออกแบบให้นำไปใช้ข้าม application ได้ ปัจจุบัน frontend อ้าง package จาก
+sibling checkout ด้วย `file:../components` เป็นการชั่วคราว เนื่องจาก release
+ล่าสุดยังไม่มี `InputDateTime`
+
+การอ้างแบบ local package เป็น dependency ตอน build ไม่ใช่ service ที่ต้อง deploy
+แยกต่างหาก เมื่อ Vite build frontend แล้ว JavaScript และ CSS ที่ถูก import จะรวมอยู่
+ใน frontend artifact
+
+## Component ownership
+
+| ตำแหน่ง | ใช้สำหรับ | ตัวอย่าง |
+| --- | --- | --- |
+| `frontend/src/shared/ui/` | UI กลางที่ MatterSolv เป็นเจ้าของ | `Input`, `SearchInput`, `EmailField` |
+| Frontend module เจ้าของงาน | UI ที่รู้จัก business domain ของ MatterSolv | Client form, Employee form |
+| `components/src/components/` | Control เฉพาะทางที่ใช้ข้าม application | `InputDate`, `InputDateTime`, `InputNumber`, `InputTag`, `InputTime` |
+
+ห้ามนำ permission, translation, API logic หรือ business rule ของ MatterSolv ไปไว้
+ใน component library
+
+## Required workspace layout
+
+เครื่อง Developer และ CI ต้องมีทั้งสอง checkout เป็น sibling folders:
+
+```text
+Projects/
+├── components/
+└── frontend/
+```
+
+CI ต้องกำหนด revision ของ `components` ที่ทำงานร่วมกับ frontend อย่างชัดเจน
+เพื่อป้องกันการ build ด้วย component library คนละ revision
+
+## Local update workflow
+
+หลังแก้ component library ให้ build library ก่อน แล้ว force-refresh local package
+ใน frontend:
+
+```bash
+cd components
+npm run build
+
+cd ../frontend
+corepack pnpm install --force
+corepack pnpm test --run
+corepack pnpm typecheck
+corepack pnpm lint
+corepack pnpm build
+```
+
+การ run `npm run build` ใน `components` เพียงอย่างเดียวไม่พอ เพราะ pnpm copy
+`file:` dependency เข้า package store ของ frontend
+
+## CI/CD and deployment
+
+Pipeline ต้องทำงานตามลำดับต่อไปนี้:
+
+1. Checkout `components` และ `frontend` เป็น sibling folders ด้วย revision ที่รองรับกัน
+2. Run `npm ci` และ `npm run build` ใน `components`
+3. Run `corepack pnpm install --frozen-lockfile` ใน `frontend`
+4. Run test, typecheck, lint และ production build ของ frontend
+5. Deploy เฉพาะ `frontend/dist/`
+
+Production host ไม่ต้องมี folder `components`, `components/dist/` หรือ component
+library deployment แยกต่างหาก
+
+## Published-package migration
+
+`file:../components` เป็นสถานะชั่วคราว เมื่อ published release มี component ที่
+frontend ต้องใช้ครบแล้ว ให้ดำเนินการดังนี้:
+
+1. เปลี่ยน dependency ใน `frontend/package.json` เป็น package version แบบ exact
+2. Run `corepack pnpm install` และ commit lockfile ที่เปลี่ยน
+3. Run frontend verification suite ทั้งหมด
+4. นำ sibling checkout และ component build steps ออกจาก CI
+
+วิธีนี้ทำให้ build reproducible และ frontend CI ไม่ต้องพึ่ง sibling repository
+
+## Source of truth
+
+คำสั่งปฏิบัติงานและ troubleshooting ฉบับเต็มอยู่ที่
+`frontend/docs/development/component-library-integration.md` หากขั้นตอน build หรือ
+dependency เปลี่ยน ต้องแก้ runbook ดังกล่าวก่อนและปรับบทสรุปหน้านี้ให้ตรงกัน
+
+## Related documents
+
+- [Technology Stack](/docs/architecture/technology-stack)
+- [Development Workflow](/docs/development/workflow)
+- [Development Rules](/docs/development/rules)
+- [Design System](/docs/development/design-system)
