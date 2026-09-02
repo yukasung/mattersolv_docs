@@ -10,6 +10,9 @@ Authentication, Permission และกฎใน Development Rules
 - ทุกตารางที่เป็นของบริษัทต้องมี `workspace_id` และ foreign key ที่ถูกต้อง
 - เงิน จำนวน เวลา สถานะ และข้อมูลที่ใช้อนุมัติต้องใช้ชนิดข้อมูลกับ constraint
   ที่ชัดเจน
+- ใช้ `VARCHAR(n)` เมื่อมีเพดานจาก requirement, frontend หรือมาตรฐานภายนอก
+  ที่ยืนยันได้ เช่น login email, country/currency code, employee input และที่อยู่
+  ส่วนข้อความที่ไม่มีเพดานชัดเจนให้ใช้ `TEXT` โดยไม่กำหนด `VARCHAR(255)` ขึ้นเอง
 - เอกสารจริงเก็บใน Cloud Storage ส่วน metadata, version และ permission เก็บใน
   PostgreSQL
 - การเปลี่ยนแปลงข้อมูลสำคัญต้องสร้าง audit record ที่แก้ย้อนหลังไม่ได้

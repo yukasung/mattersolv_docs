@@ -83,14 +83,15 @@
         {
           "id": "18ZZaAFjv3PULcbpDQcig",
           "name": "country_code",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "TH",
           "check": "char_length(country_code) = 2",
-          "comment": ""
+          "comment": "",
+          "size": 2
         },
         {
           "id": "TO0drMS55_5Rt20jOebKq",
@@ -390,14 +391,15 @@
         {
           "id": "XAx0hBf_rC-1dHiYpoxzR",
           "name": "invited_email",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "",
           "check": "invited_email = lower(btrim(invited_email)) AND char_length(invited_email) <= 150",
-          "comment": ""
+          "comment": "",
+          "size": 150
         },
         {
           "id": "mz1JlV3nUg5VQbpS61rjt",
@@ -942,14 +944,15 @@
         {
           "id": "3szAe5wQBZw8fXiBhvekF",
           "name": "employee_number",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 50
         },
         {
           "id": "kMTPxVQikTHJ3Tpsoxmka",
@@ -978,74 +981,80 @@
         {
           "id": "tRBTeOtZ-wpDXdEWM35Lm",
           "name": "prefix_other",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 50
         },
         {
           "id": "AXM_hIp2I2NxohAzUY-Sj",
           "name": "first_name",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 100
         },
         {
           "id": "6Cqa6k_UkO83TaRdtDIPO",
           "name": "last_name",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 100
         },
         {
           "id": "fjCH1dM5BbBvOSKNmCE50",
           "name": "work_email",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 254
         },
         {
           "id": "792xti_-o5UyZULhRQ-tJ",
           "name": "work_phone",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 16
         },
         {
           "id": "jSMruAvYeyFQQQ7mBQiYt",
           "name": "work_mobile",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 16
         },
         {
           "id": "atjiuk_IBrQfXsI37snzt",
@@ -1086,26 +1095,28 @@
         {
           "id": "QVNXLOnx8RQA8szL9mm93",
           "name": "private_email",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 254
         },
         {
           "id": "39USlHnpqI476We3Oaovq",
           "name": "private_phone",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 16
         },
         {
           "id": "bS3zdzLWKO_qpyywxubxp",
@@ -1122,50 +1133,54 @@
         {
           "id": "Lp9GKv-57wM6YHysxzJoI",
           "name": "identity_number",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 13
         },
         {
           "id": "CJaJRkeXWWK44cAh7YkAh",
           "name": "language_proficiency",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 200
         },
         {
           "id": "HeGzkn3LiSTgXnodc542p",
           "name": "line_id",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 20
         },
         {
           "id": "Hr_5mNpLxU_b17m3vLWeJ",
           "name": "wechat_id",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 20
         },
         {
           "id": "p3sphIAlGJQT2RgMALJ1T",
@@ -1242,14 +1257,15 @@
         {
           "id": "Ad-M3hw4qScQghgnOyZiG",
           "name": "employee_number_key",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "",
           "check": "employee_number_key = lower(btrim(employee_number))",
-          "comment": "Canonical case-insensitive key derived from employee_number by Django."
+          "comment": "Canonical case-insensitive key derived from employee_number by Django.",
+          "size": 50
         }
       ],
       "comment": "Odoo hr.employee adapted for a tenant. tenant_user_id is optional and must be unique per tenant when present. Sensitive fields require employees.view_sensitive. Migration must enforce composite tenant FK (tenant_id, tenant_user_id) -> tenant_users(tenant_id, id).",
@@ -1365,38 +1381,41 @@
         {
           "id": "d0jaM0bCVbnaq0NelTmA_",
           "name": "building",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 255
         },
         {
           "id": "udp1jzr4w0-h8XqpHQD0T",
           "name": "road",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 100
         },
         {
           "id": "I20z4kr_zI78CuSP8zFSO",
           "name": "alley",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 100
         },
         {
           "id": "2Z7Sk3phdSzEX4zcFYusY",
@@ -1437,26 +1456,28 @@
         {
           "id": "ASVttBHwdj9MJB0Ska-4h",
           "name": "postal_code",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 5
         },
         {
           "id": "zpcSeoPM-ZdTAdPq0csZd",
           "name": "country_code",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "TH",
           "check": "char_length(country_code) = 2",
-          "comment": ""
+          "comment": "",
+          "size": 2
         },
         {
           "id": "VCx_JQke2x2lkoxiHQnKE",
@@ -1592,14 +1613,15 @@
         {
           "id": "z1LBobcICwqABonrzAoqY",
           "name": "currency",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "THB",
           "check": "char_length(currency) = 3",
-          "comment": ""
+          "comment": "",
+          "size": 3
         },
         {
           "id": "VjmFmY6v54UVawZ58ioNr",
@@ -1965,14 +1987,15 @@
         {
           "id": "ky0FqSVgSdzhFM9Bxc1gf",
           "name": "currency",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "THB",
           "check": "char_length(currency) = 3",
-          "comment": ""
+          "comment": "",
+          "size": 3
         },
         {
           "id": "pDj3jMcG7Nru8F7QzFOl0",
@@ -2315,14 +2338,15 @@
         {
           "id": "sdrTAC32Sx4SHex5I-k-Z",
           "name": "email",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "",
           "check": "email = lower(btrim(email)) AND char_length(email) <= 150",
-          "comment": ""
+          "comment": "",
+          "size": 150
         },
         {
           "id": "m_5nhnZpRXZznf6cGV-Sv",
@@ -2411,14 +2435,15 @@
         {
           "id": "oIZPSVZWAKNKshhrAlO0n",
           "name": "currency",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "THB",
           "check": "char_length(currency) = 3",
-          "comment": ""
+          "comment": "",
+          "size": 3
         },
         {
           "id": "WjPEYOtMBWElkoGBu9PL2",
@@ -2592,14 +2617,15 @@
         {
           "id": "bXhhgy-ThaP-MSxEBzOXL",
           "name": "email",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "",
           "check": "email = lower(btrim(email)) AND char_length(email) <= 150",
-          "comment": ""
+          "comment": "",
+          "size": 150
         },
         {
           "id": "5KIVvSNzsBxfCKnp4KB38",
@@ -2628,14 +2654,15 @@
         {
           "id": "m_zyeT1UqWCUD4XUejXkh",
           "name": "phone",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "",
+          "size": 16
         },
         {
           "id": "DbfNM6r1N7Jlb7ixJrr2c",
@@ -2897,14 +2924,15 @@
         {
           "id": "dZf8f4M1anvuftkhomEbn",
           "name": "currency",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "THB",
           "check": "char_length(currency) = 3",
-          "comment": ""
+          "comment": "",
+          "size": 3
         },
         {
           "id": "Eg8-FO_1LixjSQoesNVDZ",
