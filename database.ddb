@@ -1,9 +1,3723 @@
 {
-  "title": "MatterSolv Database",
+  "title": "MatterSolv Phase 0 — SaaS Foundation",
   "database": "postgresql",
-  "tables": [],
-  "relationships": [],
-  "notes": [],
+  "tables": [
+    {
+      "id": "WSJW9wPQZpYv8OGoOKob4",
+      "name": "tenants",
+      "x": 54,
+      "y": 40,
+      "fields": [
+        {
+          "id": "QjhdpnU_DdJkKQUu2c_Sv",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "shtfACgvXzISDOZzTcWcO",
+          "name": "slug",
+          "type": "TEXT",
+          "primary": false,
+          "unique": true,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "slug = lower(slug)",
+          "comment": ""
+        },
+        {
+          "id": "s9dvJZdqCbceU4wBnfar2",
+          "name": "name",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "1aktVc9b4xc7tVNdJl5j5",
+          "name": "legal_name",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "L6w0VjL6TWSW0RQCqhFBg",
+          "name": "tax_id",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "18ZZaAFjv3PULcbpDQcig",
+          "name": "country_code",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "TH",
+          "check": "char_length(country_code) = 2",
+          "comment": ""
+        },
+        {
+          "id": "TO0drMS55_5Rt20jOebKq",
+          "name": "default_language",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "th",
+          "check": "default_language IN ('th','en')",
+          "comment": ""
+        },
+        {
+          "id": "PYTmV7Edpkj0QCcJ1galr",
+          "name": "timezone",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "Asia/Bangkok",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "v4pVxtRJ7xfkv-tkxk12r",
+          "name": "status",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "active",
+          "check": "status IN ('active','suspended','archived')",
+          "comment": ""
+        },
+        {
+          "id": "jGtUyrt792Ujpjl13slBD",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "XsjWKaGdK9SfUU4r8zdCT",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Odoo res.company adapted as the MatterSolv law-firm workspace and isolation boundary.",
+      "indices": [
+        {
+          "name": "idx_tenants_status",
+          "fields": [
+            "status"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#2563eb"
+    },
+    {
+      "id": "LLVjEYEdfl3MTj8FCs9UG",
+      "name": "users",
+      "x": 308,
+      "y": 40,
+      "fields": [
+        {
+          "id": "4xiSHOMIGaLCNYD6GwJ8t",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "ADVnHJY0a2Gqp3uYDU0UV",
+          "name": "email",
+          "type": "TEXT",
+          "primary": false,
+          "unique": true,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "email = lower(btrim(email))",
+          "comment": ""
+        },
+        {
+          "id": "YDSBey_fHauHPT6XE06_0",
+          "name": "password_hash",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "m6cM8EFXpnieAeuyCPZLW",
+          "name": "display_name",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "-8BbRl2WXjr1SR14A8uUu",
+          "name": "phone",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "nAeLPf0fmLBB15T3L5re-",
+          "name": "preferred_language",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "th",
+          "check": "preferred_language IN ('th','en')",
+          "comment": ""
+        },
+        {
+          "id": "qr4ewsQzT3PZVKnqeHCSB",
+          "name": "status",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "active",
+          "check": "status IN ('active','archived')",
+          "comment": ""
+        },
+        {
+          "id": "9pXmN1xP1FbZcVC9bgqy6",
+          "name": "email_verified_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "WosxUkgrqWlFxb-zd9eNg",
+          "name": "last_login_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "DvA_khSw5IhO7WAzysFhy",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "YfJQ31DaWiyHe1g0men7V",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Global authenticated identity, corresponding to Odoo res.users. One normalized email may join many tenants.",
+      "indices": [
+        {
+          "name": "idx_users_status",
+          "fields": [
+            "status"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#2563eb"
+    },
+    {
+      "id": "EIt8WECuYSHn6OWablvmi",
+      "name": "tenant_users",
+      "x": 562,
+      "y": 40,
+      "fields": [
+        {
+          "id": "TIdekZpmecw36SXXW1v_B",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "YlXyv0sfrRb_vsajxR1Vs",
+          "name": "tenant_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Verified SaaS isolation boundary; never trust the request header without membership validation."
+        },
+        {
+          "id": "obz7Bz2eNUWAFvfMYGysy",
+          "name": "user_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "XAx0hBf_rC-1dHiYpoxzR",
+          "name": "invited_email",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "invited_email = lower(btrim(invited_email))",
+          "comment": ""
+        },
+        {
+          "id": "mz1JlV3nUg5VQbpS61rjt",
+          "name": "status",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "active",
+          "check": "status IN ('pending','active','archived')",
+          "comment": ""
+        },
+        {
+          "id": "PUuNXG0JdyB81U8AYY0_T",
+          "name": "invitation_status",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "not_invited",
+          "check": "invitation_status IN ('not_invited','pending','accepted','expired','revoked')",
+          "comment": ""
+        },
+        {
+          "id": "tYGxB_twtYI9BbhRBp6cW",
+          "name": "preferred_language",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "th",
+          "check": "preferred_language IN ('th','en')",
+          "comment": ""
+        },
+        {
+          "id": "MRFZBf9clEWRtARYOtp3N",
+          "name": "invited_by_tenant_user_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "7E_CenLfprIoPO4tBBZF3",
+          "name": "invited_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "C2f1MmtIcH-moImPIM1Re",
+          "name": "last_invitation_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "xHrKgEM2P_-eRWXqF0328",
+          "name": "accepted_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "z9sfisZIXwz8dIf59YPJ_",
+          "name": "archived_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "eBgMa1S3v6QNRG7rpbLGs",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "PygfplMvAMmEOnwMHjHtM",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Tenant membership. Supports pending invitations before a User exists. Unique active linkage: (tenant_id,user_id) WHERE user_id IS NOT NULL; unique pending email per tenant uses lower(invited_email).",
+      "indices": [
+        {
+          "name": "idx_tenant_users_tenant_status",
+          "fields": [
+            "tenant_id",
+            "status"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_tenant_users_user",
+          "fields": [
+            "user_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_tenant_users_invited_by",
+          "fields": [
+            "invited_by_tenant_user_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#2563eb"
+    },
+    {
+      "id": "UPSrpgagEvwD2eTmp0yTO",
+      "name": "roles",
+      "x": 816,
+      "y": 40,
+      "fields": [
+        {
+          "id": "WJMYA9iXmd1kDWnAOuKpr",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "O93HdqdZhH9hE4xfPTn4w",
+          "name": "code",
+          "type": "TEXT",
+          "primary": false,
+          "unique": true,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "code = lower(code)",
+          "comment": ""
+        },
+        {
+          "id": "ftgXsufzaiSzCCEeBhch8",
+          "name": "name",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "TBK-vLNY9pVxNfqGoZjas",
+          "name": "description",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "fZuof0CvhtFOcT8ZaHz00",
+          "name": "is_system",
+          "type": "BOOLEAN",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "true",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "Y8_fqrDbJlsziXVwvmuc_",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "LlVv8S0j8VGaGUrAxdH0P",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Odoo res.groups adapted as a stable global role catalog. Seed owner, administrator, member.",
+      "indices": [],
+      "color": "#7c3aed"
+    },
+    {
+      "id": "_tzM64sBqbmorVxdTU6sA",
+      "name": "permissions",
+      "x": 1070,
+      "y": 40,
+      "fields": [
+        {
+          "id": "bcCqRKUWGlTmHbme-xVDm",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "kf-oRl_6OFK9Y2N_7Cx31",
+          "name": "code",
+          "type": "TEXT",
+          "primary": false,
+          "unique": true,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "code = lower(code)",
+          "comment": ""
+        },
+        {
+          "id": "nE8YVi3sra8E4cxdoYl7Y",
+          "name": "module",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "YxsWTq57utKEd3ljq4XhV",
+          "name": "name",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "0nsyQNNWyFEyWGyzFVvdb",
+          "name": "description",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "mCCL_F2QyfV6vRtZZd4Ol",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "SaYelRCHepivVSK9er2Nh",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Stable permission catalog. Seed codes include employees.view_employee, employees.view_sensitive, employees.manage_employee, users.manage_users.",
+      "indices": [],
+      "color": "#7c3aed"
+    },
+    {
+      "id": "yI2CEaU8dRW3DjSTpmdy3",
+      "name": "role_permissions",
+      "x": 1324,
+      "y": 40,
+      "fields": [
+        {
+          "id": "z30TKuQNF9rDfq1DqY6Mf",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "bdmPi1_lU09BxMUqXxN1o",
+          "name": "role_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "tijmzbF6610ihpjOFWcia",
+          "name": "permission_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "RBFZKFS63RbROz-EqzTAL",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "HXB3iYq3QTinxqq3AI-9O",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Global many-to-many role permission catalog, equivalent to Odoo group grants.",
+      "indices": [
+        {
+          "name": "uq_role_permissions",
+          "fields": [
+            "role_id",
+            "permission_id"
+          ],
+          "unique": true
+        },
+        {
+          "name": "idx_role_permissions_permission",
+          "fields": [
+            "permission_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#7c3aed"
+    },
+    {
+      "id": "vmfLdPlonPhtLig1tukG6",
+      "name": "tenant_user_roles",
+      "x": 1578,
+      "y": 40,
+      "fields": [
+        {
+          "id": "fTWYKkloQ0OqRhcGe43fb",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "l5xWpSupKO98eS5e93tE1",
+          "name": "tenant_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Verified SaaS isolation boundary; never trust the request header without membership validation."
+        },
+        {
+          "id": "i41PVqTyeP-QRoSZh6y_m",
+          "name": "tenant_user_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "NhiVNustZyvYnEUsIkcfN",
+          "name": "role_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "e6Pb3w5LOYcTX_CQoQzh-",
+          "name": "assigned_by_tenant_user_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "vTNB4SWILWh3SN3pIdW5O",
+          "name": "assigned_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "xpdZXJTlZ_3Jdv5qIO7zb",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "nWmWMiMDONYvwHkD0QIVt",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Tenant-aware role assignment. Authorization is derived from the current membership, never from a global user role.",
+      "indices": [
+        {
+          "name": "uq_tenant_user_roles",
+          "fields": [
+            "tenant_id",
+            "tenant_user_id",
+            "role_id"
+          ],
+          "unique": true
+        },
+        {
+          "name": "idx_tenant_user_roles_role",
+          "fields": [
+            "role_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_tenant_user_roles_membership",
+          "fields": [
+            "tenant_user_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_tenant_user_roles_assigned_by",
+          "fields": [
+            "assigned_by_tenant_user_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#7c3aed"
+    },
+    {
+      "id": "KEIeFlGCgN6AoCX4Qaknn",
+      "name": "employees",
+      "x": 1832,
+      "y": 40,
+      "fields": [
+        {
+          "id": "i8_YG5Kzr1GJiXllhcPfZ",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "h7IvX5glGHSWu4y1aaXtu",
+          "name": "tenant_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Verified SaaS isolation boundary; never trust the request header without membership validation."
+        },
+        {
+          "id": "qbUniy5VqiQsePsRQc5hs",
+          "name": "tenant_user_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "3szAe5wQBZw8fXiBhvekF",
+          "name": "employee_number",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "kMTPxVQikTHJ3Tpsoxmka",
+          "name": "profile_image_url",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "i6d2gpzFPM24-PNzwUiEh",
+          "name": "prefix",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "prefix IN ('mr','mrs','ms','other')",
+          "comment": ""
+        },
+        {
+          "id": "tRBTeOtZ-wpDXdEWM35Lm",
+          "name": "prefix_other",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "AXM_hIp2I2NxohAzUY-Sj",
+          "name": "first_name",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "6Cqa6k_UkO83TaRdtDIPO",
+          "name": "last_name",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "fjCH1dM5BbBvOSKNmCE50",
+          "name": "work_email",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "792xti_-o5UyZULhRQ-tJ",
+          "name": "work_phone",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "jSMruAvYeyFQQQ7mBQiYt",
+          "name": "work_mobile",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "atjiuk_IBrQfXsI37snzt",
+          "name": "department",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "fajmmiiYtfASnpqeRcUtY",
+          "name": "position",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "7Y4--f2V4ReU9jhvKo3_X",
+          "name": "employment_start_date",
+          "type": "DATE",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "QVNXLOnx8RQA8szL9mm93",
+          "name": "private_email",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "39USlHnpqI476We3Oaovq",
+          "name": "private_phone",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "bS3zdzLWKO_qpyywxubxp",
+          "name": "identity_document_type",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "identity_document_type IN ('national_id','passport')",
+          "comment": ""
+        },
+        {
+          "id": "Lp9GKv-57wM6YHysxzJoI",
+          "name": "identity_number",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "CJaJRkeXWWK44cAh7YkAh",
+          "name": "language_proficiency",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "HeGzkn3LiSTgXnodc542p",
+          "name": "line_id",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "Hr_5mNpLxU_b17m3vLWeJ",
+          "name": "wechat_id",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "p3sphIAlGJQT2RgMALJ1T",
+          "name": "tags",
+          "type": "TEXT[]",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "{}",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "qP0eHSPlyDhE_rkhoiC1u",
+          "name": "status",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "active",
+          "check": "status IN ('active','archived')",
+          "comment": ""
+        },
+        {
+          "id": "FNuygt3yvXJy-TLH5JdPU",
+          "name": "departure_date",
+          "type": "DATE",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "rB5sFr91SYyUXW0zZ0_A7",
+          "name": "departure_reason",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "Wqs7fhwiFZZfIAYqH-xDq",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "rEk-MopDpx4LpbHSno9uM",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Odoo hr.employee adapted for a tenant. tenant_user_id is optional and must be unique per tenant when present. Sensitive fields require employees.view_sensitive.",
+      "indices": [
+        {
+          "name": "uq_employees_tenant_number",
+          "fields": [
+            "tenant_id",
+            "employee_number"
+          ],
+          "unique": true
+        },
+        {
+          "name": "idx_employees_tenant_status",
+          "fields": [
+            "tenant_id",
+            "status"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_employees_tenant_user",
+          "fields": [
+            "tenant_user_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#059669"
+    },
+    {
+      "id": "UkZss3kk9Qt3y99bqhhoN",
+      "name": "employee_addresses",
+      "x": 2086,
+      "y": 40,
+      "fields": [
+        {
+          "id": "yWgJ_pLMKSF8KKb-kRDTf",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "YT9Skb_-EeYKmDNGJ2RM6",
+          "name": "tenant_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Verified SaaS isolation boundary; never trust the request header without membership validation."
+        },
+        {
+          "id": "B0RvrEcR8VucYnXMR98LT",
+          "name": "employee_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "OKs9ztrFhrBQh0JmhhI0h",
+          "name": "address_type",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "address_type IN ('home','contact')",
+          "comment": ""
+        },
+        {
+          "id": "d0jaM0bCVbnaq0NelTmA_",
+          "name": "building",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "udp1jzr4w0-h8XqpHQD0T",
+          "name": "road",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "I20z4kr_zI78CuSP8zFSO",
+          "name": "alley",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "2Z7Sk3phdSzEX4zcFYusY",
+          "name": "subdistrict",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "eTnT-c51Widx4wkJ-YYA0",
+          "name": "district",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "L2ZYCVcSAOMWy18qtT05r",
+          "name": "province",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "ASVttBHwdj9MJB0Ska-4h",
+          "name": "postal_code",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "zpcSeoPM-ZdTAdPq0csZd",
+          "name": "country_code",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "TH",
+          "check": "char_length(country_code) = 2",
+          "comment": ""
+        },
+        {
+          "id": "VCx_JQke2x2lkoxiHQnKE",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "F0eER9BDKOmGq15_dSQMm",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Normalized home/contact addresses from the employee form. One address per (employee_id,address_type).",
+      "indices": [
+        {
+          "name": "uq_employee_addresses_type",
+          "fields": [
+            "employee_id",
+            "address_type"
+          ],
+          "unique": true
+        },
+        {
+          "name": "idx_employee_addresses_tenant",
+          "fields": [
+            "tenant_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#059669"
+    },
+    {
+      "id": "Us0DC4MO3qclyTyW3USMA",
+      "name": "plans",
+      "x": 2340,
+      "y": 40,
+      "fields": [
+        {
+          "id": "pn9QvZXKXUca2Fr4JzyIQ",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "kT8AHhPcAgMcV4mJwqy9o",
+          "name": "code",
+          "type": "TEXT",
+          "primary": false,
+          "unique": true,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "code = lower(code)",
+          "comment": ""
+        },
+        {
+          "id": "M6Vtg30WaYNm3Z-ZSIJxv",
+          "name": "name",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "Ol-D9BVIr829eXQhNNkkh",
+          "name": "monthly_price",
+          "type": "NUMERIC(12,2)",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "monthly_price >= 0",
+          "comment": ""
+        },
+        {
+          "id": "KoXF5ubDS7GZHnAilDOI6",
+          "name": "annual_price",
+          "type": "NUMERIC(12,2)",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "annual_price >= 0",
+          "comment": ""
+        },
+        {
+          "id": "z1LBobcICwqABonrzAoqY",
+          "name": "currency",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "THB",
+          "check": "char_length(currency) = 3",
+          "comment": ""
+        },
+        {
+          "id": "VjmFmY6v54UVawZ58ioNr",
+          "name": "default_user_limit",
+          "type": "INTEGER",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "default_user_limit IS NULL OR default_user_limit > 0",
+          "comment": ""
+        },
+        {
+          "id": "oLcDFwVpOCuhYsWA_fYts",
+          "name": "is_active",
+          "type": "BOOLEAN",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "true",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "Scyd1LybqYIChtwoKQpyJ",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "JDQ3sU7oNQuJ37P9tTeaX",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Commercial plan catalog. Prices are server-authoritative and never accepted from query strings.",
+      "indices": [],
+      "color": "#d97706"
+    },
+    {
+      "id": "7b3pe-p8Ilugb1UL4s4SS",
+      "name": "features",
+      "x": 2086,
+      "y": 1145,
+      "fields": [
+        {
+          "id": "Kbk-2v0m3aspS9O_I714p",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "LLGm1OxESAxCo0uCScQyy",
+          "name": "code",
+          "type": "TEXT",
+          "primary": false,
+          "unique": true,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "code = lower(code)",
+          "comment": ""
+        },
+        {
+          "id": "8wDJHjgSL8X-oYeM_6Zrf",
+          "name": "name",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "dx9Xl3ZjKsBDklw1TNjgT",
+          "name": "description",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "qCZF7IoBtSaXWm8lnfHt9",
+          "name": "is_active",
+          "type": "BOOLEAN",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "true",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "oyMaEMWffYIPM88DIXMcK",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "gdbshClhYrbHKHa60yiEs",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Stable feature catalog used to derive frontend feature flags.",
+      "indices": [],
+      "color": "#d97706"
+    },
+    {
+      "id": "grF78_Otky29KzyP2i6yT",
+      "name": "plan_entitlements",
+      "x": 1832,
+      "y": 1145,
+      "fields": [
+        {
+          "id": "K_wEJ-iumMQKLahD03qXS",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "iMTZH79ALOOb9FMqSSt1l",
+          "name": "plan_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "DR2_NTyocrPG1cjNtK4mA",
+          "name": "feature_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "k0Yz6-N3TTBGQeDxOqNQ-",
+          "name": "enabled",
+          "type": "BOOLEAN",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "true",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "1dbOqv1o_UA4g3RB5XXEV",
+          "name": "limit_value",
+          "type": "INTEGER",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "limit_value IS NULL OR limit_value >= 0",
+          "comment": ""
+        },
+        {
+          "id": "n3mVYTuB-xV-7m_LwRDCF",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "fXnXv4pyW8U9yDEHPps6i",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Default feature access and optional numeric limit for a plan.",
+      "indices": [
+        {
+          "name": "uq_plan_entitlements",
+          "fields": [
+            "plan_id",
+            "feature_id"
+          ],
+          "unique": true
+        },
+        {
+          "name": "idx_plan_entitlements_feature",
+          "fields": [
+            "feature_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#d97706"
+    },
+    {
+      "id": "WDpL8F6FMTcmU2Rv6d2Kt",
+      "name": "subscriptions",
+      "x": 1578,
+      "y": 1145,
+      "fields": [
+        {
+          "id": "hwKpehON_LvWP6DDgCxWM",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "6P_BTBUmG3MtPUthubrnm",
+          "name": "tenant_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Verified SaaS isolation boundary; never trust the request header without membership validation."
+        },
+        {
+          "id": "gHL792kEaxmltkTsbuSi9",
+          "name": "plan_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "t0WctXlDe_aE0obgc0bGF",
+          "name": "status",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "pending",
+          "check": "status IN ('pending','trialing','active','past_due','suspended','expired','canceled')",
+          "comment": ""
+        },
+        {
+          "id": "N3QGC1Nlgagi-faUqcCmp",
+          "name": "billing_period",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "billing_period IN ('monthly','annual','custom')",
+          "comment": ""
+        },
+        {
+          "id": "RXsviSTX7vxevJok5lAUV",
+          "name": "licensed_user_limit",
+          "type": "INTEGER",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "licensed_user_limit > 0",
+          "comment": ""
+        },
+        {
+          "id": "ky0FqSVgSdzhFM9Bxc1gf",
+          "name": "currency",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "THB",
+          "check": "char_length(currency) = 3",
+          "comment": ""
+        },
+        {
+          "id": "pDj3jMcG7Nru8F7QzFOl0",
+          "name": "unit_amount",
+          "type": "NUMERIC(12,2)",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "unit_amount >= 0",
+          "comment": ""
+        },
+        {
+          "id": "ZR8VhVHFbOnmiLgaAhmkw",
+          "name": "trial_starts_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "kdOTNOrpjl3evPFx0S18u",
+          "name": "trial_ends_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "EafUvgeSWbdprblVQm8yd",
+          "name": "current_period_starts_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "TKPU8ueNVH2FwGckDseBV",
+          "name": "current_period_ends_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "Ievr_gm_VtvLz89F02auj",
+          "name": "cancel_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "V4AoBRGLuo6nVC4elypzI",
+          "name": "canceled_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "EW2kLaSNMUTS5FYDatNMS",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "AjZpxo9QwVDvfJUcvVoux",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Tenant subscription lifecycle and licensed user quantity. At most one current subscription per tenant is enforced by a partial unique index.",
+      "indices": [
+        {
+          "name": "idx_subscriptions_tenant_status",
+          "fields": [
+            "tenant_id",
+            "status"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_subscriptions_plan",
+          "fields": [
+            "plan_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#d97706"
+    },
+    {
+      "id": "4xaCJu1H8Izes9NjG3L_f",
+      "name": "tenant_entitlement_overrides",
+      "x": 1324,
+      "y": 1145,
+      "fields": [
+        {
+          "id": "P0haLhcLSx5nTZKYGVoPF",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "1ljN3Rkz0X_YQkKGJz7qM",
+          "name": "tenant_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Verified SaaS isolation boundary; never trust the request header without membership validation."
+        },
+        {
+          "id": "uw-zLzrrisk_WkJWrc8cY",
+          "name": "feature_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "hYg0SpYbDWVMvBYXmcUbU",
+          "name": "enabled",
+          "type": "BOOLEAN",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "hWIKc3DcDdlO1iC7q-z3N",
+          "name": "limit_value",
+          "type": "INTEGER",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "limit_value IS NULL OR limit_value >= 0",
+          "comment": ""
+        },
+        {
+          "id": "dc58eFmZRJ_ATtz-1XIDE",
+          "name": "reason",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "6DKCFbtg4L0Iel6n_Q6qG",
+          "name": "expires_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "lL_zkJ-omr_KmUUFUUT-F",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "WdH-HgjWv2o856XlN8Lwb",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Tenant-specific feature override layered over plan_entitlements.",
+      "indices": [
+        {
+          "name": "uq_tenant_feature_override",
+          "fields": [
+            "tenant_id",
+            "feature_id"
+          ],
+          "unique": true
+        },
+        {
+          "name": "idx_entitlement_overrides_feature",
+          "fields": [
+            "feature_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#d97706"
+    },
+    {
+      "id": "ZTFkIHA3fRZlzm4WoBrc6",
+      "name": "checkout_sessions",
+      "x": 1070,
+      "y": 1145,
+      "fields": [
+        {
+          "id": "mL-ZCB9Vt7Rawlcjm9Ay8",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "i3-HonA0NIlrXcf-R-NNv",
+          "name": "tenant_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "MGITNbFaBnBEJh96irx4I",
+          "name": "buyer_user_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "MnQvd0sfnrg1q4-pyoins",
+          "name": "plan_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "sdrTAC32Sx4SHex5I-k-Z",
+          "name": "email",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "email = lower(btrim(email))",
+          "comment": ""
+        },
+        {
+          "id": "m_5nhnZpRXZznf6cGV-Sv",
+          "name": "firm_name",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "37GYpHwqFuKEGO4RZav_A",
+          "name": "billing_period",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "billing_period IN ('monthly','annual','custom')",
+          "comment": ""
+        },
+        {
+          "id": "OVMGvbQSYnIT4C66Pd_Aj",
+          "name": "user_quantity",
+          "type": "INTEGER",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "user_quantity > 0",
+          "comment": ""
+        },
+        {
+          "id": "fe-iCFt0J_VkyWIbcEFIj",
+          "name": "subtotal",
+          "type": "NUMERIC(12,2)",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "subtotal >= 0",
+          "comment": ""
+        },
+        {
+          "id": "jdKrkFkmzjnEkJy5ZjgUu",
+          "name": "discount",
+          "type": "NUMERIC(12,2)",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "0",
+          "check": "discount >= 0",
+          "comment": ""
+        },
+        {
+          "id": "CWRs50tYLIkYtQ0axzDnd",
+          "name": "tax",
+          "type": "NUMERIC(12,2)",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "0",
+          "check": "tax >= 0",
+          "comment": ""
+        },
+        {
+          "id": "yV3sqzOvTWe8ETTD68z4t",
+          "name": "total",
+          "type": "NUMERIC(12,2)",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "total >= 0",
+          "comment": ""
+        },
+        {
+          "id": "oIZPSVZWAKNKshhrAlO0n",
+          "name": "currency",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "THB",
+          "check": "char_length(currency) = 3",
+          "comment": ""
+        },
+        {
+          "id": "WjPEYOtMBWElkoGBu9PL2",
+          "name": "status",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "pending",
+          "check": "status IN ('pending','processing','completed','failed','expired')",
+          "comment": ""
+        },
+        {
+          "id": "87VAsPc58FrFkfxaDPSvo",
+          "name": "expires_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "qbG7IR_DaJkq0C19vJFrL",
+          "name": "completed_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "Mn7KlQzux6kz_h64HhxFR",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "oltF-XFm1zPLR3ybodDTV",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Pre-provisioning server-authoritative checkout state. tenant_id is nullable until commercial confirmation.",
+      "indices": [
+        {
+          "name": "idx_checkout_sessions_email_status",
+          "fields": [
+            "email",
+            "status"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_checkout_sessions_tenant",
+          "fields": [
+            "tenant_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_checkout_sessions_plan",
+          "fields": [
+            "plan_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_checkout_sessions_buyer",
+          "fields": [
+            "buyer_user_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#dc2626"
+    },
+    {
+      "id": "uZ0lDxPc-e8SFXAmfz_XS",
+      "name": "pending_trial_applications",
+      "x": 816,
+      "y": 1145,
+      "fields": [
+        {
+          "id": "jo_2LtyZL0dvqfBw-nJQ3",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "ZUquPAqsFXxkZljZB9mZX",
+          "name": "plan_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "aUpGLp-Ity2RMBfBgzBbh",
+          "name": "resulting_user_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "DImHXT8LhJTU7E5Gf6s3v",
+          "name": "resulting_tenant_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "bXhhgy-ThaP-MSxEBzOXL",
+          "name": "email",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "email = lower(btrim(email))",
+          "comment": ""
+        },
+        {
+          "id": "5KIVvSNzsBxfCKnp4KB38",
+          "name": "applicant_name",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "pylwOgTmnikVqX0keaQN2",
+          "name": "firm_name",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "m_zyeT1UqWCUD4XUejXkh",
+          "name": "phone",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "DbfNM6r1N7Jlb7ixJrr2c",
+          "name": "company_size",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "Lm0E95fJFyAxISI1hNT9P",
+          "name": "verification_token_hash",
+          "type": "TEXT",
+          "primary": false,
+          "unique": true,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "r8BIy0hYSMMP90JLa56Pf",
+          "name": "status",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "pending",
+          "check": "status IN ('pending','verified','provisioned','expired','revoked')",
+          "comment": ""
+        },
+        {
+          "id": "uGLZo3EbWppwFHvPwHbtW",
+          "name": "expires_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "R1Zo1JtUvgK-ibIND8oK1",
+          "name": "verified_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "fPfOSysmaB91ndwbP6JCX",
+          "name": "provisioned_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "LeUIHgn4nkbTXlP7RazCP",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "GQDl9ppMCLAzYlxuUJkVS",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Untrusted trial applicant before verification; does not grant access or create an active tenant.",
+      "indices": [
+        {
+          "name": "idx_trial_applications_email_status",
+          "fields": [
+            "email",
+            "status"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_trial_applications_plan",
+          "fields": [
+            "plan_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_trial_applications_user",
+          "fields": [
+            "resulting_user_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_trial_applications_tenant",
+          "fields": [
+            "resulting_tenant_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#dc2626"
+    },
+    {
+      "id": "3As5_f3yTyFBnvyNFqMeX",
+      "name": "payment_transactions",
+      "x": 562,
+      "y": 1145,
+      "fields": [
+        {
+          "id": "JHMQGYnSKfT4D97_g0Q-2",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "iAx-1dMSQ4l-oM15cnKJJ",
+          "name": "tenant_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "mYMzyIwswax7OclozIbhN",
+          "name": "checkout_session_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "dSEfx6TSxSQdv8JQZO8p8",
+          "name": "subscription_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "X8uy9Q49wp9rxdaF1s5NR",
+          "name": "provider",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "tdtEeH_Dl6gm66w9xHyok",
+          "name": "external_transaction_id",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "4iTJWrQ4wltEjogTBtfUd",
+          "name": "idempotency_key",
+          "type": "TEXT",
+          "primary": false,
+          "unique": true,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "ibF-uzhweO_50Q7UX6kqf",
+          "name": "status",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "pending",
+          "check": "status IN ('pending','requires_action','succeeded','failed','canceled','refunded')",
+          "comment": ""
+        },
+        {
+          "id": "QEJueOG-aazTkNpnIVYbt",
+          "name": "amount",
+          "type": "NUMERIC(12,2)",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "amount >= 0",
+          "comment": ""
+        },
+        {
+          "id": "dZf8f4M1anvuftkhomEbn",
+          "name": "currency",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "THB",
+          "check": "char_length(currency) = 3",
+          "comment": ""
+        },
+        {
+          "id": "Eg8-FO_1LixjSQoesNVDZ",
+          "name": "failure_code",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "T8ESjuEgTYwoW350UoF6a",
+          "name": "failure_message",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "ABPvM-0IES1SPruHsobok",
+          "name": "succeeded_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "MsNjEef8tZNMdnXaKoFg3",
+          "name": "failed_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "rzVxidcLEirpsToS5-qas",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "qQJejuCrPA-2jO05xGKpu",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Provider-agnostic payment attempts. Never stores raw card or bank credentials.",
+      "indices": [
+        {
+          "name": "idx_payment_transactions_checkout",
+          "fields": [
+            "checkout_session_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_payment_transactions_tenant_status",
+          "fields": [
+            "tenant_id",
+            "status"
+          ],
+          "unique": false
+        },
+        {
+          "name": "uq_payment_provider_transaction",
+          "fields": [
+            "provider",
+            "external_transaction_id"
+          ],
+          "unique": true
+        },
+        {
+          "name": "idx_payment_transactions_subscription",
+          "fields": [
+            "subscription_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#dc2626"
+    },
+    {
+      "id": "goyA8YJDykf9-puU7-Ixi",
+      "name": "payment_events",
+      "x": 308,
+      "y": 1145,
+      "fields": [
+        {
+          "id": "AiZsob1DCbRXkN9k7xbDA",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "Zolm6z2MELcG2lClhqDut",
+          "name": "tenant_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "mOAgrodAOKUz8eNDKoy1F",
+          "name": "payment_transaction_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "_8Z_iv5hgMWL1wuCtbbqY",
+          "name": "provider",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "y7GV1LvxYOmgdEsSKgkb7",
+          "name": "external_event_id",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "vBH2yM7lCdhtIa6NK9fNt",
+          "name": "event_type",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "bBYCFyHWSkACE24GR-82f",
+          "name": "payload",
+          "type": "JSONB",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "{}",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "w5jm0rwUac64Jjs_FPek4",
+          "name": "payload_hash",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "QwznzULMjsZPt6ID6W26O",
+          "name": "status",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "received",
+          "check": "status IN ('received','processing','processed','failed')",
+          "comment": ""
+        },
+        {
+          "id": "bD8vyWHL2zqFbLXkpoFMZ",
+          "name": "received_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "uJsfIG1qSFKEVum5CTnvO",
+          "name": "processed_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "KQgNNnQYRDA0IZW3ExSZx",
+          "name": "error_message",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "G3UhmVJo1JR1mmaRaWw-9",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "0OER8Fh-zOSZx0ecGTiIX",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Idempotent webhook inbox. external_event_id is unique per provider; payload excludes payment credentials.",
+      "indices": [
+        {
+          "name": "uq_payment_provider_event",
+          "fields": [
+            "provider",
+            "external_event_id"
+          ],
+          "unique": true
+        },
+        {
+          "name": "idx_payment_events_transaction",
+          "fields": [
+            "payment_transaction_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_payment_events_status",
+          "fields": [
+            "status",
+            "received_at"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_payment_events_tenant",
+          "fields": [
+            "tenant_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#dc2626"
+    },
+    {
+      "id": "Gr4DdkZ93D-qg_-MqTdLW",
+      "name": "tenant_invitations",
+      "x": 54,
+      "y": 1145,
+      "fields": [
+        {
+          "id": "hYTH5L1zT0uJNjcvnQQh0",
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "gen_random_uuid()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "wz3ks_dr_s99UmyCg-Klb",
+          "name": "tenant_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Verified SaaS isolation boundary; never trust the request header without membership validation."
+        },
+        {
+          "id": "5U76lcGsnw7W36ZcaV14F",
+          "name": "tenant_user_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "2ioxYk6MfcJF4s-KrWdKo",
+          "name": "role_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "IlqV47uJHPJZxuOQbbHg7",
+          "name": "invited_by_tenant_user_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "HsYnTcoz2ZOhJefVMGoyy",
+          "name": "token_hash",
+          "type": "TEXT",
+          "primary": false,
+          "unique": true,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "MESSqIfIB7qBIHwQyON48",
+          "name": "status",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "pending",
+          "check": "status IN ('pending','accepted','expired','revoked')",
+          "comment": ""
+        },
+        {
+          "id": "mIWxvgmrCTHA7CasG5dk6",
+          "name": "sent_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "MEW_YiSU7TM8E4-xZOdAS",
+          "name": "expires_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "zMiAqqKH_DbWUEjIyl0vm",
+          "name": "accepted_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "JJ2Hmoht54f6sK7p7TeYf",
+          "name": "revoked_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "iQqPU6K1t81J1G-WX913K",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "TJA9v32gs88vCP9eSKZLS",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Single-use, expiring invitation token history for a tenant membership.",
+      "indices": [
+        {
+          "name": "idx_tenant_invitations_membership",
+          "fields": [
+            "tenant_user_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_tenant_invitations_tenant_status",
+          "fields": [
+            "tenant_id",
+            "status"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_tenant_invitations_role",
+          "fields": [
+            "role_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_tenant_invitations_invited_by",
+          "fields": [
+            "invited_by_tenant_user_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#2563eb"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "ectMbtj4ULdAacR4lYXq3",
+      "name": "fk_tenant_users_tenant_id",
+      "startTableId": "EIt8WECuYSHn6OWablvmi",
+      "startFieldId": "YlXyv0sfrRb_vsajxR1Vs",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "HUVtA9rehvDg6pT4-BRgw",
+      "name": "fk_tenant_users_user_id",
+      "startTableId": "EIt8WECuYSHn6OWablvmi",
+      "startFieldId": "obz7Bz2eNUWAFvfMYGysy",
+      "endTableId": "LLVjEYEdfl3MTj8FCs9UG",
+      "endFieldId": "4xiSHOMIGaLCNYD6GwJ8t",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "Dh6mf-FTqxDJ10TGAZSeR",
+      "name": "fk_tenant_users_invited_by_tenant_user_id",
+      "startTableId": "EIt8WECuYSHn6OWablvmi",
+      "startFieldId": "MRFZBf9clEWRtARYOtp3N",
+      "endTableId": "EIt8WECuYSHn6OWablvmi",
+      "endFieldId": "TIdekZpmecw36SXXW1v_B",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Set null"
+    },
+    {
+      "id": "ieP1JUiJoNvqOoWaLWYUL",
+      "name": "fk_role_permissions_role_id",
+      "startTableId": "yI2CEaU8dRW3DjSTpmdy3",
+      "startFieldId": "bdmPi1_lU09BxMUqXxN1o",
+      "endTableId": "UPSrpgagEvwD2eTmp0yTO",
+      "endFieldId": "WJMYA9iXmd1kDWnAOuKpr",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "FSpX4xGHhOC187h01t5c2",
+      "name": "fk_role_permissions_permission_id",
+      "startTableId": "yI2CEaU8dRW3DjSTpmdy3",
+      "startFieldId": "tijmzbF6610ihpjOFWcia",
+      "endTableId": "_tzM64sBqbmorVxdTU6sA",
+      "endFieldId": "bcCqRKUWGlTmHbme-xVDm",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "o0NvAF7RS8q59mKZKVZ37",
+      "name": "fk_tenant_user_roles_tenant_id",
+      "startTableId": "vmfLdPlonPhtLig1tukG6",
+      "startFieldId": "l5xWpSupKO98eS5e93tE1",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "s7_-NL0tsu68do5ucgMBE",
+      "name": "fk_tenant_user_roles_tenant_user_id",
+      "startTableId": "vmfLdPlonPhtLig1tukG6",
+      "startFieldId": "i41PVqTyeP-QRoSZh6y_m",
+      "endTableId": "EIt8WECuYSHn6OWablvmi",
+      "endFieldId": "TIdekZpmecw36SXXW1v_B",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "2Jj32w2uMxS8Fmd2Ze_8i",
+      "name": "fk_tenant_user_roles_role_id",
+      "startTableId": "vmfLdPlonPhtLig1tukG6",
+      "startFieldId": "NhiVNustZyvYnEUsIkcfN",
+      "endTableId": "UPSrpgagEvwD2eTmp0yTO",
+      "endFieldId": "WJMYA9iXmd1kDWnAOuKpr",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "YT-iJEAXjP0b7cM_-3DJY",
+      "name": "fk_tenant_user_roles_assigned_by_tenant_user_id",
+      "startTableId": "vmfLdPlonPhtLig1tukG6",
+      "startFieldId": "e6Pb3w5LOYcTX_CQoQzh-",
+      "endTableId": "EIt8WECuYSHn6OWablvmi",
+      "endFieldId": "TIdekZpmecw36SXXW1v_B",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Set null"
+    },
+    {
+      "id": "H4SY9ffEtu8matJW3d-EI",
+      "name": "fk_employees_tenant_id",
+      "startTableId": "KEIeFlGCgN6AoCX4Qaknn",
+      "startFieldId": "h7IvX5glGHSWu4y1aaXtu",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "g8xJI5EAqJMqSuCQ1zbdn",
+      "name": "fk_employees_tenant_user_id",
+      "startTableId": "KEIeFlGCgN6AoCX4Qaknn",
+      "startFieldId": "qbUniy5VqiQsePsRQc5hs",
+      "endTableId": "EIt8WECuYSHn6OWablvmi",
+      "endFieldId": "TIdekZpmecw36SXXW1v_B",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Set null"
+    },
+    {
+      "id": "ggkBMdqS93wk4560YuhFz",
+      "name": "fk_employee_addresses_tenant_id",
+      "startTableId": "UkZss3kk9Qt3y99bqhhoN",
+      "startFieldId": "YT9Skb_-EeYKmDNGJ2RM6",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "xyiSF5s8S13LvKinSx6Bo",
+      "name": "fk_employee_addresses_employee_id",
+      "startTableId": "UkZss3kk9Qt3y99bqhhoN",
+      "startFieldId": "B0RvrEcR8VucYnXMR98LT",
+      "endTableId": "KEIeFlGCgN6AoCX4Qaknn",
+      "endFieldId": "i8_YG5Kzr1GJiXllhcPfZ",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "o2AKX8Bfdu-m7dXyBFk4D",
+      "name": "fk_plan_entitlements_plan_id",
+      "startTableId": "grF78_Otky29KzyP2i6yT",
+      "startFieldId": "iMTZH79ALOOb9FMqSSt1l",
+      "endTableId": "Us0DC4MO3qclyTyW3USMA",
+      "endFieldId": "pn9QvZXKXUca2Fr4JzyIQ",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "zFCwqHYCX0ZOxXsIPht9-",
+      "name": "fk_plan_entitlements_feature_id",
+      "startTableId": "grF78_Otky29KzyP2i6yT",
+      "startFieldId": "DR2_NTyocrPG1cjNtK4mA",
+      "endTableId": "7b3pe-p8Ilugb1UL4s4SS",
+      "endFieldId": "Kbk-2v0m3aspS9O_I714p",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "AJRBwM8DczwkOJRPRFRLf",
+      "name": "fk_subscriptions_tenant_id",
+      "startTableId": "WDpL8F6FMTcmU2Rv6d2Kt",
+      "startFieldId": "6P_BTBUmG3MtPUthubrnm",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "ZNG9OIPwXEAEkohgXGf54",
+      "name": "fk_subscriptions_plan_id",
+      "startTableId": "WDpL8F6FMTcmU2Rv6d2Kt",
+      "startFieldId": "gHL792kEaxmltkTsbuSi9",
+      "endTableId": "Us0DC4MO3qclyTyW3USMA",
+      "endFieldId": "pn9QvZXKXUca2Fr4JzyIQ",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "YuC4lorowaUJ6bmOd0gAk",
+      "name": "fk_tenant_entitlement_overrides_tenant_id",
+      "startTableId": "4xaCJu1H8Izes9NjG3L_f",
+      "startFieldId": "1ljN3Rkz0X_YQkKGJz7qM",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "kHi2CuMYgnsZaRnHMwqCq",
+      "name": "fk_tenant_entitlement_overrides_feature_id",
+      "startTableId": "4xaCJu1H8Izes9NjG3L_f",
+      "startFieldId": "uw-zLzrrisk_WkJWrc8cY",
+      "endTableId": "7b3pe-p8Ilugb1UL4s4SS",
+      "endFieldId": "Kbk-2v0m3aspS9O_I714p",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "w1WQzdyQMOrkk8P5ot55f",
+      "name": "fk_checkout_sessions_tenant_id",
+      "startTableId": "ZTFkIHA3fRZlzm4WoBrc6",
+      "startFieldId": "i3-HonA0NIlrXcf-R-NNv",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Set null"
+    },
+    {
+      "id": "5Jmh9ndURFsAEZIBORwg9",
+      "name": "fk_checkout_sessions_buyer_user_id",
+      "startTableId": "ZTFkIHA3fRZlzm4WoBrc6",
+      "startFieldId": "MGITNbFaBnBEJh96irx4I",
+      "endTableId": "LLVjEYEdfl3MTj8FCs9UG",
+      "endFieldId": "4xiSHOMIGaLCNYD6GwJ8t",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Set null"
+    },
+    {
+      "id": "XvtV5KgXFivg4bpDzrYlJ",
+      "name": "fk_checkout_sessions_plan_id",
+      "startTableId": "ZTFkIHA3fRZlzm4WoBrc6",
+      "startFieldId": "MnQvd0sfnrg1q4-pyoins",
+      "endTableId": "Us0DC4MO3qclyTyW3USMA",
+      "endFieldId": "pn9QvZXKXUca2Fr4JzyIQ",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "zDL7ENXtWBWYeRnVvMws-",
+      "name": "fk_pending_trial_applications_plan_id",
+      "startTableId": "uZ0lDxPc-e8SFXAmfz_XS",
+      "startFieldId": "ZUquPAqsFXxkZljZB9mZX",
+      "endTableId": "Us0DC4MO3qclyTyW3USMA",
+      "endFieldId": "pn9QvZXKXUca2Fr4JzyIQ",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "V9yCl1gvyy1C2rJag7gEQ",
+      "name": "fk_pending_trial_applications_resulting_user_id",
+      "startTableId": "uZ0lDxPc-e8SFXAmfz_XS",
+      "startFieldId": "aUpGLp-Ity2RMBfBgzBbh",
+      "endTableId": "LLVjEYEdfl3MTj8FCs9UG",
+      "endFieldId": "4xiSHOMIGaLCNYD6GwJ8t",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Set null"
+    },
+    {
+      "id": "i09F6g2y-tYXHhnX-ryrw",
+      "name": "fk_pending_trial_applications_resulting_tenant_id",
+      "startTableId": "uZ0lDxPc-e8SFXAmfz_XS",
+      "startFieldId": "DImHXT8LhJTU7E5Gf6s3v",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Set null"
+    },
+    {
+      "id": "Nm4-7zDxgOguDxf-4eUH0",
+      "name": "fk_payment_transactions_tenant_id",
+      "startTableId": "3As5_f3yTyFBnvyNFqMeX",
+      "startFieldId": "iAx-1dMSQ4l-oM15cnKJJ",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Set null"
+    },
+    {
+      "id": "4Naf5oQURCoiz6m17gA62",
+      "name": "fk_payment_transactions_checkout_session_id",
+      "startTableId": "3As5_f3yTyFBnvyNFqMeX",
+      "startFieldId": "mYMzyIwswax7OclozIbhN",
+      "endTableId": "ZTFkIHA3fRZlzm4WoBrc6",
+      "endFieldId": "mL-ZCB9Vt7Rawlcjm9Ay8",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "2RW_CUbGJIbKrR60dme2D",
+      "name": "fk_payment_transactions_subscription_id",
+      "startTableId": "3As5_f3yTyFBnvyNFqMeX",
+      "startFieldId": "dSEfx6TSxSQdv8JQZO8p8",
+      "endTableId": "WDpL8F6FMTcmU2Rv6d2Kt",
+      "endFieldId": "hwKpehON_LvWP6DDgCxWM",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Set null"
+    },
+    {
+      "id": "DAUSauhWIZTux_Wy77DiK",
+      "name": "fk_payment_events_tenant_id",
+      "startTableId": "goyA8YJDykf9-puU7-Ixi",
+      "startFieldId": "Zolm6z2MELcG2lClhqDut",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Set null"
+    },
+    {
+      "id": "0pnnaReyGH6R6UNZL_bt_",
+      "name": "fk_payment_events_payment_transaction_id",
+      "startTableId": "goyA8YJDykf9-puU7-Ixi",
+      "startFieldId": "mOAgrodAOKUz8eNDKoy1F",
+      "endTableId": "3As5_f3yTyFBnvyNFqMeX",
+      "endFieldId": "JHMQGYnSKfT4D97_g0Q-2",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Set null"
+    },
+    {
+      "id": "ciHmuG9nznryJRlVY1NiL",
+      "name": "fk_tenant_invitations_tenant_id",
+      "startTableId": "Gr4DdkZ93D-qg_-MqTdLW",
+      "startFieldId": "wz3ks_dr_s99UmyCg-Klb",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "OUJWg1wwhXwCJBkuIxXRs",
+      "name": "fk_tenant_invitations_tenant_user_id",
+      "startTableId": "Gr4DdkZ93D-qg_-MqTdLW",
+      "startFieldId": "5U76lcGsnw7W36ZcaV14F",
+      "endTableId": "EIt8WECuYSHn6OWablvmi",
+      "endFieldId": "TIdekZpmecw36SXXW1v_B",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Cascade"
+    },
+    {
+      "id": "sg_Uxc20MIivYZF65iWD_",
+      "name": "fk_tenant_invitations_role_id",
+      "startTableId": "Gr4DdkZ93D-qg_-MqTdLW",
+      "startFieldId": "2ioxYk6MfcJF4s-KrWdKo",
+      "endTableId": "UPSrpgagEvwD2eTmp0yTO",
+      "endFieldId": "WJMYA9iXmd1kDWnAOuKpr",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "1CGK-zxBdPhSEJaYoaCYI",
+      "name": "fk_tenant_invitations_invited_by_tenant_user_id",
+      "startTableId": "Gr4DdkZ93D-qg_-MqTdLW",
+      "startFieldId": "IlqV47uJHPJZxuOQbbHg7",
+      "endTableId": "EIt8WECuYSHn6OWablvmi",
+      "endFieldId": "TIdekZpmecw36SXXW1v_B",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Set null"
+    }
+  ],
+  "notes": [
+    {
+      "id": 0,
+      "title": "Tenant isolation and PostgreSQL RLS",
+      "content": "Django authenticates the user, verifies an active tenant_users membership, then runs SET LOCAL app.tenant_id = '<uuid>' inside the transaction. RLS policies on every tenant-owned table compare tenant_id to current_setting('app.tenant_id', true)::uuid. X-Tenant-ID is selection input only, never authorization. Pre-provisioning rows with nullable tenant_id are accessed only by dedicated service roles and identifiers.",
+      "x": 0,
+      "y": 0,
+      "color": "#fee2e2",
+      "width": 180,
+      "height": 594
+    },
+    {
+      "id": 1,
+      "title": "Required partial and expression indexes",
+      "content": "Migration DDL must add: UNIQUE (tenant_id,user_id) WHERE user_id IS NOT NULL on tenant_users; UNIQUE (tenant_id,lower(invited_email)) for non-revoked memberships; UNIQUE (tenant_id,tenant_user_id) WHERE tenant_user_id IS NOT NULL on employees; UNIQUE (tenant_id) WHERE subscriptions.status IN ('trialing','active','past_due','suspended'); and expression indexes for normalized email lookups. drawDB cannot represent index predicates, so these remain explicit migration requirements.",
+      "x": 340,
+      "y": 0,
+      "color": "#fef3c7",
+      "width": 180,
+      "height": 786
+    },
+    {
+      "id": 2,
+      "title": "Seed catalog",
+      "content": "Seed roles: owner, administrator, member. Seed permissions at minimum: employees.view_employee, employees.view_sensitive, employees.manage_employee, users.manage_users. Seed plan and feature catalogs from the approved MatterSolv pricing/entitlement source; frontend currentTenant.permissions and features are derived server-side.",
+      "x": 680,
+      "y": 0,
+      "color": "#ede9fe",
+      "width": 180,
+      "height": 570
+    }
+  ],
   "enums": [],
   "types": [],
   "subjectAreas": []
