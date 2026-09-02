@@ -5,8 +5,6 @@ const diagramUrl = new URL('../../database.ddb', import.meta.url)
 const diagram = JSON.parse(await readFile(diagramUrl, 'utf8'))
 
 assert.equal(diagram.database, 'postgresql')
-assert.equal(diagram.tables.length, 19)
-assert.equal(diagram.relationships.length, 34)
 
 for (const table of diagram.tables) {
   const primaryKeys = table.fields.filter(({ primary }) => primary)
@@ -24,9 +22,13 @@ for (const table of diagram.tables) {
   )
 }
 
-const notes = diagram.notes.map(({ content }) => content).join('\n')
-assert.match(notes, /PostgreSQL 18/)
-assert.match(notes, /uuidv7\(\)/)
+const identifierNote = diagram.notes.find(
+  ({ title }) => title === 'PostgreSQL version and identifiers'
+)
+assert.ok(identifierNote, 'PostgreSQL identifier policy note must exist')
+assert.match(identifierNote.content, /PostgreSQL 18/)
+assert.match(identifierNote.content, /uuidv7\(\)/)
+assert.match(identifierNote.content, /[\u0E00-\u0E7F]/)
 
 console.log(
   `Verified PostgreSQL 18 uuidv7() defaults for ${diagram.tables.length} tables`

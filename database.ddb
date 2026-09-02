@@ -3814,7 +3814,7 @@
     {
       "id": 4,
       "title": "PostgreSQL version and identifiers",
-      "content": "MatterSolv requires PostgreSQL 18 or later. Every UUID primary key uses the native uuidv7() default. Existing UUID v4 rows remain valid and created_at remains the authoritative business timestamp; UUID values are identifiers, not secrets.",
+      "content": "MatterSolv ต้องใช้ PostgreSQL 18 ขึ้นไป โดย UUID primary key ทุกตารางใช้ native default uuidv7() ข้อมูลเดิมที่เป็น UUID v4 ยังคงใช้งานได้ และ created_at ยังคงเป็นเวลาหลักสำหรับ business logic; UUID เป็นเพียง identifier และห้ามใช้แทน secret หรือ authorization control",
       "x": 1360,
       "y": 0,
       "color": "#dcfce7",
