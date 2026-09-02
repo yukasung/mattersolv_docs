@@ -80,7 +80,7 @@ for (const expected of [
   'FOREIGN KEY ("tenant_id", "department_id") REFERENCES "departments" ("tenant_id", "id")',
   'FOREIGN KEY ("tenant_id", "job_position_id") REFERENCES "job_positions" ("tenant_id", "id")',
   'FOREIGN KEY ("tenant_id", "manager_employee_id") REFERENCES "employees" ("tenant_id", "id")',
-  'ON DELETE SET NULL ("manager_employee_id")',
+  'ON DELETE RESTRICT;',
   'CREATE CONSTRAINT TRIGGER departments_no_cycle',
   'CREATE CONSTRAINT TRIGGER employees_manager_no_cycle'
 ]) assert.ok(isolation.includes(expected), `missing HR constraint: ${expected}`)
@@ -88,7 +88,7 @@ for (const expected of [
 for (const expected of [
   'Cross-tenant department was accepted', 'Duplicate normalized department code was accepted',
   'Department cycle was accepted', 'Employee manager cycle was accepted', 'Self-manager was accepted',
-  'Deleting an in-use job position was accepted', 'Manager deletion did not clear manager_employee_id',
+  'Deleting an in-use job position was accepted', 'Deleting a referenced manager was accepted',
   'RLS exposed Tenant B departments to Tenant A'
 ]) assert.match(runtimeVerifier, new RegExp(expected))
 

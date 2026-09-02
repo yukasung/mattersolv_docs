@@ -85,6 +85,137 @@ AFTER INSERT OR UPDATE OF manager_employee_id ON employees
 DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION reject_employee_manager_cycle();
 
+-- Employment versions retain past, current, and future assignment state.
+-- Voided corrections may share an effective date, but only one active version
+-- can apply to an employee on that date.
+CREATE UNIQUE INDEX IF NOT EXISTS
+    uq_employee_employment_versions_active_effective_date
+ON employee_employment_versions (tenant_id, employee_id, effective_from)
+WHERE is_active;
+
+CREATE INDEX IF NOT EXISTS idx_employee_employment_versions_active_lookup
+ON employee_employment_versions (tenant_id, employee_id, effective_from DESC)
+WHERE is_active;
+
+-- drawDB renders DATE column checks in the canvas but its PostgreSQL exporter
+-- does not emit them, so install these as executable table constraints.
+ALTER TABLE employees
+    DROP CONSTRAINT IF EXISTS chk_employees_contract_dates;
+ALTER TABLE employees
+    ADD CONSTRAINT chk_employees_contract_dates CHECK (
+      contract_end_date IS NULL OR (
+        contract_start_date IS NOT NULL
+        AND contract_end_date >= contract_start_date
+      )
+    );
+ALTER TABLE employee_employment_versions
+    DROP CONSTRAINT IF EXISTS chk_employee_employment_versions_contract_dates;
+ALTER TABLE employee_employment_versions
+    ADD CONSTRAINT chk_employee_employment_versions_contract_dates CHECK (
+      contract_end_date IS NULL OR (
+        contract_start_date IS NOT NULL
+        AND contract_end_date >= contract_start_date
+      )
+    );
+
+CREATE OR REPLACE FUNCTION select_employee_employment_version(
+    p_tenant_id bigint,
+    p_employee_id bigint,
+    p_business_date date
+) RETURNS bigint
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT version.id
+    FROM employee_employment_versions AS version
+    WHERE version.tenant_id = p_tenant_id
+      AND version.employee_id = p_employee_id
+      AND version.is_active
+    ORDER BY
+      CASE WHEN version.effective_from <= p_business_date THEN 0 ELSE 1 END,
+      CASE WHEN version.effective_from <= p_business_date THEN version.effective_from END DESC,
+      CASE WHEN version.effective_from > p_business_date THEN version.effective_from END ASC,
+      version.id DESC
+    LIMIT 1
+$$;
+
+CREATE OR REPLACE FUNCTION validate_employee_employment_snapshot()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    affected_tenant_id bigint;
+    affected_employee_id bigint;
+    business_date date;
+    selected_version_id bigint;
+    employee_row employees%ROWTYPE;
+    version_row employee_employment_versions%ROWTYPE;
+BEGIN
+    IF TG_TABLE_NAME = 'employees' THEN
+        affected_tenant_id := NEW.tenant_id;
+        affected_employee_id := NEW.id;
+    ELSE
+        affected_tenant_id := NEW.tenant_id;
+        affected_employee_id := NEW.employee_id;
+    END IF;
+
+    SELECT (CURRENT_TIMESTAMP AT TIME ZONE tenant.timezone)::date
+    INTO STRICT business_date
+    FROM tenants AS tenant
+    WHERE tenant.id = affected_tenant_id;
+
+    SELECT * INTO STRICT employee_row
+    FROM employees
+    WHERE tenant_id = affected_tenant_id AND id = affected_employee_id;
+
+    selected_version_id := select_employee_employment_version(
+        affected_tenant_id,
+        affected_employee_id,
+        business_date
+    );
+    IF selected_version_id IS NULL THEN
+        RAISE EXCEPTION 'employee must have an active employment version'
+            USING ERRCODE = '23514';
+    END IF;
+
+    SELECT * INTO STRICT version_row
+    FROM employee_employment_versions
+    WHERE tenant_id = affected_tenant_id
+      AND employee_id = affected_employee_id
+      AND id = selected_version_id;
+
+    IF employee_row.current_employment_version_id IS DISTINCT FROM version_row.id
+       OR employee_row.department_id IS DISTINCT FROM version_row.department_id
+       OR employee_row.job_position_id IS DISTINCT FROM version_row.job_position_id
+       OR employee_row.manager_employee_id IS DISTINCT FROM version_row.manager_employee_id
+       OR employee_row.employment_type IS DISTINCT FROM version_row.employment_type
+       OR employee_row.contract_start_date IS DISTINCT FROM version_row.contract_start_date
+       OR employee_row.contract_end_date IS DISTINCT FROM version_row.contract_end_date THEN
+        RAISE EXCEPTION 'employee current employment snapshot is inconsistent'
+            USING ERRCODE = '23514';
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS employees_employment_snapshot_consistent ON employees;
+CREATE CONSTRAINT TRIGGER employees_employment_snapshot_consistent
+AFTER INSERT OR UPDATE OF current_employment_version_id, department_id,
+  job_position_id, manager_employee_id, employment_type,
+  contract_start_date, contract_end_date ON employees
+DEFERRABLE INITIALLY DEFERRED
+FOR EACH ROW EXECUTE FUNCTION validate_employee_employment_snapshot();
+
+DROP TRIGGER IF EXISTS employee_employment_versions_snapshot_consistent
+  ON employee_employment_versions;
+CREATE CONSTRAINT TRIGGER employee_employment_versions_snapshot_consistent
+AFTER INSERT OR UPDATE OF tenant_id, employee_id, effective_from,
+  department_id, job_position_id, manager_employee_id, employment_type,
+  contract_start_date, contract_end_date, is_active
+  ON employee_employment_versions
+DEFERRABLE INITIALLY DEFERRED
+FOR EACH ROW EXECUTE FUNCTION validate_employee_employment_snapshot();
+
 -- Enforce tenant consistency for relationships between tenant-owned records.
 -- Existing single-column foreign keys remain useful for their delete actions;
 -- these composite keys add the tenant equality invariant.
@@ -132,7 +263,46 @@ ALTER TABLE "employees" ADD CONSTRAINT "fk_employees_job_position_tenant"
 ALTER TABLE "employees" DROP CONSTRAINT IF EXISTS "fk_employees_manager_tenant";
 ALTER TABLE "employees" ADD CONSTRAINT "fk_employees_manager_tenant"
     FOREIGN KEY ("tenant_id", "manager_employee_id") REFERENCES "employees" ("tenant_id", "id")
-    ON DELETE SET NULL ("manager_employee_id");
+    ON DELETE RESTRICT;
+
+ALTER TABLE "employee_employment_versions"
+    DROP CONSTRAINT IF EXISTS "fk_employee_employment_versions_employee_tenant";
+ALTER TABLE "employee_employment_versions"
+    ADD CONSTRAINT "fk_employee_employment_versions_employee_tenant"
+    FOREIGN KEY ("tenant_id", "employee_id")
+    REFERENCES "employees" ("tenant_id", "id") ON DELETE RESTRICT;
+ALTER TABLE "employee_employment_versions"
+    DROP CONSTRAINT IF EXISTS "fk_employee_employment_versions_department_tenant";
+ALTER TABLE "employee_employment_versions"
+    ADD CONSTRAINT "fk_employee_employment_versions_department_tenant"
+    FOREIGN KEY ("tenant_id", "department_id")
+    REFERENCES "departments" ("tenant_id", "id") ON DELETE RESTRICT;
+ALTER TABLE "employee_employment_versions"
+    DROP CONSTRAINT IF EXISTS "fk_employee_employment_versions_job_position_tenant";
+ALTER TABLE "employee_employment_versions"
+    ADD CONSTRAINT "fk_employee_employment_versions_job_position_tenant"
+    FOREIGN KEY ("tenant_id", "job_position_id")
+    REFERENCES "job_positions" ("tenant_id", "id") ON DELETE RESTRICT;
+ALTER TABLE "employee_employment_versions"
+    DROP CONSTRAINT IF EXISTS "fk_employee_employment_versions_manager_tenant";
+ALTER TABLE "employee_employment_versions"
+    ADD CONSTRAINT "fk_employee_employment_versions_manager_tenant"
+    FOREIGN KEY ("tenant_id", "manager_employee_id")
+    REFERENCES "employees" ("tenant_id", "id") ON DELETE RESTRICT;
+ALTER TABLE "employee_employment_versions"
+    DROP CONSTRAINT IF EXISTS "fk_employee_employment_versions_recorder_tenant";
+ALTER TABLE "employee_employment_versions"
+    ADD CONSTRAINT "fk_employee_employment_versions_recorder_tenant"
+    FOREIGN KEY ("tenant_id", "recorded_by_tenant_user_id")
+    REFERENCES "tenant_users" ("tenant_id", "id") ON DELETE RESTRICT;
+
+ALTER TABLE "employees"
+    DROP CONSTRAINT IF EXISTS "fk_employees_current_employment_version";
+ALTER TABLE "employees"
+    ADD CONSTRAINT "fk_employees_current_employment_version"
+    FOREIGN KEY ("tenant_id", "id", "current_employment_version_id")
+    REFERENCES "employee_employment_versions" ("tenant_id", "employee_id", "id")
+    ON DELETE RESTRICT DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "employee_addresses"
     DROP CONSTRAINT IF EXISTS "fk_employee_addresses_employee_tenant";
@@ -275,6 +445,23 @@ ALTER TABLE "employees" FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS tenant_isolation ON "employees";
 CREATE POLICY tenant_isolation ON "employees"
     FOR ALL TO PUBLIC
+    USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint)
+    WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
+
+ALTER TABLE "employee_employment_versions" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "employee_employment_versions" FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON "employee_employment_versions";
+DROP POLICY IF EXISTS tenant_isolation_select ON "employee_employment_versions";
+CREATE POLICY tenant_isolation_select ON "employee_employment_versions"
+    FOR SELECT TO PUBLIC
+    USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
+DROP POLICY IF EXISTS tenant_isolation_insert ON "employee_employment_versions";
+CREATE POLICY tenant_isolation_insert ON "employee_employment_versions"
+    FOR INSERT TO PUBLIC
+    WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
+DROP POLICY IF EXISTS tenant_isolation_update ON "employee_employment_versions";
+CREATE POLICY tenant_isolation_update ON "employee_employment_versions"
+    FOR UPDATE TO PUBLIC
     USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint)
     WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
 

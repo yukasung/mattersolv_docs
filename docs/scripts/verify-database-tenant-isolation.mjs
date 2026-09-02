@@ -67,6 +67,23 @@ for (const statement of [
 assert.doesNotMatch(migration, /CREATE POLICY tenant_isolation_update ON "audit_events"/)
 assert.doesNotMatch(migration, /CREATE POLICY tenant_isolation_delete ON "audit_events"/)
 
+for (const statement of [
+  'ALTER TABLE "employee_employment_versions" ENABLE ROW LEVEL SECURITY;',
+  'ALTER TABLE "employee_employment_versions" FORCE ROW LEVEL SECURITY;',
+  'CREATE POLICY tenant_isolation_select ON "employee_employment_versions"',
+  'CREATE POLICY tenant_isolation_insert ON "employee_employment_versions"',
+  'CREATE POLICY tenant_isolation_update ON "employee_employment_versions"'
+]) {
+  assert.ok(
+    migration.includes(statement),
+    `employment history isolation must include: ${statement}`
+  )
+}
+assert.doesNotMatch(
+  migration,
+  /CREATE POLICY tenant_isolation_delete ON "employee_employment_versions"/
+)
+
 const compositeForeignKeys = [
   ['tenant_users', 'invited_by_tenant_user_id', 'tenant_users'],
   ['tenant_role_assignments', 'tenant_user_id', 'tenant_users'],
@@ -77,6 +94,11 @@ const compositeForeignKeys = [
   ['employees', 'department_id', 'departments'],
   ['employees', 'job_position_id', 'job_positions'],
   ['employees', 'manager_employee_id', 'employees'],
+  ['employee_employment_versions', 'employee_id', 'employees'],
+  ['employee_employment_versions', 'department_id', 'departments'],
+  ['employee_employment_versions', 'job_position_id', 'job_positions'],
+  ['employee_employment_versions', 'manager_employee_id', 'employees'],
+  ['employee_employment_versions', 'recorded_by_tenant_user_id', 'tenant_users'],
   ['audit_events', 'actor_tenant_user_id', 'tenant_users'],
   ['employee_addresses', 'employee_id', 'employees'],
   ['payment_transactions', 'checkout_session_id', 'checkout_sessions'],
@@ -88,12 +110,21 @@ const compositeForeignKeys = [
 ]
 
 for (const [table, field, parent] of compositeForeignKeys) {
-  const expected = `FOREIGN KEY ("tenant_id", "${field}") REFERENCES "${parent}" ("tenant_id", "id")`
-  assert.ok(
-    migration.includes(expected),
+  const expected = new RegExp(
+    `FOREIGN KEY \\(\"tenant_id\", \"${field}\"\\)\\s+` +
+    `REFERENCES \"${parent}\" \\(\"tenant_id\", \"id\"\\)`
+  )
+  assert.match(
+    migration,
+    expected,
     `${table}.${field} must use a composite tenant foreign key`
   )
 }
+
+assert.match(
+  migration,
+  /FOREIGN KEY \("tenant_id", "id", "current_employment_version_id"\)\s+REFERENCES "employee_employment_versions" \("tenant_id", "employee_id", "id"\)/
+)
 
 assert.match(migration, /current_setting\('app\.tenant_id', true\)/)
 assert.match(migration, /current_setting\('app\.tenant_id', true\), ''\)::bigint/)
@@ -124,6 +155,7 @@ const expectedTenantReferences = [
   'checkout_sessions.tenant_id',
   'departments.tenant_id',
   'employee_addresses.tenant_id',
+  'employee_employment_versions.tenant_id',
   'employees.tenant_id',
   'job_positions.tenant_id',
   'payment_events.tenant_id',

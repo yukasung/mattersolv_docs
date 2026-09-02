@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 
-const diagram = JSON.parse(await readFile(
-  new URL('../../database.ddb', import.meta.url),
-  'utf8'
-))
+const [diagram, isolation, runtimeVerifier] = await Promise.all([
+  readFile(new URL('../../database.ddb', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('./mattersolv-phase0-tenant-isolation.sql', import.meta.url), 'utf8'),
+  readFile(new URL('./verify-database-employment-history.sql', import.meta.url), 'utf8')
+])
 const tables = new Map(diagram.tables.map((table) => [table.name, table]))
 const table = (name) => {
   const value = tables.get(name)
@@ -132,5 +133,54 @@ assert.match(
   /uq_employee_employment_versions_active_effective_date/
 )
 assert.match(partialIndexNote.content, /WHERE is_active/)
+
+for (const expected of [
+  'uq_employee_employment_versions_active_effective_date',
+  'idx_employee_employment_versions_active_lookup',
+  'chk_employees_contract_dates',
+  'chk_employee_employment_versions_contract_dates',
+  'WHERE is_active',
+  'DEFERRABLE INITIALLY DEFERRED',
+  'CREATE OR REPLACE FUNCTION select_employee_employment_version',
+  'CREATE OR REPLACE FUNCTION validate_employee_employment_snapshot',
+  'CREATE CONSTRAINT TRIGGER employees_employment_snapshot_consistent',
+  'CREATE CONSTRAINT TRIGGER employee_employment_versions_snapshot_consistent',
+  'ALTER TABLE "employee_employment_versions" ENABLE ROW LEVEL SECURITY;',
+  'ALTER TABLE "employee_employment_versions" FORCE ROW LEVEL SECURITY;',
+  'CREATE POLICY tenant_isolation_select ON "employee_employment_versions"',
+  'CREATE POLICY tenant_isolation_insert ON "employee_employment_versions"',
+  'CREATE POLICY tenant_isolation_update ON "employee_employment_versions"'
+]) assert.ok(isolation.includes(expected), `missing employment history SQL: ${expected}`)
+
+for (const expected of [
+  /FOREIGN KEY \("tenant_id", "employee_id"\)\s+REFERENCES "employees" \("tenant_id", "id"\)/,
+  /FOREIGN KEY \("tenant_id", "department_id"\)\s+REFERENCES "departments" \("tenant_id", "id"\)/,
+  /FOREIGN KEY \("tenant_id", "job_position_id"\)\s+REFERENCES "job_positions" \("tenant_id", "id"\)/,
+  /FOREIGN KEY \("tenant_id", "manager_employee_id"\)\s+REFERENCES "employees" \("tenant_id", "id"\)/,
+  /FOREIGN KEY \("tenant_id", "recorded_by_tenant_user_id"\)\s+REFERENCES "tenant_users" \("tenant_id", "id"\)/,
+  /FOREIGN KEY \("tenant_id", "id", "current_employment_version_id"\)\s+REFERENCES "employee_employment_versions" \("tenant_id", "employee_id", "id"\)/
+]) assert.match(isolation, expected)
+
+assert.doesNotMatch(
+  isolation,
+  /CREATE POLICY tenant_isolation_delete ON "employee_employment_versions"/
+)
+
+for (const expected of [
+  'Duplicate active effective date was accepted',
+  'Cross-tenant employment reference was accepted',
+  'Cross-tenant recorder was accepted',
+  'Current pointer accepted another employee version',
+  'Snapshot mismatch was accepted',
+  'Invalid contract date range was accepted',
+  'Self-manager version was accepted',
+  'Latest effective version was not selected',
+  'Earliest future version was not selected',
+  'Inactive version participated in selection',
+  'Current manager cycle was accepted',
+  'Archiving employee removed employment history',
+  'Runtime role deleted employment history',
+  'RLS exposed Tenant B employment history to Tenant A'
+]) assert.match(runtimeVerifier, new RegExp(expected))
 
 console.log('Verified effective-dated employment history diagram contract')

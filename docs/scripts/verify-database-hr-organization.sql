@@ -4,6 +4,16 @@
 
 INSERT INTO tenants (slug, name) VALUES ('hr-org-a', 'HR Organization A') RETURNING id AS tenant_a_id \gset
 INSERT INTO tenants (slug, name) VALUES ('hr-org-b', 'HR Organization B') RETURNING id AS tenant_b_id \gset
+INSERT INTO auth_user (
+  password, username, first_name, last_name, email,
+  is_superuser, is_staff, is_active, date_joined
+) VALUES (
+  'unusable', 'hr-org@example.test', '', '', 'hr-org@example.test',
+  false, false, true, now()
+) RETURNING id AS actor_user_id \gset
+INSERT INTO tenant_users (tenant_id, user_id, invited_email)
+VALUES (:'tenant_a_id', :'actor_user_id', 'hr-org@example.test')
+RETURNING id AS actor_tenant_user_id \gset
 INSERT INTO departments (tenant_id, code, code_key, name) VALUES
   (:'tenant_a_id', 'civil', 'civil', 'Civil'),
   (:'tenant_a_id', 'criminal', 'criminal', 'Criminal');
@@ -16,6 +26,7 @@ VALUES (:'tenant_b_id', 'employee', 'employee', 'Employee') RETURNING id AS tena
 SELECT id AS tenant_a_department_id FROM departments
 WHERE tenant_id = :'tenant_a_id' AND code_key = 'civil' \gset
 
+BEGIN;
 INSERT INTO employees (
   tenant_id, employee_number, employee_number_key, prefix, first_name, last_name,
   work_email, work_phone, department_id, job_position_id, employment_start_date,
@@ -25,6 +36,22 @@ INSERT INTO employees (
   'manager@example.test', '+66810000001', :'tenant_a_department_id',
   :'tenant_a_position_id', DATE '2026-01-01', 'national_id', '1000000000001'
 ) RETURNING id AS manager_employee_id \gset
+INSERT INTO employee_employment_versions (
+  tenant_id, employee_id, effective_from, department_id, job_position_id,
+  employment_type, recorded_by_tenant_user_id
+) VALUES (
+  :'tenant_a_id', :'manager_employee_id', DATE '2000-01-01',
+  :'tenant_a_department_id', :'tenant_a_position_id', 'employee',
+  :'actor_tenant_user_id'
+) RETURNING id AS manager_version_id \gset
+UPDATE employees SET
+  current_employment_version_id = :'manager_version_id',
+  employment_type = 'employee'
+WHERE id = :'manager_employee_id';
+SET CONSTRAINTS ALL IMMEDIATE;
+COMMIT;
+
+BEGIN;
 INSERT INTO employees (
   tenant_id, employee_number, employee_number_key, prefix, first_name, last_name,
   work_email, work_phone, department_id, job_position_id, manager_employee_id,
@@ -35,6 +62,20 @@ INSERT INTO employees (
   :'tenant_a_position_id', :'manager_employee_id', DATE '2026-01-01',
   'national_id', '1000000000002'
 ) RETURNING id AS subordinate_employee_id \gset
+INSERT INTO employee_employment_versions (
+  tenant_id, employee_id, effective_from, department_id, job_position_id,
+  manager_employee_id, employment_type, recorded_by_tenant_user_id
+) VALUES (
+  :'tenant_a_id', :'subordinate_employee_id', DATE '2000-01-01',
+  :'tenant_a_department_id', :'tenant_a_position_id', :'manager_employee_id',
+  'employee', :'actor_tenant_user_id'
+) RETURNING id AS subordinate_version_id \gset
+UPDATE employees SET
+  current_employment_version_id = :'subordinate_version_id',
+  employment_type = 'employee'
+WHERE id = :'subordinate_employee_id';
+SET CONSTRAINTS ALL IMMEDIATE;
+COMMIT;
 
 DO $$
 DECLARE
@@ -90,12 +131,12 @@ BEGIN
   EXCEPTION WHEN check_violation THEN NULL; END;
 END $$;
 
-DELETE FROM employees WHERE employee_number = 'EMP-MGR';
 DO $$
 BEGIN
-  IF (SELECT manager_employee_id FROM employees WHERE employee_number = 'EMP-SUB') IS NOT NULL THEN
-    RAISE EXCEPTION 'Manager deletion did not clear manager_employee_id';
-  END IF;
+  BEGIN
+    DELETE FROM employees WHERE employee_number = 'EMP-MGR';
+    RAISE EXCEPTION 'Deleting a referenced manager was accepted';
+  EXCEPTION WHEN restrict_violation OR foreign_key_violation THEN NULL; END;
 END $$;
 
 DO $$ BEGIN
