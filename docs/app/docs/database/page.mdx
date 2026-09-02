@@ -166,6 +166,29 @@ Backend ต้องจองเลขแบบ atomic ภายใน transacti
 - กระบวนการ purge ในอนาคตต้องกำหนดผู้อนุมัติ ระยะรอ การส่งออกข้อมูล Backup,
   Audit Log, retention และ Legal Hold ก่อนเปิดใช้งาน
 
+## Employee Organization Data
+
+`departments` และ `job_positions` เป็น master data แยกตาม Tenant ส่วน
+`employees` เก็บ `department_id`, `job_position_id` และ
+`manager_employee_id` เป็น internal `BIGINT` references ห้ามเก็บชื่อแผนกหรือ
+ตำแหน่งซ้ำบน Employee record
+
+- Department และ Position ใช้ stable code ที่ไม่ซ้ำแบบ case-insensitive ภายใน Tenant
+- Position ไม่ผูกกับ Department เดียว เพื่อให้ตำแหน่งเดียวกันใช้ได้หลายทีม
+- การสร้างหรือย้าย Employee เลือกได้เฉพาะ catalog record ที่ active
+- การ archive catalog ไม่ทำลาย Employee เดิม แต่ห้ามใช้กับ assignment ใหม่
+- Manager และ parent Department ต้องอยู่ Tenant เดียวกันและห้ามเกิดวงจร
+- การลบ Department หรือ Position ที่ถูกใช้งานต้องถูก Foreign Key ปฏิเสธ
+
+API Employee ยังคงใช้ `department` และ `position` เป็น stable code เพื่อรักษา
+frontend contract ส่วน Backend resolve code เป็น internal ID ภายใต้ Tenant context
+ก่อนบันทึก การเพิ่มหรือเปลี่ยนชื่อ catalog ผ่านหน้า Administration เป็นงานภายหลัง
+
+Migration ที่มีข้อมูลเดิมต้องสร้าง catalog จากค่าที่ normalize แยกตาม Tenant,
+เพิ่ม FK แบบ nullable, backfill และตรวจค่าที่ map ไม่ได้ก่อน validate composite FK
+จากนั้นจึงเปลี่ยน FK เป็น `NOT NULL` และลบ text columns เดิม ห้ามเลือก fallback
+department หรือ position ให้ข้อมูลที่กำกวมโดยอัตโนมัติ
+
 ## PostgreSQL Partitioning
 
 ใช้ Declarative Partitioning เฉพาะตารางที่มีขนาดใหญ่และมีรูปแบบ query หรือ
@@ -231,6 +254,8 @@ retention ที่ได้ประโยชน์จาก partition pruning 
   และการแก้ Audit Event ต้องถูก PostgreSQL ปฏิเสธ
 - Concurrent allocator ต้องคืน running number ไม่ซ้ำ และ format ที่เปลี่ยนต้องไม่
   แก้เลขที่ออกไปแล้ว
+- Department, Position และ Manager ที่อ้างจาก Employee ต้องอยู่ Workspace เดียวกัน
+  และ PostgreSQL ต้องปฏิเสธ hierarchy cycle กับ normalized code ที่ซ้ำ
 - Partition routing และ partition pruning ทำงานตามช่วงที่กำหนด
 - การสร้าง partition ใหม่ไม่ทำให้ constraint หรือ index หาย
 - Restore test รักษาข้อมูล ความสัมพันธ์ audit history และขอบเขต Workspace
@@ -248,6 +273,11 @@ retention ที่ได้ประโยชน์จาก partition pruning 
 หลังโหลด schema export กับ tenant-isolation migration แล้ว ส่วน concurrent allocator
 ทดสอบด้วย `database:tenant-settings:concurrency:verify` ซึ่งเปิดหลาย `psql` connection
 และตรวจว่าเลขที่คืนไม่ซ้ำกับ `tenant_settings_allocation_results.issued_number`
+
+ทดสอบ Department, Position, Manager, composite tenant FK, cycle detection,
+delete behavior และ RLS ได้ด้วย
+`docs/scripts/verify-database-hr-organization.sql` บนฐานข้อมูล PostgreSQL 18
+ที่ลบทิ้งได้
 
 ## Related Documents
 
