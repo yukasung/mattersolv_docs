@@ -1,0 +1,10 @@
+{
+  "title": "MatterSolv Database",
+  "database": "postgresql",
+  "tables": [],
+  "relationships": [],
+  "notes": [],
+  "enums": [],
+  "types": [],
+  "subjectAreas": []
+}
