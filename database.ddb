@@ -1057,9 +1057,9 @@
           "size": 16
         },
         {
-          "id": "atjiuk_IBrQfXsI37snzt",
-          "name": "department",
-          "type": "TEXT",
+          "id": "735ab26b-8072-41b0-8c52-903ccbe5b4e3",
+          "name": "department_id",
+          "type": "BIGINT",
           "primary": false,
           "unique": false,
           "notNull": true,
@@ -1069,15 +1069,27 @@
           "comment": ""
         },
         {
-          "id": "fajmmiiYtfASnpqeRcUtY",
-          "name": "position",
-          "type": "TEXT",
+          "id": "543fd6ac-dc4b-4b6b-8fb4-c18ad02fcd5d",
+          "name": "job_position_id",
+          "type": "BIGINT",
           "primary": false,
           "unique": false,
           "notNull": true,
           "increment": false,
           "default": "",
           "check": "",
+          "comment": ""
+        },
+        {
+          "id": "80bd7f79-2e7f-48d9-aada-750b4c89f642",
+          "name": "manager_employee_id",
+          "type": "BIGINT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "manager_employee_id IS NULL OR manager_employee_id <> id",
           "comment": ""
         },
         {
@@ -1308,6 +1320,30 @@
             "id"
           ],
           "unique": true
+        },
+        {
+          "name": "idx_employees_tenant_department",
+          "fields": [
+            "tenant_id",
+            "department_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_employees_tenant_job_position",
+          "fields": [
+            "tenant_id",
+            "job_position_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_employees_tenant_manager",
+          "fields": [
+            "tenant_id",
+            "manager_employee_id"
+          ],
+          "unique": false
         }
       ],
       "color": "#059669"
@@ -1315,8 +1351,8 @@
     {
       "id": "UkZss3kk9Qt3y99bqhhoN",
       "name": "employee_addresses",
-      "x": 1920,
-      "y": 1630,
+      "x": 1790,
+      "y": 2150,
       "fields": [
         {
           "id": "yWgJ_pLMKSF8KKb-kRDTf",
@@ -4553,6 +4589,344 @@
         }
       ],
       "color": "#7c3aed"
+    },
+    {
+      "id": "c4c4b294-d266-4a4f-9680-1764ff8f5f7c",
+      "name": "departments",
+      "x": 1790,
+      "y": 1630,
+      "fields": [
+        {
+          "id": "9ebe01d9-24e4-441f-9ca3-ed358756410d",
+          "name": "id",
+          "type": "BIGINT",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": true,
+          "default": "",
+          "check": "",
+          "comment": "Internal database key; never expose this sequential value through the public API."
+        },
+        {
+          "id": "3cb49528-57da-44bc-89dd-7999d6ebcba5",
+          "name": "public_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": true,
+          "notNull": true,
+          "increment": false,
+          "default": "uuidv7()",
+          "check": "",
+          "comment": "Stable opaque identifier exposed through APIs and URLs."
+        },
+        {
+          "id": "701eb90c-8272-4917-960c-ce3db2abf054",
+          "name": "tenant_id",
+          "type": "BIGINT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Verified SaaS isolation boundary; never trust the request header without membership validation."
+        },
+        {
+          "id": "11c783a7-e7e4-4592-ab9e-8b6e6e5e84e6",
+          "name": "code",
+          "type": "VARCHAR",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "",
+          "size": 50
+        },
+        {
+          "id": "385061d6-24c1-4bc9-9fda-371b8f73a252",
+          "name": "code_key",
+          "type": "VARCHAR",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "code_key = lower(btrim(code))",
+          "comment": "Canonical case-insensitive key derived from code by Django.",
+          "size": 50
+        },
+        {
+          "id": "b3204915-f19f-4256-ad1f-1446d7b29080",
+          "name": "name",
+          "type": "VARCHAR",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "btrim(name) <> ''",
+          "comment": "",
+          "size": 100
+        },
+        {
+          "id": "6b4fd4d1-2b6f-47ac-907e-5c8ccf2fa7c7",
+          "name": "parent_department_id",
+          "type": "BIGINT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "db5ac5eb-38da-4dfc-a9b4-207698c61765",
+          "name": "status",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "active",
+          "check": "status IN ('active','archived') AND ((status = 'archived') = (archived_at IS NOT NULL))",
+          "comment": ""
+        },
+        {
+          "id": "bf044fb4-854d-40f4-b088-60b19ca3cfe9",
+          "name": "archived_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "95dbd211-fcae-44e5-b3bc-3aedbd7e5696",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "24bfb90c-3c78-4a0f-9b7d-6bedc7148826",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Tenant-owned department catalog adapted from Odoo hr.department. Parent and employee references require composite tenant FKs; normal removal archives the record.",
+      "indices": [
+        {
+          "name": "uq_departments_tenant_id",
+          "fields": [
+            "tenant_id",
+            "id"
+          ],
+          "unique": true
+        },
+        {
+          "name": "uq_departments_tenant_code_key",
+          "fields": [
+            "tenant_id",
+            "code_key"
+          ],
+          "unique": true
+        },
+        {
+          "name": "idx_departments_tenant_status",
+          "fields": [
+            "tenant_id",
+            "status"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_departments_tenant_parent",
+          "fields": [
+            "tenant_id",
+            "parent_department_id"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#059669"
+    },
+    {
+      "id": "a29bad2e-a14b-4de5-88bf-6ab647f22d0a",
+      "name": "job_positions",
+      "x": 2030,
+      "y": 1630,
+      "fields": [
+        {
+          "id": "0178a56d-bbe0-4ab2-9170-f7909248f3e1",
+          "name": "id",
+          "type": "BIGINT",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": true,
+          "default": "",
+          "check": "",
+          "comment": "Internal database key; never expose this sequential value through the public API."
+        },
+        {
+          "id": "24f1003e-f352-4e8a-b6da-b211d83a617c",
+          "name": "public_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": true,
+          "notNull": true,
+          "increment": false,
+          "default": "uuidv7()",
+          "check": "",
+          "comment": "Stable opaque identifier exposed through APIs and URLs."
+        },
+        {
+          "id": "15ba7d35-5aee-485b-9b1a-ae48e66e017b",
+          "name": "tenant_id",
+          "type": "BIGINT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Verified SaaS isolation boundary; never trust the request header without membership validation."
+        },
+        {
+          "id": "692c9226-cbb7-47cf-aeab-155840bd2295",
+          "name": "code",
+          "type": "VARCHAR",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "",
+          "size": 50
+        },
+        {
+          "id": "bcb0083b-3ca6-4c49-a43f-c05ba036f0f7",
+          "name": "code_key",
+          "type": "VARCHAR",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "code_key = lower(btrim(code))",
+          "comment": "Canonical case-insensitive key derived from code by Django.",
+          "size": 50
+        },
+        {
+          "id": "ad3a9330-5e5c-4cf0-812b-87c8a3f014a7",
+          "name": "name",
+          "type": "VARCHAR",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "btrim(name) <> ''",
+          "comment": "",
+          "size": 100
+        },
+        {
+          "id": "87d39aff-5102-4a26-9705-75e1b6cf839c",
+          "name": "status",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "active",
+          "check": "status IN ('active','archived') AND ((status = 'archived') = (archived_at IS NOT NULL))",
+          "comment": ""
+        },
+        {
+          "id": "7842599c-f13c-4270-baee-ef88e5723f93",
+          "name": "archived_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "58d4a5f1-d30c-437b-920d-c4ad13262e0c",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "7d465e7f-c04b-4884-9c1f-5e0d13508f6e",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Tenant-owned position catalog adapted from Odoo hr.job but intentionally independent from departments. Normal removal archives the record.",
+      "indices": [
+        {
+          "name": "uq_job_positions_tenant_id",
+          "fields": [
+            "tenant_id",
+            "id"
+          ],
+          "unique": true
+        },
+        {
+          "name": "uq_job_positions_tenant_code_key",
+          "fields": [
+            "tenant_id",
+            "code_key"
+          ],
+          "unique": true
+        },
+        {
+          "name": "idx_job_positions_tenant_status",
+          "fields": [
+            "tenant_id",
+            "status"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#059669"
     }
   ],
   "relationships": [
@@ -5072,6 +5446,72 @@
       "cardinality": "one_to_many",
       "updateConstraint": "No action",
       "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "cfe138f6-f3c6-4697-a5f4-2e48f4d6c6b8",
+      "name": "fk_departments_tenant_id",
+      "startTableId": "c4c4b294-d266-4a4f-9680-1764ff8f5f7c",
+      "startFieldId": "701eb90c-8272-4917-960c-ce3db2abf054",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "a16d23f9-6e77-4027-bcf6-73c952d21f33",
+      "name": "fk_departments_parent_department_id",
+      "startTableId": "c4c4b294-d266-4a4f-9680-1764ff8f5f7c",
+      "startFieldId": "6b4fd4d1-2b6f-47ac-907e-5c8ccf2fa7c7",
+      "endTableId": "c4c4b294-d266-4a4f-9680-1764ff8f5f7c",
+      "endFieldId": "9ebe01d9-24e4-441f-9ca3-ed358756410d",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "727672ff-deb3-4b83-aa78-1a4ea8f6dc47",
+      "name": "fk_job_positions_tenant_id",
+      "startTableId": "a29bad2e-a14b-4de5-88bf-6ab647f22d0a",
+      "startFieldId": "15ba7d35-5aee-485b-9b1a-ae48e66e017b",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "92280633-628a-4281-9f5a-0ab0070a3883",
+      "name": "fk_employees_department_id",
+      "startTableId": "KEIeFlGCgN6AoCX4Qaknn",
+      "startFieldId": "735ab26b-8072-41b0-8c52-903ccbe5b4e3",
+      "endTableId": "c4c4b294-d266-4a4f-9680-1764ff8f5f7c",
+      "endFieldId": "9ebe01d9-24e4-441f-9ca3-ed358756410d",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "ca987dcd-3595-44d9-96bf-415afabad5e1",
+      "name": "fk_employees_job_position_id",
+      "startTableId": "KEIeFlGCgN6AoCX4Qaknn",
+      "startFieldId": "543fd6ac-dc4b-4b6b-8fb4-c18ad02fcd5d",
+      "endTableId": "a29bad2e-a14b-4de5-88bf-6ab647f22d0a",
+      "endFieldId": "0178a56d-bbe0-4ab2-9170-f7909248f3e1",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "0d226492-e7ed-421b-a2e7-eedc28915e7d",
+      "name": "fk_employees_manager_employee_id",
+      "startTableId": "KEIeFlGCgN6AoCX4Qaknn",
+      "startFieldId": "80bd7f79-2e7f-48d9-aada-750b4c89f642",
+      "endTableId": "KEIeFlGCgN6AoCX4Qaknn",
+      "endFieldId": "i8_YG5Kzr1GJiXllhcPfZ",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Set null"
     }
   ],
   "notes": [
@@ -5098,22 +5538,22 @@
     {
       "id": 2,
       "title": "Seed catalog",
-      "content": "Provisioning สร้าง Django auth_group แยกต่อ tenant สำหรับ role codes owner, administrator และ member โดยใช้ชื่อภายใน <tenant_uuid>:<role_code> แล้วเชื่อมผ่าน tenant_groups Permission catalog ใช้ auth_permission และ auth_group_permissions จาก Django เท่านั้น; frontend currentTenant.permissions และ features derive ฝั่ง server จาก active membership",
+      "content": "Provisioning สร้าง Django auth_group แยกต่อ tenant สำหรับ role codes owner, administrator และ member โดยใช้ชื่อภายใน <tenant_uuid>:<role_code> แล้วเชื่อมผ่าน tenant_groups Permission catalog ใช้ auth_permission และ auth_group_permissions จาก Django เท่านั้น; frontend currentTenant.permissions และ features derive ฝั่ง server จาก active membership\nHR defaults ต่อ tenant: departments court, civil, criminal, accounting และ job positions managingPartner, partner, seniorEmployee, employee, assistantEmployee โดย code เป็น stable API key",
       "x": 800,
       "y": 3400,
       "color": "#ede9fe",
       "width": 360,
-      "height": 258
+      "height": 378
     },
     {
       "id": 3,
       "title": "Composite tenant foreign-key contract",
-      "content": "Migration ต้องสร้าง composite foreign key เมื่อ child และ parent เป็นข้อมูล tenant: tenant_role_assignments และ employees -> tenant_users; tenant_role_assignments -> tenant_groups; employee_addresses -> employees; tenant_invitations -> tenant_users และ tenant_groups; payment_transactions -> checkout/subscription ที่มี tenant_id; payment_events -> payment_transactions โดย parent ต้องมี UNIQUE (tenant_id,id) เพื่อป้องกันการเชื่อม ID ที่มีอยู่จริงแต่เป็นของ tenant อื่น",
+      "content": "Migration ต้องสร้าง composite foreign key เมื่อ child และ parent เป็นข้อมูล tenant: tenant_role_assignments และ employees -> tenant_users; tenant_role_assignments -> tenant_groups; employee_addresses -> employees; tenant_invitations -> tenant_users และ tenant_groups; payment_transactions -> checkout/subscription ที่มี tenant_id; payment_events -> payment_transactions โดย parent ต้องมี UNIQUE (tenant_id,id) เพื่อป้องกันการเชื่อม ID ที่มีอยู่จริงแต่เป็นของ tenant อื่น; departments -> parent department; employees -> departments, job_positions และ manager employee",
       "x": 1200,
       "y": 3400,
       "color": "#dbeafe",
       "width": 360,
-      "height": 330,
+      "height": 378,
       "locked": false
     },
     {
@@ -5154,7 +5594,7 @@
       "y": 3400,
       "color": "#ede9fe",
       "width": 360,
-      "height": 330
+      "height": 546
     }
   ],
   "enums": [],

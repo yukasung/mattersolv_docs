@@ -10,6 +10,7 @@
     "database:commercial-constraints:verify": "node scripts/verify-database-commercial-constraints.mjs",
     "database:tenant-isolation:verify": "node scripts/verify-database-tenant-isolation.mjs",
     "database:identifiers:verify": "node scripts/verify-database-identifiers.mjs",
+    "database:hr-organization:verify": "node scripts/verify-database-hr-organization.mjs",
     "database:layout:verify": "node scripts/verify-database-layout.mjs",
     "database:string-lengths:verify": "node scripts/verify-database-string-lengths.mjs",
     "database:tenant-settings:verify": "node scripts/verify-database-tenant-settings.mjs",
