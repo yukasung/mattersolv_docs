@@ -502,6 +502,30 @@
             "invited_by_tenant_user_id"
           ],
           "unique": false
+        },
+        {
+          "name": "uq_tenant_users_tenant_user",
+          "fields": [
+            "tenant_id",
+            "user_id"
+          ],
+          "unique": true
+        },
+        {
+          "name": "uq_tenant_users_tenant_email",
+          "fields": [
+            "tenant_id",
+            "invited_email"
+          ],
+          "unique": true
+        },
+        {
+          "name": "uq_tenant_users_tenant_id",
+          "fields": [
+            "tenant_id",
+            "id"
+          ],
+          "unique": true
         }
       ],
       "color": "#2563eb"
@@ -692,7 +716,7 @@
           "comment": ""
         }
       ],
-      "comment": "Stable permission catalog. Seed codes include employees.view_employee, employees.view_sensitive, employees.manage_employee, users.manage_users.",
+      "comment": "Stable permission catalog aligned with frontend permission constants. Seed employees.view_employee, employees.add_employee, employees.view_sensitive, users.manage_users, and settings.view_settings.",
       "indices": [],
       "color": "#7c3aed"
     },
@@ -886,7 +910,7 @@
           "comment": ""
         }
       ],
-      "comment": "Tenant-aware role assignment. Authorization is derived from the current membership, never from a global user role.",
+      "comment": "Tenant-aware role assignment. Authorization is derived from the current membership, never from a global user role. Migration must enforce composite tenant FK (tenant_id, tenant_user_id) -> tenant_users(tenant_id, id).",
       "indices": [
         {
           "name": "uq_tenant_user_roles",
@@ -1262,18 +1286,22 @@
           "default": "now()",
           "check": "",
           "comment": ""
+        },
+        {
+          "id": "Ad-M3hw4qScQghgnOyZiG",
+          "name": "employee_number_key",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "employee_number_key = lower(btrim(employee_number))",
+          "comment": "Canonical case-insensitive key derived from employee_number by Django."
         }
       ],
-      "comment": "Odoo hr.employee adapted for a tenant. tenant_user_id is optional and must be unique per tenant when present. Sensitive fields require employees.view_sensitive.",
+      "comment": "Odoo hr.employee adapted for a tenant. tenant_user_id is optional and must be unique per tenant when present. Sensitive fields require employees.view_sensitive. Migration must enforce composite tenant FK (tenant_id, tenant_user_id) -> tenant_users(tenant_id, id).",
       "indices": [
-        {
-          "name": "uq_employees_tenant_number",
-          "fields": [
-            "tenant_id",
-            "employee_number"
-          ],
-          "unique": true
-        },
         {
           "name": "idx_employees_tenant_status",
           "fields": [
@@ -1288,6 +1316,30 @@
             "tenant_user_id"
           ],
           "unique": false
+        },
+        {
+          "name": "uq_employees_tenant_number_key",
+          "fields": [
+            "tenant_id",
+            "employee_number_key"
+          ],
+          "unique": true
+        },
+        {
+          "name": "uq_employees_tenant_user",
+          "fields": [
+            "tenant_id",
+            "tenant_user_id"
+          ],
+          "unique": true
+        },
+        {
+          "name": "uq_employees_tenant_id",
+          "fields": [
+            "tenant_id",
+            "id"
+          ],
+          "unique": true
         }
       ],
       "color": "#059669"
@@ -1467,7 +1519,7 @@
           "comment": ""
         }
       ],
-      "comment": "Normalized home/contact addresses from the employee form. One address per (employee_id,address_type).",
+      "comment": "Normalized home/contact addresses from the employee form. One address per (employee_id,address_type). Migration must enforce composite tenant FK (tenant_id, employee_id) -> employees(tenant_id, id).",
       "indices": [
         {
           "name": "uq_employee_addresses_type",
@@ -1483,6 +1535,14 @@
             "tenant_id"
           ],
           "unique": false
+        },
+        {
+          "name": "uq_employee_addresses_tenant_id",
+          "fields": [
+            "tenant_id",
+            "id"
+          ],
+          "unique": true
         }
       ],
       "color": "#059669"
@@ -1622,7 +1682,7 @@
       "id": "7b3pe-p8Ilugb1UL4s4SS",
       "name": "features",
       "x": 2086,
-      "y": 1145,
+      "y": 1181,
       "fields": [
         {
           "id": "Kbk-2v0m3aspS9O_I714p",
@@ -1717,7 +1777,7 @@
       "id": "grF78_Otky29KzyP2i6yT",
       "name": "plan_entitlements",
       "x": 1832,
-      "y": 1145,
+      "y": 1181,
       "fields": [
         {
           "id": "K_wEJ-iumMQKLahD03qXS",
@@ -1828,7 +1888,7 @@
       "id": "WDpL8F6FMTcmU2Rv6d2Kt",
       "name": "subscriptions",
       "x": 1578,
-      "y": 1145,
+      "y": 1181,
       "fields": [
         {
           "id": "hwKpehON_LvWP6DDgCxWM",
@@ -2039,6 +2099,14 @@
             "plan_id"
           ],
           "unique": false
+        },
+        {
+          "name": "uq_subscriptions_tenant_id",
+          "fields": [
+            "tenant_id",
+            "id"
+          ],
+          "unique": true
         }
       ],
       "color": "#d97706"
@@ -2047,7 +2115,7 @@
       "id": "4xaCJu1H8Izes9NjG3L_f",
       "name": "tenant_entitlement_overrides",
       "x": 1324,
-      "y": 1145,
+      "y": 1181,
       "fields": [
         {
           "id": "P0haLhcLSx5nTZKYGVoPF",
@@ -2182,7 +2250,7 @@
       "id": "ZTFkIHA3fRZlzm4WoBrc6",
       "name": "checkout_sessions",
       "x": 1070,
-      "y": 1145,
+      "y": 1181,
       "fields": [
         {
           "id": "mL-ZCB9Vt7Rawlcjm9Ay8",
@@ -2431,6 +2499,14 @@
             "buyer_user_id"
           ],
           "unique": false
+        },
+        {
+          "name": "uq_checkout_sessions_tenant_id",
+          "fields": [
+            "tenant_id",
+            "id"
+          ],
+          "unique": true
         }
       ],
       "color": "#dc2626"
@@ -2439,7 +2515,7 @@
       "id": "uZ0lDxPc-e8SFXAmfz_XS",
       "name": "pending_trial_applications",
       "x": 816,
-      "y": 1145,
+      "y": 1181,
       "fields": [
         {
           "id": "jo_2LtyZL0dvqfBw-nJQ3",
@@ -2672,7 +2748,7 @@
       "id": "3As5_f3yTyFBnvyNFqMeX",
       "name": "payment_transactions",
       "x": 562,
-      "y": 1145,
+      "y": 1181,
       "fields": [
         {
           "id": "JHMQGYnSKfT4D97_g0Q-2",
@@ -2867,7 +2943,7 @@
           "comment": ""
         }
       ],
-      "comment": "Provider-agnostic payment attempts. Never stores raw card or bank credentials.",
+      "comment": "Provider-agnostic payment attempts. Never stores raw card or bank credentials. Once tenant_id is assigned, checkout/subscription references must use composite tenant FKs.",
       "indices": [
         {
           "name": "idx_payment_transactions_checkout",
@@ -2898,6 +2974,14 @@
             "subscription_id"
           ],
           "unique": false
+        },
+        {
+          "name": "uq_payment_transactions_tenant_id",
+          "fields": [
+            "tenant_id",
+            "id"
+          ],
+          "unique": true
         }
       ],
       "color": "#dc2626"
@@ -2906,7 +2990,7 @@
       "id": "goyA8YJDykf9-puU7-Ixi",
       "name": "payment_events",
       "x": 308,
-      "y": 1145,
+      "y": 1181,
       "fields": [
         {
           "id": "AiZsob1DCbRXkN9k7xbDA",
@@ -3077,7 +3161,7 @@
           "comment": ""
         }
       ],
-      "comment": "Idempotent webhook inbox. external_event_id is unique per provider; payload excludes payment credentials.",
+      "comment": "Idempotent webhook inbox. external_event_id is unique per provider; payload excludes payment credentials. Once tenant_id is assigned, payment transaction references must use a composite tenant FK.",
       "indices": [
         {
           "name": "uq_payment_provider_event",
@@ -3116,7 +3200,7 @@
       "id": "Gr4DdkZ93D-qg_-MqTdLW",
       "name": "tenant_invitations",
       "x": 54,
-      "y": 1145,
+      "y": 1181,
       "fields": [
         {
           "id": "hYTH5L1zT0uJNjcvnQQh0",
@@ -3275,7 +3359,7 @@
           "comment": ""
         }
       ],
-      "comment": "Single-use, expiring invitation token history for a tenant membership.",
+      "comment": "Single-use, expiring invitation token history for a tenant membership. Membership and inviter references must use composite tenant FKs.",
       "indices": [
         {
           "name": "idx_tenant_invitations_membership",
@@ -3690,7 +3774,7 @@
     {
       "id": 0,
       "title": "Tenant isolation and PostgreSQL RLS",
-      "content": "Django authenticates the user, verifies an active tenant_users membership, then runs SET LOCAL app.tenant_id = '<uuid>' inside the transaction. RLS policies on every tenant-owned table compare tenant_id to current_setting('app.tenant_id', true)::uuid. X-Tenant-ID is selection input only, never authorization. Pre-provisioning rows with nullable tenant_id are accessed only by dedicated service roles and identifiers.",
+      "content": "Django authenticates the user, verifies an active tenant_users membership, then runs SET LOCAL app.tenant_id = '<uuid>' inside the transaction. For each tenant-owned table: ALTER TABLE <table> ENABLE ROW LEVEL SECURITY; CREATE POLICY tenant_isolation ON <table> USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid). X-Tenant-ID is selection input only. Pre-provisioning rows with nullable tenant_id are accessible only through dedicated service roles and unguessable server-side identifiers.",
       "x": 0,
       "y": 0,
       "color": "#fee2e2",
@@ -3700,7 +3784,7 @@
     {
       "id": 1,
       "title": "Required partial and expression indexes",
-      "content": "Migration DDL must add: UNIQUE (tenant_id,user_id) WHERE user_id IS NOT NULL on tenant_users; UNIQUE (tenant_id,lower(invited_email)) for non-revoked memberships; UNIQUE (tenant_id,tenant_user_id) WHERE tenant_user_id IS NOT NULL on employees; UNIQUE (tenant_id) WHERE subscriptions.status IN ('trialing','active','past_due','suspended'); and expression indexes for normalized email lookups. drawDB cannot represent index predicates, so these remain explicit migration requirements.",
+      "content": "Migration DDL must preserve these predicates: one current subscription per tenant WHERE status IN ('trialing','active','past_due','suspended'); employee_number_key = lower(btrim(employee_number)); and expression indexes for any normalized lookup not represented by a stored key. Composite unique indexes in the diagram enforce tenant membership, invited email, employee linkage, and parent tenant keys; PostgreSQL UNIQUE permits multiple NULL values for unlinked rows.",
       "x": 340,
       "y": 0,
       "color": "#fef3c7",
@@ -3710,12 +3794,22 @@
     {
       "id": 2,
       "title": "Seed catalog",
-      "content": "Seed roles: owner, administrator, member. Seed permissions at minimum: employees.view_employee, employees.view_sensitive, employees.manage_employee, users.manage_users. Seed plan and feature catalogs from the approved MatterSolv pricing/entitlement source; frontend currentTenant.permissions and features are derived server-side.",
+      "content": "Seed roles: owner, administrator, member. Seed permissions aligned with frontend constants: employees.view_employee, employees.add_employee, employees.view_sensitive, users.manage_users, settings.view_settings. Seed plan and feature catalogs from the approved MatterSolv pricing source; frontend currentTenant.permissions and features are derived server-side from the active tenant membership.",
       "x": 680,
       "y": 0,
       "color": "#ede9fe",
       "width": 180,
       "height": 570
+    },
+    {
+      "id": 3,
+      "title": "Composite tenant foreign-key contract",
+      "content": "Migrations must implement composite foreign keys wherever both child and parent are tenant-owned: tenant_user_roles and employees -> tenant_users; employee_addresses -> employees; tenant_invitations -> tenant_users; payment_transactions -> tenant-scoped checkout/subscription when tenant_id is present; payment_events -> payment_transactions when tenant_id is present. Referenced parents expose UNIQUE (tenant_id,id). This prevents valid IDs from another tenant being linked accidentally.",
+      "x": 1020,
+      "y": 0,
+      "color": "#dbeafe",
+      "width": 180,
+      "height": 738
     }
   ],
   "enums": [],
