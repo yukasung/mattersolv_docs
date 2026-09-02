@@ -16,7 +16,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -167,7 +167,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -318,7 +318,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -544,7 +544,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -639,7 +639,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -734,7 +734,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -821,7 +821,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -959,7 +959,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -1358,7 +1358,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -1561,7 +1561,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -1692,7 +1692,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -1787,7 +1787,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -1898,7 +1898,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -2125,7 +2125,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -2260,7 +2260,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -2525,7 +2525,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -2758,7 +2758,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -3000,7 +3000,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -3210,7 +3210,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "default": "gen_random_uuid()",
+          "default": "uuidv7()",
           "check": "",
           "comment": ""
         },
@@ -3810,6 +3810,16 @@
       "color": "#dbeafe",
       "width": 180,
       "height": 738
+    },
+    {
+      "id": 4,
+      "title": "PostgreSQL version and identifiers",
+      "content": "MatterSolv requires PostgreSQL 18 or later. Every UUID primary key uses the native uuidv7() default. Existing UUID v4 rows remain valid and created_at remains the authoritative business timestamp; UUID values are identifiers, not secrets.",
+      "x": 1360,
+      "y": 0,
+      "color": "#dcfce7",
+      "width": 180,
+      "height": 378
     }
   ],
   "enums": [],

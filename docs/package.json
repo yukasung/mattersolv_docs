@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "next build --webpack",
+    "database:uuidv7:verify": "node scripts/verify-database-uuidv7.mjs",
     "dev": "next dev",
     "questions:test": "node --test --experimental-strip-types app/docs/questions/_lib/*.test.ts",
     "questions:verify": "node scripts/verify-question-snapshot.mjs",
