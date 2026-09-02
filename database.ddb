@@ -5,8 +5,8 @@
     {
       "id": "WSJW9wPQZpYv8OGoOKob4",
       "name": "tenants",
-      "x": -112.13016010802482,
-      "y": 19.468074845679027,
+      "x": 1520,
+      "y": 80,
       "fields": [
         {
           "id": "QjhdpnU_DdJkKQUu2c_Sv",
@@ -180,8 +180,8 @@
     {
       "id": "LLVjEYEdfl3MTj8FCs9UG",
       "name": "auth_user",
-      "x": 308,
-      "y": 40,
+      "x": 880,
+      "y": 360,
       "fields": [
         {
           "id": "4xiSHOMIGaLCNYD6GwJ8t",
@@ -336,8 +336,8 @@
     {
       "id": "EIt8WECuYSHn6OWablvmi",
       "name": "tenant_users",
-      "x": 562,
-      "y": 40,
+      "x": 1800,
+      "y": 80,
       "fields": [
         {
           "id": "TIdekZpmecw36SXXW1v_B",
@@ -574,8 +574,8 @@
     {
       "id": "UPSrpgagEvwD2eTmp0yTO",
       "name": "auth_group",
-      "x": 816,
-      "y": 40,
+      "x": 880,
+      "y": 80,
       "fields": [
         {
           "id": "WJMYA9iXmd1kDWnAOuKpr",
@@ -610,8 +610,8 @@
     {
       "id": "_tzM64sBqbmorVxdTU6sA",
       "name": "auth_permission",
-      "x": 1070,
-      "y": 40,
+      "x": 320,
+      "y": 80,
       "fields": [
         {
           "id": "bcCqRKUWGlTmHbme-xVDm",
@@ -687,8 +687,8 @@
     {
       "id": "yI2CEaU8dRW3DjSTpmdy3",
       "name": "auth_group_permissions",
-      "x": 1324,
-      "y": 40,
+      "x": 600,
+      "y": 80,
       "fields": [
         {
           "id": "z30TKuQNF9rDfq1DqY6Mf",
@@ -750,8 +750,8 @@
     {
       "id": "vmfLdPlonPhtLig1tukG6",
       "name": "tenant_role_assignments",
-      "x": 1569.5555475180042,
-      "y": 30.857285236625472,
+      "x": 2360,
+      "y": 80,
       "fields": [
         {
           "id": "fTWYKkloQ0OqRhcGe43fb",
@@ -888,8 +888,8 @@
     {
       "id": "KEIeFlGCgN6AoCX4Qaknn",
       "name": "employees",
-      "x": 1832,
-      "y": 40,
+      "x": 1520,
+      "y": 1030,
       "fields": [
         {
           "id": "i8_YG5Kzr1GJiXllhcPfZ",
@@ -1299,8 +1299,8 @@
     {
       "id": "UkZss3kk9Qt3y99bqhhoN",
       "name": "employee_addresses",
-      "x": 2086,
-      "y": 40,
+      "x": 1920,
+      "y": 1030,
       "fields": [
         {
           "id": "yWgJ_pLMKSF8KKb-kRDTf",
@@ -1514,8 +1514,8 @@
     {
       "id": "Us0DC4MO3qclyTyW3USMA",
       "name": "plans",
-      "x": 2340,
-      "y": 40,
+      "x": 2420,
+      "y": 1030,
       "fields": [
         {
           "id": "pn9QvZXKXUca2Fr4JzyIQ",
@@ -1657,8 +1657,8 @@
     {
       "id": "7b3pe-p8Ilugb1UL4s4SS",
       "name": "features",
-      "x": 2086,
-      "y": 1181.3496334876545,
+      "x": 2420,
+      "y": 1700,
       "fields": [
         {
           "id": "Kbk-2v0m3aspS9O_I714p",
@@ -1764,8 +1764,8 @@
     {
       "id": "grF78_Otky29KzyP2i6yT",
       "name": "plan_entitlements",
-      "x": 1832,
-      "y": 1181,
+      "x": 2740,
+      "y": 1350,
       "fields": [
         {
           "id": "K_wEJ-iumMQKLahD03qXS",
@@ -1875,8 +1875,8 @@
     {
       "id": "WDpL8F6FMTcmU2Rv6d2Kt",
       "name": "subscriptions",
-      "x": 1578,
-      "y": 1181,
+      "x": 3060,
+      "y": 1030,
       "fields": [
         {
           "id": "hwKpehON_LvWP6DDgCxWM",
@@ -2114,8 +2114,8 @@
     {
       "id": "4xaCJu1H8Izes9NjG3L_f",
       "name": "tenant_entitlement_overrides",
-      "x": 1324,
-      "y": 1181,
+      "x": 3060,
+      "y": 1850,
       "fields": [
         {
           "id": "P0haLhcLSx5nTZKYGVoPF",
@@ -2249,8 +2249,8 @@
     {
       "id": "ZTFkIHA3fRZlzm4WoBrc6",
       "name": "checkout_sessions",
-      "x": 1070,
-      "y": 1181,
+      "x": 3420,
+      "y": 1030,
       "fields": [
         {
           "id": "mL-ZCB9Vt7Rawlcjm9Ay8",
@@ -2526,8 +2526,8 @@
     {
       "id": "uZ0lDxPc-e8SFXAmfz_XS",
       "name": "pending_trial_applications",
-      "x": 816,
-      "y": 1181,
+      "x": 3780,
+      "y": 1850,
       "fields": [
         {
           "id": "jo_2LtyZL0dvqfBw-nJQ3",
@@ -2771,8 +2771,8 @@
     {
       "id": "3As5_f3yTyFBnvyNFqMeX",
       "name": "payment_transactions",
-      "x": 562,
-      "y": 1181,
+      "x": 3780,
+      "y": 1030,
       "fields": [
         {
           "id": "JHMQGYnSKfT4D97_g0Q-2",
@@ -3025,8 +3025,8 @@
     {
       "id": "goyA8YJDykf9-puU7-Ixi",
       "name": "payment_events",
-      "x": 308,
-      "y": 1181,
+      "x": 4140,
+      "y": 1030,
       "fields": [
         {
           "id": "AiZsob1DCbRXkN9k7xbDA",
@@ -3247,8 +3247,8 @@
     {
       "id": "Gr4DdkZ93D-qg_-MqTdLW",
       "name": "tenant_invitations",
-      "x": 54,
-      "y": 1181,
+      "x": 2640,
+      "y": 80,
       "fields": [
         {
           "id": "hYTH5L1zT0uJNjcvnQQh0",
@@ -3456,8 +3456,8 @@
     {
       "id": "ffab4861-7fc5-40b7-9e76-a91d3f4410a3",
       "name": "django_content_type",
-      "x": 1070,
-      "y": 650,
+      "x": 40,
+      "y": 80,
       "fields": [
         {
           "id": "2b681d0b-6739-43c6-baa5-37ead77e0531",
@@ -3514,8 +3514,8 @@
     {
       "id": "0011fcc8-f367-4a58-99e9-849ee97a6294",
       "name": "user_profiles",
-      "x": 308,
-      "y": 650,
+      "x": 1120,
+      "y": 360,
       "fields": [
         {
           "id": "01f0964c-d5eb-484d-a5e6-55976e275c7e",
@@ -3621,8 +3621,8 @@
     {
       "id": "fa08b076-0a5f-418b-b7c2-eb1172b91c8b",
       "name": "tenant_groups",
-      "x": 816,
-      "y": 650,
+      "x": 2080,
+      "y": 80,
       "fields": [
         {
           "id": "c9c7923a-1509-45c1-aeaf-2bad6b347dd1",
@@ -3752,8 +3752,8 @@
     {
       "id": "66b6c07b-c43b-4d5b-9c23-9b55da67032d",
       "name": "auth_user_groups",
-      "x": 1324,
-      "y": 650,
+      "x": 600,
+      "y": 360,
       "fields": [
         {
           "id": "041512f8-2200-41ca-8abf-2ac9550775b6",
@@ -3815,8 +3815,8 @@
     {
       "id": "5c61748a-dcb4-4dae-80fe-ddad0a82190f",
       "name": "auth_user_user_permissions",
-      "x": 1578,
-      "y": 650,
+      "x": 320,
+      "y": 360,
       "fields": [
         {
           "id": "aab75999-7589-4402-95dd-597b7c4c256d",
@@ -4345,75 +4345,112 @@
       "id": 0,
       "title": "Tenant isolation and PostgreSQL RLS",
       "content": "Django รับ X-Tenant-ID เป็น tenants.public_id UUID, resolve เป็น tenants.id BIGINT และตรวจ active tenant_users membership ฝั่ง server ก่อน SET LOCAL app.tenant_id = '<verified-internal-bigint>' ภายใน transaction จากนั้นใช้ docs/scripts/mattersolv-phase0-tenant-isolation.sql เพื่อเปิด ENABLE/FORCE ROW LEVEL SECURITY และ policy ที่เทียบ tenant_id กับ current_setting('app.tenant_id')::bigint ทุกตาราง tenant-owned ค่า header เป็นเพียงตัวเลือก Workspace ห้ามนำไปตั้ง RLS context โดยตรง ตาราง pre-provisioning ที่ tenant_id เป็น NULL ใช้ได้เฉพาะ controlled provisioning role",
-      "x": -619.554157021605,
-      "y": -42.25815007716051,
+      "x": 0,
+      "y": 2800,
       "color": "#fee2e2",
-      "width": 180,
-      "height": 834
+      "width": 360,
+      "height": 378
     },
     {
       "id": 1,
       "title": "Required partial and expression indexes",
       "content": "Executable commercial contract: ใช้ docs/scripts/mattersolv-phase0-commercial-constraints.sql หลัง export base schema เพื่อบังคับให้แต่ละ tenant มี current subscription ได้เพียงหนึ่งรายการ เมื่อ status เป็น trialing, active, past_due หรือ suspended โดยยังเก็บ pending, expired และ canceled history ได้ Migration DDL ต้องคง employee_number_key = lower(btrim(employee_number)) และ expression indexes สำหรับ normalized lookup ที่ไม่ได้แทนด้วย stored key Composite unique indexes ใน diagram ใช้กับ membership, invited email, employee linkage และ parent tenant keys; PostgreSQL UNIQUE อนุญาต NULL ซ้ำได้สำหรับแถวที่ยังไม่เชื่อม",
-      "x": -362.4544270833333,
-      "y": 2.02473958333303,
+      "x": 400,
+      "y": 2800,
       "color": "#fef3c7",
-      "width": 180,
-      "height": 882
+      "width": 360,
+      "height": 402
     },
     {
       "id": 2,
       "title": "Seed catalog",
       "content": "Provisioning สร้าง Django auth_group แยกต่อ tenant สำหรับ role codes owner, administrator และ member โดยใช้ชื่อภายใน <tenant_uuid>:<role_code> แล้วเชื่อมผ่าน tenant_groups Permission catalog ใช้ auth_permission และ auth_group_permissions จาก Django เท่านั้น; frontend currentTenant.permissions และ features derive ฝั่ง server จาก active membership",
-      "x": -625.5958236882719,
-      "y": 886.2321566358027,
+      "x": 800,
+      "y": 2800,
       "color": "#ede9fe",
-      "width": 180,
-      "height": 618
+      "width": 360,
+      "height": 258
     },
     {
       "id": 3,
       "title": "Composite tenant foreign-key contract",
       "content": "Migration ต้องสร้าง composite foreign key เมื่อ child และ parent เป็นข้อมูล tenant: tenant_role_assignments และ employees -> tenant_users; tenant_role_assignments -> tenant_groups; employee_addresses -> employees; tenant_invitations -> tenant_users และ tenant_groups; payment_transactions -> checkout/subscription ที่มี tenant_id; payment_events -> payment_transactions โดย parent ต้องมี UNIQUE (tenant_id,id) เพื่อป้องกันการเชื่อม ID ที่มีอยู่จริงแต่เป็นของ tenant อื่น",
-      "x": -387.6562500000001,
-      "y": 961.5364583333333,
+      "x": 1200,
+      "y": 2800,
       "color": "#dbeafe",
-      "width": 180,
-      "height": 738,
+      "width": 360,
+      "height": 330,
       "locked": false
     },
     {
       "id": 4,
       "title": "PostgreSQL version and identifiers",
       "content": "MatterSolv ใช้ PostgreSQL 18 และ hybrid identifiers: ทุกตารางที่ MatterSolv เป็นเจ้าของใช้ id BIGINT identity เป็น Primary Key สำหรับ FK และ join ภายใน ส่วน entity ที่ส่งผ่าน API/URL ใช้ public_id UUID NOT NULL UNIQUE DEFAULT uuidv7() เป็น opaque identifier ตารางเชื่อมภายใน tenant_groups, tenant_role_assignments, plan_entitlements และ tenant_entitlement_overrides ไม่สร้าง public_id ที่ซ้ำซ้อน ตาราง Django auth เป็น framework-owned และคง BIGINT ตาม Django migrations ห้าม frontend พึ่งชนิดหรือลำดับของ id; X-Tenant-ID ส่ง tenants.public_id แล้ว backend ต้องตรวจ active membership, resolve เป็น tenants.id แบบ BIGINT และจึง SET LOCAL app.tenant_id ภายใน transaction",
-      "x": -844.9045138888889,
-      "y": -25.4513888888889,
+      "x": 1600,
+      "y": 2800,
       "color": "#dcfce7",
-      "width": 180,
-      "height": 378
+      "width": 360,
+      "height": 426
     },
     {
       "id": 5,
       "title": "Django authentication contract",
       "content": "Django migrations เป็นเจ้าของ auth_user, auth_group, auth_permission และตาราง auth_* ที่เกี่ยวข้อง Login ใช้ ModelBackend มาตรฐาน โดย normalize email ด้วย lower และ btrim แล้วบันทึกค่าเดียวกันลง username กับ email ความยาวไม่เกิน 150 ตัวอักษร auth_user.id เป็น BIGINT; ตาราง MatterSolv ใช้ BIGINT เป็น internal Primary Key และ entity ที่เปิดผ่าน API ใช้ UUID v7 ใน public_id auth_user.is_active ระงับทั้งระบบ ส่วน tenant_users.status ระงับเฉพาะ workspace ห้ามใช้ auth_user_groups, auth_user_user_permissions หรือ user.has_perm() ตัดสิน tenant permission ให้ resolve ผ่าน tenant_role_assignments -> tenant_groups -> auth_group_permissions",
-      "x": 1165,
-      "y": 620,
+      "x": 2000,
+      "y": 2800,
       "color": "#dbeafe",
-      "width": 220,
-      "height": 642
+      "width": 360,
+      "height": 402
     },
     {
       "id": 6,
       "title": "Tenant lifecycle and deletion safety",
       "content": "การหยุดใช้ Workspace ต้องเปลี่ยน tenants.status เป็น archived และบันทึก archived_at โดยยังเก็บข้อมูล ความสัมพันธ์ และ Audit Log ไว้ Backend ต้องปฏิเสธ archived Workspace และห้ามตั้ง app.tenant_id ให้ request หรือ background job ของ Workspace นั้น FK ทุกเส้นที่อ้าง tenants ใช้ ON DELETE RESTRICT/NO ACTION เพื่อปฏิเสธการลบ tenant ที่มีข้อมูล การลบอนุญาตเฉพาะ tenant ที่สร้างผิดและยังไม่มีข้อมูลอ้างอิง Phase 0 ยังไม่รองรับ controlled purge; ห้ามลบข้อมูลที่อยู่ภายใต้ retention หรือ Legal Hold",
-      "x": 1400,
-      "y": 620,
+      "x": 2400,
+      "y": 2800,
       "color": "#fee2e2",
-      "width": 180,
-      "height": 546
+      "width": 360,
+      "height": 330
     }
   ],
   "enums": [],
   "types": [],
-  "subjectAreas": []
+  "subjectAreas": [
+    {
+      "id": 0,
+      "name": "Django Authentication",
+      "x": 0,
+      "y": 0,
+      "width": 1380,
+      "height": 900,
+      "color": "#dbeafe"
+    },
+    {
+      "id": 1,
+      "name": "Tenant & Authorization",
+      "x": 1480,
+      "y": 0,
+      "width": 1440,
+      "height": 800,
+      "color": "#ede9fe"
+    },
+    {
+      "id": 2,
+      "name": "People & HR",
+      "x": 1480,
+      "y": 950,
+      "width": 800,
+      "height": 1350,
+      "color": "#dcfce7"
+    },
+    {
+      "id": 3,
+      "name": "Plans & Billing",
+      "x": 2380,
+      "y": 950,
+      "width": 2060,
+      "height": 1650,
+      "color": "#ffedd5"
+    }
+  ]
 }
