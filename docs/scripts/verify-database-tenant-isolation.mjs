@@ -14,7 +14,8 @@ const [migration, diagram] = await Promise.all([
 const tenantTables = [
   'tenants',
   'tenant_users',
-  'tenant_user_roles',
+  'tenant_groups',
+  'tenant_role_assignments',
   'employees',
   'employee_addresses',
   'subscriptions',
@@ -42,14 +43,16 @@ for (const table of tenantTables) {
 
 const compositeForeignKeys = [
   ['tenant_users', 'invited_by_tenant_user_id', 'tenant_users'],
-  ['tenant_user_roles', 'tenant_user_id', 'tenant_users'],
-  ['tenant_user_roles', 'assigned_by_tenant_user_id', 'tenant_users'],
+  ['tenant_role_assignments', 'tenant_user_id', 'tenant_users'],
+  ['tenant_role_assignments', 'tenant_group_id', 'tenant_groups'],
+  ['tenant_role_assignments', 'assigned_by_tenant_user_id', 'tenant_users'],
   ['employees', 'tenant_user_id', 'tenant_users'],
   ['employee_addresses', 'employee_id', 'employees'],
   ['payment_transactions', 'checkout_session_id', 'checkout_sessions'],
   ['payment_transactions', 'subscription_id', 'subscriptions'],
   ['payment_events', 'payment_transaction_id', 'payment_transactions'],
   ['tenant_invitations', 'tenant_user_id', 'tenant_users'],
+  ['tenant_invitations', 'tenant_group_id', 'tenant_groups'],
   ['tenant_invitations', 'invited_by_tenant_user_id', 'tenant_users']
 ]
 

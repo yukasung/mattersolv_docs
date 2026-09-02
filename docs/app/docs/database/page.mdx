@@ -31,31 +31,39 @@ identity ฝั่ง server ห้ามเชื่อถือ `workspace_id`
 
 ## Django Roles and Permissions Tables
 
-MatterSolv ใช้ตารางมาตรฐานของ `django.contrib.auth` เป็น contract หลัก และไม่สร้าง
-ตาราง role หรือ permission ซ้ำอีกชุดหนึ่ง การจำกัดบทบาทรายสำนักงานทำผ่านตารางเชื่อม
-ของโดเมน MatterSolv โดยไม่เพิ่มหรือแก้คอลัมน์ในตาราง Django auth
+MatterSolv ใช้ Default Django User, `ModelBackend` และตารางมาตรฐานของ
+`django.contrib.auth` เป็น contract หลัก โดยไม่สร้างระบบ User, Role หรือ Permission
+ซ้ำอีกชุดหนึ่ง ตาราง Django สร้างโดย Django migrations ส่วนตารางเชื่อม tenant
+เป็นของโดเมน MatterSolv
 
 | ตาราง | ขอบเขต | คำอธิบาย |
 | --- | :---: | --- |
+| `auth_user` | ทั้งระบบ | บัญชีเข้าสู่ระบบมาตรฐานของ Django ใช้ `BIGINT` เป็น Primary Key |
 | `auth_permission` | ทั้งระบบ | Django model permissions และ custom permissions ที่สร้างจาก migration |
 | `auth_group` | ทั้งระบบ | กลุ่มสิทธิ์มาตรฐานของ Django; หนึ่งกลุ่มเป็นบทบาทของสำนักงานผ่านตารางเชื่อม |
 | `auth_group_permissions` | ทั้งระบบ | ผูก Django Group กับ Django Permission |
 | `auth_user_groups` | ทั้งระบบ | ใช้เฉพาะ Group ระดับระบบที่ไม่ขึ้นกับสำนักงาน; ไม่ใช้มอบบทบาทรายสำนักงาน |
-| `office_groups` | รายสำนักงาน | ผูก `office_id` กับ `group_id` เก็บ `display_name` และ unique (`office_id`, `display_name`) |
-| `office_role_assignments` | รายสำนักงาน | ผูกสมาชิกกับ `office_group_id`; ไม่เพิ่มบทบาทสำนักงานลง `auth_user_groups` |
+| `auth_user_user_permissions` | ทั้งระบบ | ใช้เฉพาะ Permission ระดับระบบ; ไม่ใช้มอบสิทธิ์รายสำนักงาน |
+| `tenant_groups` | รายสำนักงาน | ผูก `tenant_id` กับ `group_id` และเก็บ `code`, `display_name` |
+| `tenant_role_assignments` | รายสำนักงาน | ผูกสมาชิกกับ `tenant_group_id`; ไม่เพิ่มบทบาทสำนักงานลง `auth_user_groups` |
+
+Login Email ต้องผ่าน `lower(btrim(email))` และยาวไม่เกิน 150 ตัวอักษร ระบบบันทึก
+ค่าเดียวกันใน `auth_user.username` และ `auth_user.email` เพื่อให้เข้าสู่ระบบด้วย
+อีเมลผ่าน `ModelBackend` มาตรฐานโดยไม่สร้าง Custom User หรือ Authentication Backend
+ข้อมูลเพิ่มเติม เช่น ชื่อที่แสดง โทรศัพท์ และเวลายืนยันอีเมลอยู่ใน `user_profiles`
 
 กฎการใช้งาน:
 
 - ตรวจว่าสมาชิกและ Django Group เชื่อมกับสำนักงานเดียวกันก่อนเพิ่มหรือลบสมาชิก
-- ทุกการจัดการบทบาทต้อง query ผ่าน `office_groups` และ `office_role_assignments`
+- ทุกการจัดการบทบาทต้อง query ผ่าน `tenant_groups` และ `tenant_role_assignments`
   เพื่อป้องกันการใช้ Group ข้ามสำนักงาน
-- `auth_group.name` ใช้ชื่อภายในที่ unique ทั้งระบบ เช่น `<office_uuid>:<role_uuid>`
-  ส่วนชื่อที่ผู้ใช้เห็นและแก้ไขได้เก็บใน `office_groups.display_name`
+- `auth_group.name` ใช้ชื่อภายในที่ unique ทั้งระบบ เช่น `<tenant_uuid>:<role_code>`
+  ส่วนชื่อที่ผู้ใช้เห็นเก็บใน `tenant_groups.display_name`
 - การสร้างสำนักงานใหม่คัดลอก role template เป็น `auth_group` ใหม่ แล้วเชื่อมกับสำนักงานใหม่
 - สิทธิ์มาตรฐานและสิทธิ์พิเศษประกาศบน Django model และสร้างโดย migration เท่านั้น
 - สิทธิ์ระดับระบบที่ไม่ขึ้นกับสำนักงานตรวจด้วย `user.has_perm()` ได้ตาม Django
-- สิทธิ์ของบทบาทสำนักงานต้องตรวจด้วย `has_office_perm(user, office, permission)`
-  ซึ่ง query `office_role_assignments -> office_groups -> auth_group_permissions`; ห้ามใช้
+- สิทธิ์ของบทบาทสำนักงานต้องตรวจด้วย `has_tenant_perm(user, tenant, permission)`
+  ซึ่ง query `tenant_role_assignments -> tenant_groups -> auth_group_permissions`; ห้ามใช้
   `user.has_perm()` ตัดสินสิทธิ์รายสำนักงาน เพราะ Django รวมสิทธิ์จากทุก Group ของผู้ใช้
 - data scope และ workflow เป็นเงื่อนไขเพิ่มเติมที่ authorization service ต้องตรวจแยก
 - ดูความหมายเชิงธุรกิจที่ [Roles](/docs/roles) และรหัสสิทธิ์ที่

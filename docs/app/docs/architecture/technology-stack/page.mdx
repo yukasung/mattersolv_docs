@@ -28,7 +28,7 @@ flowchart TB
 | :------------------ | :----------------------- | :------------------------------------------------------------------------------- |
 | Frontend            | React และ Tailwind CSS   | สร้างหน้าจอสำหรับผู้ใช้งานผ่าน browser                                           |
 | Backend             | Django                   | จัดการ API, business rules, permission และ workflow                              |
-| Authentication      | Django Authentication    | จัดการบัญชี รหัสผ่าน session, group และ permission โดยไม่สร้างระบบยืนยันตัวตนเอง |
+| Authentication      | Django Authentication    | ใช้ Default User และ ModelBackend จัดการรหัสผ่าน session, group และ permission โดยไม่สร้างระบบยืนยันตัวตนเอง |
 | Database            | Cloud SQL for PostgreSQL | จัดเก็บข้อมูลธุรกิจ ความสัมพันธ์ และ audit data                                  |
 | Application Runtime | Cloud Run (รอยืนยัน)     | รัน Django และบริการที่บรรจุเป็น container โดยไม่ต้องดูแล cluster                |
 

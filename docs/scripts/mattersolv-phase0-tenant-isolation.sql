@@ -21,15 +21,20 @@ ALTER TABLE "tenant_users"
     ADD CONSTRAINT "fk_tenant_users_inviter_tenant"
     FOREIGN KEY ("tenant_id", "invited_by_tenant_user_id") REFERENCES "tenant_users" ("tenant_id", "id");
 
-ALTER TABLE "tenant_user_roles"
-    DROP CONSTRAINT IF EXISTS "fk_tenant_user_roles_membership_tenant";
-ALTER TABLE "tenant_user_roles"
-    ADD CONSTRAINT "fk_tenant_user_roles_membership_tenant"
+ALTER TABLE "tenant_role_assignments"
+    DROP CONSTRAINT IF EXISTS "fk_tenant_role_assignments_membership_tenant";
+ALTER TABLE "tenant_role_assignments"
+    ADD CONSTRAINT "fk_tenant_role_assignments_membership_tenant"
     FOREIGN KEY ("tenant_id", "tenant_user_id") REFERENCES "tenant_users" ("tenant_id", "id");
-ALTER TABLE "tenant_user_roles"
-    DROP CONSTRAINT IF EXISTS "fk_tenant_user_roles_assigner_tenant";
-ALTER TABLE "tenant_user_roles"
-    ADD CONSTRAINT "fk_tenant_user_roles_assigner_tenant"
+ALTER TABLE "tenant_role_assignments"
+    DROP CONSTRAINT IF EXISTS "fk_tenant_role_assignments_group_tenant";
+ALTER TABLE "tenant_role_assignments"
+    ADD CONSTRAINT "fk_tenant_role_assignments_group_tenant"
+    FOREIGN KEY ("tenant_id", "tenant_group_id") REFERENCES "tenant_groups" ("tenant_id", "id");
+ALTER TABLE "tenant_role_assignments"
+    DROP CONSTRAINT IF EXISTS "fk_tenant_role_assignments_assigner_tenant";
+ALTER TABLE "tenant_role_assignments"
+    ADD CONSTRAINT "fk_tenant_role_assignments_assigner_tenant"
     FOREIGN KEY ("tenant_id", "assigned_by_tenant_user_id") REFERENCES "tenant_users" ("tenant_id", "id");
 
 ALTER TABLE "employees"
@@ -67,6 +72,11 @@ ALTER TABLE "tenant_invitations"
     ADD CONSTRAINT "fk_tenant_invitations_membership_tenant"
     FOREIGN KEY ("tenant_id", "tenant_user_id") REFERENCES "tenant_users" ("tenant_id", "id");
 ALTER TABLE "tenant_invitations"
+    DROP CONSTRAINT IF EXISTS "fk_tenant_invitations_group_tenant";
+ALTER TABLE "tenant_invitations"
+    ADD CONSTRAINT "fk_tenant_invitations_group_tenant"
+    FOREIGN KEY ("tenant_id", "tenant_group_id") REFERENCES "tenant_groups" ("tenant_id", "id");
+ALTER TABLE "tenant_invitations"
     DROP CONSTRAINT IF EXISTS "fk_tenant_invitations_inviter_tenant";
 ALTER TABLE "tenant_invitations"
     ADD CONSTRAINT "fk_tenant_invitations_inviter_tenant"
@@ -91,10 +101,18 @@ CREATE POLICY tenant_isolation ON "tenant_users"
     USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::uuid)
     WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::uuid);
 
-ALTER TABLE "tenant_user_roles" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "tenant_user_roles" FORCE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS tenant_isolation ON "tenant_user_roles";
-CREATE POLICY tenant_isolation ON "tenant_user_roles"
+ALTER TABLE "tenant_groups" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "tenant_groups" FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON "tenant_groups";
+CREATE POLICY tenant_isolation ON "tenant_groups"
+    FOR ALL TO PUBLIC
+    USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::uuid)
+    WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::uuid);
+
+ALTER TABLE "tenant_role_assignments" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "tenant_role_assignments" FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON "tenant_role_assignments";
+CREATE POLICY tenant_isolation ON "tenant_role_assignments"
     FOR ALL TO PUBLIC
     USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::uuid)
     WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::uuid);

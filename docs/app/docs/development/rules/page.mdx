@@ -86,14 +86,14 @@ QuerySet, Permission หรือ record scope ของ Application
 ตรวจสิทธิ์จากรหัสสิทธิ์เสมอ โดยสิทธิ์บทบาทรายสำนักงานต้องผ่าน service ที่จำกัดสำนักงาน:
 
 ```python
-if has_office_perm(user, office, "matters.change_matter"):
+if has_tenant_perm(user, tenant, "matters.change_matter"):
 ```
 
 หรือประกาศที่ระดับ view ด้วย decorator ของ application ซึ่ง query ตารางเชื่อมสำนักงาน
 โดยไม่แก้ Django `ModelBackend`:
 
 ```python
-@office_permission_required("matters.change_matter")
+@tenant_permission_required("matters.change_matter")
 ```
 
 ห้ามตรวจจากชื่อบทบาท:

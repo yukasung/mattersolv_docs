@@ -14,7 +14,7 @@
 5. สถานะ workflow และระดับอนุมัติรองรับการดำเนินการ
 
 การตรวจ permission เป็นเพียงหนึ่งชั้นของ authorization เท่านั้น สิทธิ์ระดับสำนักงานต้องใช้
-`has_office_perm(user, office, permission)`; `user.has_perm()` สงวนไว้สำหรับสิทธิ์
+`has_tenant_perm(user, tenant, permission)`; `user.has_perm()` สงวนไว้สำหรับสิทธิ์
 ระดับระบบที่ไม่ขึ้นกับสำนักงาน
 สิทธิ์ไม่สามารถข้าม plan entitlement, data scope หรือ workflow rule ได้
 
@@ -162,7 +162,7 @@ allowed = active_account
 ```
 
 `group_grants_permission` ต้องคำนวณผ่าน
-`has_office_perm(user, office, permission)` และ office-scoped role assignment
+`has_tenant_perm(user, tenant, permission)` และ tenant-scoped role assignment
 ไม่ใช้ชื่อ Role และไม่ใช้ `user.has_perm()` สำหรับสิทธิ์รายสำนักงาน
 
 Individual Data Scope ตั้งแต่แผน PRO ขึ้นไปใช้กำหนดขอบเขตตามสมาชิก ทีม คดี

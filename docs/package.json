@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "next build --webpack",
+    "database:django-auth:verify": "node scripts/verify-database-django-auth.mjs",
     "database:commercial-constraints:verify": "node scripts/verify-database-commercial-constraints.mjs",
     "database:tenant-isolation:verify": "node scripts/verify-database-tenant-isolation.mjs",
     "database:uuidv7:verify": "node scripts/verify-database-uuidv7.mjs",
