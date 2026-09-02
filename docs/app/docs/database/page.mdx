@@ -189,6 +189,46 @@ Migration ที่มีข้อมูลเดิมต้องสร้า�
 จากนั้นจึงเปลี่ยน FK เป็น `NOT NULL` และลบ text columns เดิม ห้ามเลือก fallback
 department หรือ position ให้ข้อมูลที่กำกวมโดยอัตโนมัติ
 
+## Effective-Dated Employment History
+
+`employee_employment_versions` เป็น source of truth ของแผนก ตำแหน่ง หัวหน้างาน
+ประเภทการจ้าง และช่วงสัญญาตาม effective date ส่วน `employees` เก็บ
+`current_employment_version_id` และ current snapshot เพื่อให้ API เดิมกับ query
+หน้ารายชื่อทำงานได้รวดเร็ว ค่า snapshot ทุกช่องต้องตรงกับ version ที่เลือก
+
+Backend คำนวณ business date จาก `tenants.timezone` แล้วเลือก active version ล่าสุด
+ที่ `effective_from <= business_date` หากยังไม่มี version ที่เริ่มใช้ ให้เลือก future
+version แรกตามแนวทาง Odoo 19 `hr.version` สถานะ past/current/future และวันสิ้นสุด
+ของ version เป็นค่าที่ derive ไม่เก็บเป็น column ส่วน As-of report ต้องอ่านจาก history
+โดยตรง ไม่อ่าน current snapshot
+
+- การสร้าง แก้ หรือ void version ต้อง lock Employee ด้วย
+  `SELECT id FROM employees WHERE tenant_id = :tenant_id AND id = :employee_id FOR UPDATE`
+- การเปลี่ยน version กับ current snapshot ต้องอยู่ transaction เดียวกัน
+- Daily idempotent job refresh รายการที่ future version เริ่มมีผล
+- Read/write service ต้อง lazy-refresh ด้วย จึงไม่พึ่ง scheduler เพียงอย่างเดียว
+- Runtime role ห้าม hard delete history; การแก้ไขใช้ `is_active=false`, version ใหม่
+  และ append-only `audit_events`
+- Employee ที่มี history ต้อง archive แทน hard delete และยังคง current pointer ไว้
+- Department, Position, Manager และผู้บันทึกที่ history อ้างถึงต้องถูก FK ปฏิเสธ
+  การ hard delete เพื่อรักษาความหมายของข้อมูลย้อนหลัง
+- Current reporting line ถูกตรวจวงจรด้วย deferred database trigger ส่วน future
+  hierarchy ต้องตรวจใน Django ทั้งตอนสร้างและตอน activate
+- Contract date checks ต้องติดตั้งเป็น named table constraints ใน companion migration
+  เพราะ drawDB แสดง check บน `DATE` ได้แต่ PostgreSQL exporter ไม่ส่ง check นี้ออกมา
+
+Migration สำหรับข้อมูลเดิมต้องทำตามลำดับต่อไปนี้:
+
+1. เพิ่ม history table และ pointer/current snapshot fields แบบ nullable
+2. สร้าง active initial version ต่อ Employee โดยใช้ `employment_start_date`
+3. หากไม่มีวันเริ่มงาน ให้ใช้วันสร้าง Employee ตาม timezone ของ Tenant และรายงานทุก
+   record ที่ใช้ fallback เพื่อให้ผู้ดูแลตรวจสอบ
+4. กรณีหา actor เดิมไม่ได้ ให้ใช้ system/provisioning tenant membership ที่กำหนดไว้
+5. Backfill pointer และ current snapshot ด้วย effective-date selector
+6. ตรวจ composite foreign keys, partial uniqueness, contract dates และจำนวนข้อมูล
+   แยกตาม Tenant
+7. เปิด deferred snapshot triggers และ RLS หลัง validation สำเร็จเท่านั้น
+
 ## PostgreSQL Partitioning
 
 ใช้ Declarative Partitioning เฉพาะตารางที่มีขนาดใหญ่และมีรูปแบบ query หรือ
@@ -278,6 +318,13 @@ retention ที่ได้ประโยชน์จาก partition pruning 
 delete behavior และ RLS ได้ด้วย
 `docs/scripts/verify-database-hr-organization.sql` บนฐานข้อมูล PostgreSQL 18
 ที่ลบทิ้งได้
+
+ทดสอบ active version ต่อ effective date, current/future selection, composite tenant
+FK, cached snapshot, contract dates, manager cycle, archive behavior, RLS และการห้าม
+hard delete history ได้ด้วย `docs/scripts/verify-database-employment-history.sql`
+หลังโหลด schema export และ `docs/scripts/mattersolv-phase0-tenant-isolation.sql`
+ผลสำเร็จต้องแสดง
+`Verified effective-dated employment history, snapshot integrity, RLS, and lifecycle`
 
 ## Related Documents
 

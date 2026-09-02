@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 
-const [diagram, isolation, runtimeVerifier] = await Promise.all([
+const [diagram, isolation, runtimeVerifier, databaseDoc, employeesDoc] = await Promise.all([
   readFile(new URL('../../database.ddb', import.meta.url), 'utf8').then(JSON.parse),
   readFile(new URL('./mattersolv-phase0-tenant-isolation.sql', import.meta.url), 'utf8'),
-  readFile(new URL('./verify-database-employment-history.sql', import.meta.url), 'utf8')
+  readFile(new URL('./verify-database-employment-history.sql', import.meta.url), 'utf8'),
+  readFile(new URL('../app/docs/database/page.mdx', import.meta.url), 'utf8'),
+  readFile(new URL('../app/docs/modules/employees/page.mdx', import.meta.url), 'utf8')
 ])
 const tables = new Map(diagram.tables.map((table) => [table.name, table]))
 const table = (name) => {
@@ -182,5 +184,24 @@ for (const expected of [
   'Runtime role deleted employment history',
   'RLS exposed Tenant B employment history to Tenant A'
 ]) assert.match(runtimeVerifier, new RegExp(expected))
+
+for (const expected of [
+  '## Effective-Dated Employment History',
+  '`employee_employment_versions` เป็น source of truth',
+  '`tenants.timezone`',
+  'Daily idempotent job',
+  'lazy-refresh',
+  'As-of report',
+  'SELECT id FROM employees',
+  'docs/scripts/verify-database-employment-history.sql'
+]) assert.match(databaseDoc, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+
+for (const expected of [
+  '`employee_employment_versions`',
+  'อดีต ปัจจุบัน และอนาคต',
+  'frontend ไม่กำหนด current state เอง',
+  'ไม่รวมข้อมูลส่วนตัว',
+  'Job Position เป็นข้อมูล HR เท่านั้น'
+]) assert.match(employeesDoc, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
 
 console.log('Verified effective-dated employment history diagram contract')

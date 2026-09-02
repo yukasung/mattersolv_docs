@@ -118,8 +118,13 @@ flowchart TD
   และหัวหน้างานที่ไม่บังคับ โดยทั้งหมดต้องอยู่ใน Workspace เดียวกัน
 - Department และ Position เป็น master data ของแต่ละ Workspace แก้ชื่อหรือ archive
   ได้โดยไม่เปลี่ยน Permission และไม่ทำลาย Employee record เดิม
-- โครงสร้าง Phase 0.1 ยังไม่เก็บประวัติการย้ายแผนกหรือตำแหน่งรองหลายรายการ
-  หากต้องใช้ต้องออกแบบ temporal assignment แยกจาก Employee record
+- Employee มี current employment snapshot หนึ่งชุดสำหรับหน้า list/detail และมี
+  `employee_employment_versions` เก็บประวัติการย้ายแผนก ตำแหน่ง หัวหน้างาน
+  ประเภทการจ้าง และช่วงสัญญาตาม effective date
+- รองรับ version ในอดีต ปัจจุบัน และอนาคต โดย backend เป็นผู้เลือก current version
+  จาก business date ของ Workspace; frontend ไม่กำหนด current state เอง
+- ประวัติการจ้างงานไม่รวมข้อมูลส่วนตัว ช่องทางติดต่อ เอกสารยืนยันตัวตน หรือ Payroll
+- Job Position เป็นข้อมูล HR เท่านั้นและไม่ให้ Permission โดยอัตโนมัติ
 - เก็บข้อมูลติดต่อ เช่น โทรศัพท์, Work Email, Private Email, LINE ID และ WeChat
 - เก็บที่อยู่ตามเอกสารประจำตัวและที่อยู่ติดต่อ โดยเลือกใช้ที่อยู่เดียวกันได้
 - เก็บภาษา ทักษะ ความเชี่ยวชาญ หมายเหตุ และไฟล์แนบที่เกี่ยวข้อง
@@ -173,8 +178,8 @@ Employees เป็นเจ้าของทะเบียนและโป�
 
 ## ประเด็นที่ต้องตัดสินใจ
 
-- รูปแบบรหัสพนักงาน วันที่เริ่มงาน/สิ้นสุดงาน ประเภทการจ้าง หัวหน้างาน
-  และเหตุผลการ Deactivate ยังไม่มี requirement ที่ยืนยัน
+- รูปแบบรหัสพนักงาน วันที่เริ่มงาน/สิ้นสุดงาน และเหตุผลการ Deactivate
+  ยังไม่มี requirement ที่ยืนยัน
 - การ “ลบ” พนักงานควรหมายถึง Deactivate หรือ Archive เป็นค่าเริ่มต้น
   ส่วน Hard delete ต้องมีกฎรองรับข้อมูลที่ถูกอ้างอิงและ Audit history ก่อน
 - ต้องกำหนด Field-level Permission สำหรับข้อมูลอ่อนไหวและอัตราค่าบริการวิชาชีพ
