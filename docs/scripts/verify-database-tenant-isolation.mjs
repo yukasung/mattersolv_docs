@@ -74,6 +74,68 @@ assert.ok(note, 'Tenant isolation note must exist')
 assert.match(note.content, /mattersolv-phase0-tenant-isolation\.sql/)
 assert.match(note.content, /[\u0E00-\u0E7F]/)
 
+const tablesById = new Map(diagram.tables.map((table) => [table.id, table]))
+const fieldsById = new Map(
+  diagram.tables.flatMap((table) =>
+    table.fields.map((field) => [field.id, field])
+  )
+)
+const tenants = diagram.tables.find(({ name }) => name === 'tenants')
+const tenantReferences = diagram.relationships.filter(
+  ({ endTableId }) => endTableId === tenants?.id
+)
+const expectedTenantReferences = [
+  'checkout_sessions.tenant_id',
+  'employee_addresses.tenant_id',
+  'employees.tenant_id',
+  'payment_events.tenant_id',
+  'payment_transactions.tenant_id',
+  'pending_trial_applications.resulting_tenant_id',
+  'subscriptions.tenant_id',
+  'tenant_entitlement_overrides.tenant_id',
+  'tenant_groups.tenant_id',
+  'tenant_invitations.tenant_id',
+  'tenant_role_assignments.tenant_id',
+  'tenant_users.tenant_id'
+]
+const actualTenantReferences = tenantReferences
+  .map(
+    ({ startTableId, startFieldId }) =>
+      `${tablesById.get(startTableId)?.name}.${fieldsById.get(startFieldId)?.name}`
+  )
+  .sort()
+
+assert.deepEqual(
+  actualTenantReferences,
+  expectedTenantReferences,
+  'the tenant deletion guard must cover every direct tenant reference'
+)
+for (const relationship of tenantReferences) {
+  assert.ok(
+    ['Restrict', 'No action'].includes(relationship.deleteConstraint),
+    `${relationship.name} must reject deleting a referenced tenant`
+  )
+}
+
+const archivedAt = tenants?.fields.find(({ name }) => name === 'archived_at')
+assert.equal(archivedAt?.type, 'TIMESTAMPTZ')
+assert.equal(archivedAt?.notNull, false)
+const tenantStatus = tenants?.fields.find(({ name }) => name === 'status')
+assert.match(
+  tenantStatus?.check ?? '',
+  /status = 'archived'.*archived_at IS NOT NULL/
+)
+
+const lifecycleNote = diagram.notes.find(
+  ({ title }) => title === 'Tenant lifecycle and deletion safety'
+)
+assert.ok(lifecycleNote, 'Tenant lifecycle and deletion safety note must exist')
+assert.match(lifecycleNote.content, /RESTRICT|NO ACTION/)
+assert.match(lifecycleNote.content, /archived_at/)
+assert.match(lifecycleNote.content, /app\.tenant_id/)
+assert.match(lifecycleNote.content, /Legal Hold/)
+assert.match(lifecycleNote.content, /[\u0E00-\u0E7F]/)
+
 console.log(
-  `Verified executable tenant isolation for ${tenantTables.length} tables and ${compositeForeignKeys.length} composite foreign keys`
+  `Verified executable tenant isolation for ${tenantTables.length} tables, ${compositeForeignKeys.length} composite foreign keys, and ${tenantReferences.length} restrictive tenant references`
 )

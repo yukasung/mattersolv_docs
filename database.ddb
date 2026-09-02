@@ -113,7 +113,7 @@
           "notNull": true,
           "increment": false,
           "default": "active",
-          "check": "status IN ('active','suspended','archived')",
+          "check": "status IN ('active','suspended','archived') AND ((status = 'archived') = (archived_at IS NOT NULL))",
           "comment": ""
         },
         {
@@ -139,9 +139,21 @@
           "default": "now()",
           "check": "",
           "comment": ""
+        },
+        {
+          "id": "7oFQ7ZK4r1njdqnhAFg2u",
+          "name": "archived_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "ต้องมีเวลาเมื่อ status เป็น archived และต้องเป็น NULL สำหรับสถานะอื่น"
         }
       ],
-      "comment": "Odoo res.company adapted as the MatterSolv law-firm workspace and isolation boundary.",
+      "comment": "ขอบเขต Workspace ของสำนักงานตามแนวคิด Odoo res.company การหยุดใช้งานให้เปลี่ยน status เป็น archived; การลบทำได้เฉพาะ tenant ที่ไม่มีข้อมูลอ้างอิง",
       "indices": [
         {
           "name": "idx_tenants_status",
@@ -3718,7 +3730,7 @@
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
       "cardinality": "many_to_one",
       "updateConstraint": "No action",
-      "deleteConstraint": "Cascade"
+      "deleteConstraint": "Restrict"
     },
     {
       "id": "HUVtA9rehvDg6pT4-BRgw",
@@ -3773,7 +3785,7 @@
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
       "cardinality": "many_to_one",
       "updateConstraint": "No action",
-      "deleteConstraint": "Cascade"
+      "deleteConstraint": "Restrict"
     },
     {
       "id": "s7_-NL0tsu68do5ucgMBE",
@@ -3817,7 +3829,7 @@
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
       "cardinality": "many_to_one",
       "updateConstraint": "No action",
-      "deleteConstraint": "Cascade"
+      "deleteConstraint": "Restrict"
     },
     {
       "id": "g8xJI5EAqJMqSuCQ1zbdn",
@@ -3839,7 +3851,7 @@
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
       "cardinality": "many_to_one",
       "updateConstraint": "No action",
-      "deleteConstraint": "Cascade"
+      "deleteConstraint": "Restrict"
     },
     {
       "id": "xyiSF5s8S13LvKinSx6Bo",
@@ -3883,7 +3895,7 @@
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
       "cardinality": "many_to_one",
       "updateConstraint": "No action",
-      "deleteConstraint": "Cascade"
+      "deleteConstraint": "Restrict"
     },
     {
       "id": "ZNG9OIPwXEAEkohgXGf54",
@@ -3905,7 +3917,7 @@
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
       "cardinality": "many_to_one",
       "updateConstraint": "No action",
-      "deleteConstraint": "Cascade"
+      "deleteConstraint": "Restrict"
     },
     {
       "id": "kHi2CuMYgnsZaRnHMwqCq",
@@ -3927,7 +3939,7 @@
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
       "cardinality": "many_to_one",
       "updateConstraint": "No action",
-      "deleteConstraint": "Set null"
+      "deleteConstraint": "Restrict"
     },
     {
       "id": "5Jmh9ndURFsAEZIBORwg9",
@@ -3982,7 +3994,7 @@
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
       "cardinality": "many_to_one",
       "updateConstraint": "No action",
-      "deleteConstraint": "Set null"
+      "deleteConstraint": "Restrict"
     },
     {
       "id": "Nm4-7zDxgOguDxf-4eUH0",
@@ -3993,7 +4005,7 @@
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
       "cardinality": "many_to_one",
       "updateConstraint": "No action",
-      "deleteConstraint": "Set null"
+      "deleteConstraint": "Restrict"
     },
     {
       "id": "4Naf5oQURCoiz6m17gA62",
@@ -4026,7 +4038,7 @@
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
       "cardinality": "many_to_one",
       "updateConstraint": "No action",
-      "deleteConstraint": "Set null"
+      "deleteConstraint": "Restrict"
     },
     {
       "id": "0pnnaReyGH6R6UNZL_bt_",
@@ -4048,7 +4060,7 @@
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
       "cardinality": "many_to_one",
       "updateConstraint": "No action",
-      "deleteConstraint": "Cascade"
+      "deleteConstraint": "Restrict"
     },
     {
       "id": "OUJWg1wwhXwCJBkuIxXRs",
@@ -4114,7 +4126,7 @@
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
       "cardinality": "many_to_one",
       "updateConstraint": "No action",
-      "deleteConstraint": "Cascade"
+      "deleteConstraint": "Restrict"
     },
     {
       "id": "7c42e6de-da39-4521-8ed2-82578ff46926",
@@ -4233,6 +4245,16 @@
       "color": "#dbeafe",
       "width": 220,
       "height": 642
+    },
+    {
+      "id": 6,
+      "title": "Tenant lifecycle and deletion safety",
+      "content": "การหยุดใช้ Workspace ต้องเปลี่ยน tenants.status เป็น archived และบันทึก archived_at โดยยังเก็บข้อมูล ความสัมพันธ์ และ Audit Log ไว้ Backend ต้องปฏิเสธ archived Workspace และห้ามตั้ง app.tenant_id ให้ request หรือ background job ของ Workspace นั้น FK ทุกเส้นที่อ้าง tenants ใช้ ON DELETE RESTRICT/NO ACTION เพื่อปฏิเสธการลบ tenant ที่มีข้อมูล การลบอนุญาตเฉพาะ tenant ที่สร้างผิดและยังไม่มีข้อมูลอ้างอิง Phase 0 ยังไม่รองรับ controlled purge; ห้ามลบข้อมูลที่อยู่ภายใต้ retention หรือ Legal Hold",
+      "x": 1400,
+      "y": 620,
+      "color": "#fee2e2",
+      "width": 180,
+      "height": 546
     }
   ],
   "enums": [],

@@ -88,6 +88,23 @@ Login Email ต้องผ่าน `lower(btrim(email))` และยาวไ
 RLS เป็น defense in depth หาก application ลืมกรอง Workspace แต่ไม่สามารถแทน
 กฎระดับ module, role, Matter, record scope หรือ approval state ได้
 
+## Tenant Lifecycle and Deletion Safety
+
+การหยุดใช้ Workspace ตาม flow ปกติต้องเปลี่ยน `tenants.status` เป็น `archived`
+และบันทึก `archived_at` โดยไม่ลบข้อมูลลูก ความสัมพันธ์ หรือ Audit Log ผู้ดูแล
+สามารถระงับชั่วคราวด้วย `suspended` และนำ Workspace ที่เก็บถาวรกลับมาใช้ได้
+ตาม policy ที่ได้รับอนุมัติ
+
+- Foreign Key ทุกเส้นที่อ้าง `tenants.id` ต้องใช้ `ON DELETE RESTRICT` หรือ
+  `NO ACTION`; ห้ามใช้ `CASCADE` หรือ `SET NULL`
+- Backend ต้องปฏิเสธการเลือก Workspace ที่ `status = 'archived'` และห้ามตั้ง
+  `app.tenant_id` สำหรับ request หรือ background job ของ Workspace นั้น
+- การลบจริงอนุญาตเฉพาะ Tenant ที่สร้างผิดและยังไม่มี Membership, Subscription
+  หรือข้อมูลอื่นอ้างอิง จึงไม่ทำให้ข้อมูลธุรกิจสูญหาย
+- Phase 0 ยังไม่มี controlled purge ผู้ดูแลระบบจึงห้ามลบ Tenant ที่เคยใช้งาน
+- กระบวนการ purge ในอนาคตต้องกำหนดผู้อนุมัติ ระยะรอ การส่งออกข้อมูล Backup,
+  Audit Log, retention และ Legal Hold ก่อนเปิดใช้งาน
+
 ## PostgreSQL Partitioning
 
 ใช้ Declarative Partitioning เฉพาะตารางที่มีขนาดใหญ่และมีรูปแบบ query หรือ
@@ -143,12 +160,19 @@ retention ที่ได้ประโยชน์จาก partition pruning 
 - RLS ปฏิเสธ query เมื่อไม่มี Workspace context หรือ context ไม่ตรง
 - `INSERT` และ `UPDATE` ไม่สามารถย้ายข้อมูลไป Workspace อื่น
 - Application role ไม่สามารถ bypass RLS
+- Backend ต้องปฏิเสธ archived Workspace ก่อนสั่ง `SET LOCAL app.tenant_id`
 - Background job และ report ไม่รวมข้อมูลข้าม Workspace
 - มอบหมาย role ของ Workspace A ให้สมาชิกของ Workspace B ไม่ได้
-- ลบ Workspace แล้ว role และ role assignment ของ Workspace นั้นไม่ค้างอยู่
+- การลบ Workspace ที่มีสมาชิก role, subscription หรือข้อมูลธุรกิจต้องถูก
+  Foreign Key ปฏิเสธ
+- การ archive Workspace ต้องเก็บ role, role assignment และ Audit Log ไว้ครบถ้วน
 - Partition routing และ partition pruning ทำงานตามช่วงที่กำหนด
 - การสร้าง partition ใหม่ไม่ทำให้ constraint หรือ index หาย
 - Restore test รักษาข้อมูล ความสัมพันธ์ audit history และขอบเขต Workspace
+
+ทดสอบพฤติกรรมการ archive และการปฏิเสธการลบ Tenant บน PostgreSQL 18 ได้ด้วย
+`docs/scripts/verify-database-tenant-deletion.sql` หลังโหลด schema export ลงใน
+ฐานข้อมูลทดสอบที่ลบทิ้งได้
 
 ## Related Documents
 
