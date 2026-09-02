@@ -33,6 +33,58 @@ CREATE TRIGGER tenant_number_sequences_no_rewind
     BEFORE UPDATE OF next_number ON tenant_number_sequences
     FOR EACH ROW EXECUTE FUNCTION prevent_tenant_number_sequence_rewind();
 
+CREATE OR REPLACE FUNCTION reject_department_hierarchy_cycle()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+    IF NEW.parent_department_id IS NULL THEN RETURN NEW; END IF;
+    IF EXISTS (
+        WITH RECURSIVE ancestors AS (
+            SELECT id, parent_department_id FROM departments
+            WHERE tenant_id = NEW.tenant_id AND id = NEW.parent_department_id
+          UNION
+            SELECT department.id, department.parent_department_id
+            FROM departments AS department
+            JOIN ancestors ON department.id = ancestors.parent_department_id
+            WHERE department.tenant_id = NEW.tenant_id
+        ) SELECT 1 FROM ancestors WHERE id = NEW.id
+    ) THEN
+        RAISE EXCEPTION 'department hierarchy cannot contain a cycle' USING ERRCODE = '23514';
+    END IF;
+    RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS departments_no_cycle ON departments;
+CREATE CONSTRAINT TRIGGER departments_no_cycle
+AFTER INSERT OR UPDATE OF parent_department_id ON departments
+DEFERRABLE INITIALLY DEFERRED
+FOR EACH ROW EXECUTE FUNCTION reject_department_hierarchy_cycle();
+
+CREATE OR REPLACE FUNCTION reject_employee_manager_cycle()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+    IF NEW.manager_employee_id IS NULL THEN RETURN NEW; END IF;
+    IF EXISTS (
+        WITH RECURSIVE managers AS (
+            SELECT id, manager_employee_id FROM employees
+            WHERE tenant_id = NEW.tenant_id AND id = NEW.manager_employee_id
+          UNION
+            SELECT employee.id, employee.manager_employee_id
+            FROM employees AS employee
+            JOIN managers ON employee.id = managers.manager_employee_id
+            WHERE employee.tenant_id = NEW.tenant_id
+        ) SELECT 1 FROM managers WHERE id = NEW.id
+    ) THEN
+        RAISE EXCEPTION 'employee reporting line cannot contain a cycle' USING ERRCODE = '23514';
+    END IF;
+    RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS employees_manager_no_cycle ON employees;
+CREATE CONSTRAINT TRIGGER employees_manager_no_cycle
+AFTER INSERT OR UPDATE OF manager_employee_id ON employees
+DEFERRABLE INITIALLY DEFERRED
+FOR EACH ROW EXECUTE FUNCTION reject_employee_manager_cycle();
+
 -- Enforce tenant consistency for relationships between tenant-owned records.
 -- Existing single-column foreign keys remain useful for their delete actions;
 -- these composite keys add the tenant equality invariant.
@@ -64,6 +116,23 @@ ALTER TABLE "employees"
 ALTER TABLE "employees"
     ADD CONSTRAINT "fk_employees_membership_tenant"
     FOREIGN KEY ("tenant_id", "tenant_user_id") REFERENCES "tenant_users" ("tenant_id", "id");
+
+ALTER TABLE "departments" DROP CONSTRAINT IF EXISTS "fk_departments_parent_tenant";
+ALTER TABLE "departments" ADD CONSTRAINT "fk_departments_parent_tenant"
+    FOREIGN KEY ("tenant_id", "parent_department_id") REFERENCES "departments" ("tenant_id", "id")
+    ON DELETE RESTRICT;
+ALTER TABLE "employees" DROP CONSTRAINT IF EXISTS "fk_employees_department_tenant";
+ALTER TABLE "employees" ADD CONSTRAINT "fk_employees_department_tenant"
+    FOREIGN KEY ("tenant_id", "department_id") REFERENCES "departments" ("tenant_id", "id")
+    ON DELETE RESTRICT;
+ALTER TABLE "employees" DROP CONSTRAINT IF EXISTS "fk_employees_job_position_tenant";
+ALTER TABLE "employees" ADD CONSTRAINT "fk_employees_job_position_tenant"
+    FOREIGN KEY ("tenant_id", "job_position_id") REFERENCES "job_positions" ("tenant_id", "id")
+    ON DELETE RESTRICT;
+ALTER TABLE "employees" DROP CONSTRAINT IF EXISTS "fk_employees_manager_tenant";
+ALTER TABLE "employees" ADD CONSTRAINT "fk_employees_manager_tenant"
+    FOREIGN KEY ("tenant_id", "manager_employee_id") REFERENCES "employees" ("tenant_id", "id")
+    ON DELETE SET NULL ("manager_employee_id");
 
 ALTER TABLE "employee_addresses"
     DROP CONSTRAINT IF EXISTS "fk_employee_addresses_employee_tenant";
@@ -171,6 +240,22 @@ CREATE POLICY tenant_isolation_select ON "tenant_number_sequences"
 DROP POLICY IF EXISTS tenant_isolation_update ON "tenant_number_sequences";
 CREATE POLICY tenant_isolation_update ON "tenant_number_sequences"
     FOR UPDATE TO PUBLIC
+    USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint)
+    WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
+
+ALTER TABLE "departments" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "departments" FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON "departments";
+CREATE POLICY tenant_isolation ON "departments"
+    FOR ALL TO PUBLIC
+    USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint)
+    WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
+
+ALTER TABLE "job_positions" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "job_positions" FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON "job_positions";
+CREATE POLICY tenant_isolation ON "job_positions"
+    FOR ALL TO PUBLIC
     USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint)
     WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
 

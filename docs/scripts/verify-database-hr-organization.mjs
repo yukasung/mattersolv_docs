@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 
-const diagram = JSON.parse(await readFile(new URL('../../database.ddb', import.meta.url), 'utf8'))
+const [diagram, isolation, runtimeVerifier] = await Promise.all([
+  readFile(new URL('../../database.ddb', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('./mattersolv-phase0-tenant-isolation.sql', import.meta.url), 'utf8'),
+  readFile(new URL('./verify-database-hr-organization.sql', import.meta.url), 'utf8')
+])
 const tables = new Map(diagram.tables.map((table) => [table.name, table]))
 const table = (name) => { const value = tables.get(name); assert.ok(value, `${name} must exist`); return value }
 const field = (tableName, fieldName) => table(tableName).fields.find(({ name }) => name === fieldName)
@@ -65,5 +69,27 @@ for (const [name, fields] of [
   ['idx_employees_tenant_job_position', ['tenant_id', 'job_position_id']],
   ['idx_employees_tenant_manager', ['tenant_id', 'manager_employee_id']]
 ]) assert.deepEqual(index('employees', name)?.fields, fields)
+
+for (const tableName of ['departments', 'job_positions']) {
+  assert.match(isolation, new RegExp(`ALTER TABLE "${tableName}" ENABLE ROW LEVEL SECURITY;`))
+  assert.match(isolation, new RegExp(`ALTER TABLE "${tableName}" FORCE ROW LEVEL SECURITY;`))
+  assert.match(isolation, new RegExp(`CREATE POLICY tenant_isolation ON "${tableName}"`))
+}
+for (const expected of [
+  'FOREIGN KEY ("tenant_id", "parent_department_id") REFERENCES "departments" ("tenant_id", "id")',
+  'FOREIGN KEY ("tenant_id", "department_id") REFERENCES "departments" ("tenant_id", "id")',
+  'FOREIGN KEY ("tenant_id", "job_position_id") REFERENCES "job_positions" ("tenant_id", "id")',
+  'FOREIGN KEY ("tenant_id", "manager_employee_id") REFERENCES "employees" ("tenant_id", "id")',
+  'ON DELETE SET NULL ("manager_employee_id")',
+  'CREATE CONSTRAINT TRIGGER departments_no_cycle',
+  'CREATE CONSTRAINT TRIGGER employees_manager_no_cycle'
+]) assert.ok(isolation.includes(expected), `missing HR constraint: ${expected}`)
+
+for (const expected of [
+  'Cross-tenant department was accepted', 'Duplicate normalized department code was accepted',
+  'Department cycle was accepted', 'Employee manager cycle was accepted', 'Self-manager was accepted',
+  'Deleting an in-use job position was accepted', 'Manager deletion did not clear manager_employee_id',
+  'RLS exposed Tenant B departments to Tenant A'
+]) assert.match(runtimeVerifier, new RegExp(expected))
 
 console.log('Verified tenant HR organization diagram contract')
