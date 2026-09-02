@@ -59,7 +59,7 @@ BEGIN
   BEGIN
     DELETE FROM job_positions WHERE id = tenant_a_position;
     RAISE EXCEPTION 'Deleting an in-use job position was accepted';
-  EXCEPTION WHEN foreign_key_violation THEN NULL; END;
+  EXCEPTION WHEN restrict_violation OR foreign_key_violation THEN NULL; END;
 END $$;
 
 DO $$
