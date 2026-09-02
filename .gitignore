@@ -22,3 +22,4 @@ docs/public/sitemap.xml
 next-env.d.ts
 .vercel
 .env*
+.worktrees/
