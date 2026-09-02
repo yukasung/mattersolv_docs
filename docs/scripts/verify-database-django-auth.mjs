@@ -31,7 +31,11 @@ for (const tableName of ['auth_user', 'auth_group', 'auth_permission']) {
 
 const userProfile = tables.get('user_profiles')
 assert.ok(userProfile, 'user_profiles must extend auth_user without a custom user')
-assert.equal(userProfile.fields.find(({ name }) => name === 'id')?.default, 'uuidv7()')
+assert.equal(userProfile.fields.find(({ name }) => name === 'id')?.type, 'BIGINT')
+assert.equal(
+  userProfile.fields.find(({ name }) => name === 'public_id')?.default,
+  'uuidv7()'
+)
 assert.equal(userProfile.fields.find(({ name }) => name === 'user_id')?.type, 'BIGINT')
 
 for (const [tableName, fieldName] of [
@@ -65,7 +69,7 @@ assert.ok(tables.has('tenant_role_assignments'))
 assert.ok(
   tables
     .get('tenant_invitations')
-    .fields.some(({ name, type }) => name === 'tenant_group_id' && type === 'UUID')
+    .fields.some(({ name, type }) => name === 'tenant_group_id' && type === 'BIGINT')
 )
 
 const authNote = diagram.notes.find(

@@ -65,6 +65,8 @@ for (const [table, field, parent] of compositeForeignKeys) {
 }
 
 assert.match(migration, /current_setting\('app\.tenant_id', true\)/)
+assert.match(migration, /current_setting\('app\.tenant_id', true\), ''\)::bigint/)
+assert.doesNotMatch(migration, /current_setting\('app\.tenant_id'.*::uuid/)
 assert.match(migration, /"tenant_id" IS NOT NULL/)
 
 const note = diagram.notes.find(
@@ -72,6 +74,8 @@ const note = diagram.notes.find(
 )
 assert.ok(note, 'Tenant isolation note must exist')
 assert.match(note.content, /mattersolv-phase0-tenant-isolation\.sql/)
+assert.match(note.content, /X-Tenant-ID/)
+assert.match(note.content, /BIGINT/)
 assert.match(note.content, /[\u0E00-\u0E7F]/)
 
 const tablesById = new Map(diagram.tables.map((table) => [table.id, table]))

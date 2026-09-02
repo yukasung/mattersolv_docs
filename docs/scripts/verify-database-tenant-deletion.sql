@@ -6,14 +6,17 @@ BEGIN;
 
 DO $$
 DECLARE
-    protected_tenant UUID := '0199b000-0000-7000-8000-000000000001';
-    unused_tenant UUID := '0199b000-0000-7000-8000-000000000002';
+    protected_tenant BIGINT;
+    unused_tenant BIGINT;
     user_id BIGINT;
 BEGIN
-    INSERT INTO tenants (id, slug, name)
-    VALUES
-        (protected_tenant, 'protected-tenant', 'Protected tenant'),
-        (unused_tenant, 'unused-tenant', 'Unused tenant');
+    INSERT INTO tenants (public_id, slug, name)
+    VALUES ('0199b000-0000-7000-8000-000000000001', 'protected-tenant', 'Protected tenant')
+    RETURNING id INTO protected_tenant;
+
+    INSERT INTO tenants (public_id, slug, name)
+    VALUES ('0199b000-0000-7000-8000-000000000002', 'unused-tenant', 'Unused tenant')
+    RETURNING id INTO unused_tenant;
 
     BEGIN
         UPDATE tenants SET status = 'archived' WHERE id = protected_tenant;
