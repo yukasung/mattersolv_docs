@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "next build --webpack",
+    "database:tenant-isolation:verify": "node scripts/verify-database-tenant-isolation.mjs",
     "database:uuidv7:verify": "node scripts/verify-database-uuidv7.mjs",
     "dev": "next dev",
     "questions:test": "node --test --experimental-strip-types app/docs/questions/_lib/*.test.ts",

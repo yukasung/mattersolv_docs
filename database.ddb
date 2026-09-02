@@ -3774,7 +3774,7 @@
     {
       "id": 0,
       "title": "Tenant isolation and PostgreSQL RLS",
-      "content": "Django authenticates the user, verifies an active tenant_users membership, then runs SET LOCAL app.tenant_id = '<uuid>' inside the transaction. For each tenant-owned table: ALTER TABLE <table> ENABLE ROW LEVEL SECURITY; ALTER TABLE <table> FORCE ROW LEVEL SECURITY; CREATE POLICY tenant_isolation ON <table> USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid). Django's runtime database role must be NOBYPASSRLS and must not own tenant-owned tables; schema migrations and provisioning use separately controlled roles. X-Tenant-ID is selection input only. Pre-provisioning rows with nullable tenant_id are accessible only through dedicated service roles and unguessable server-side identifiers.",
+      "content": "Executable isolation contract: ใช้ docs/scripts/mattersolv-phase0-tenant-isolation.sql หลัง export base schema จาก drawDB โดย Django ต้องตรวจ active tenant_users membership แล้วจึงสั่ง SET LOCAL app.tenant_id = '<uuid>' ภายใน transaction Migration นี้เปิดและบังคับ RLS, กำหนด USING/WITH CHECK policies และเพิ่ม composite tenant foreign keys ให้ใช้งานจริง Django runtime role ต้องเป็น NOSUPERUSER, NOBYPASSRLS และไม่เป็นเจ้าของ tenant tables; X-Tenant-ID เป็นเพียง selection input เท่านั้น แถวที่ tenant_id เป็น NULL จะถูกปฏิเสธจาก runtime role และจัดการผ่าน provisioning role ที่ควบคุมแยก",
       "x": 0,
       "y": 0,
       "color": "#fee2e2",
