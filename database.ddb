@@ -3784,7 +3784,7 @@
     {
       "id": 1,
       "title": "Required partial and expression indexes",
-      "content": "Migration DDL must preserve these predicates: one current subscription per tenant WHERE status IN ('trialing','active','past_due','suspended'); employee_number_key = lower(btrim(employee_number)); and expression indexes for any normalized lookup not represented by a stored key. Composite unique indexes in the diagram enforce tenant membership, invited email, employee linkage, and parent tenant keys; PostgreSQL UNIQUE permits multiple NULL values for unlinked rows.",
+      "content": "Executable commercial contract: ใช้ docs/scripts/mattersolv-phase0-commercial-constraints.sql หลัง export base schema เพื่อบังคับให้แต่ละ tenant มี current subscription ได้เพียงหนึ่งรายการ เมื่อ status เป็น trialing, active, past_due หรือ suspended โดยยังเก็บ pending, expired และ canceled history ได้ Migration DDL ต้องคง employee_number_key = lower(btrim(employee_number)) และ expression indexes สำหรับ normalized lookup ที่ไม่ได้แทนด้วย stored key Composite unique indexes ใน diagram ใช้กับ membership, invited email, employee linkage และ parent tenant keys; PostgreSQL UNIQUE อนุญาต NULL ซ้ำได้สำหรับแถวที่ยังไม่เชื่อม",
       "x": 340,
       "y": 0,
       "color": "#fef3c7",
