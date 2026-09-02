@@ -4,6 +4,7 @@ export const publicIdentifierTableNames = Object.freeze([
   'departments',
   'job_positions',
   'employees',
+  'employee_employment_versions',
   'employee_addresses',
   'plans',
   'features',

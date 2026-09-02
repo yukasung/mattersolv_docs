@@ -1057,12 +1057,24 @@
           "size": 16
         },
         {
+          "id": "e2000001-0000-4000-8000-000000000001",
+          "name": "current_employment_version_id",
+          "type": "BIGINT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Current effective employment version; cached employment fields must match this record at commit."
+        },
+        {
           "id": "735ab26b-8072-41b0-8c52-903ccbe5b4e3",
           "name": "department_id",
           "type": "BIGINT",
           "primary": false,
           "unique": false,
-          "notNull": true,
+          "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
@@ -1074,7 +1086,7 @@
           "type": "BIGINT",
           "primary": false,
           "unique": false,
-          "notNull": true,
+          "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
@@ -1091,6 +1103,43 @@
           "default": "",
           "check": "manager_employee_id IS NULL OR manager_employee_id <> id",
           "comment": ""
+        },
+        {
+          "id": "e2000002-0000-4000-8000-000000000002",
+          "name": "employment_type",
+          "type": "VARCHAR",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "employment_type IS NULL OR employment_type IN ('employee','worker','student','trainee','contractor','freelance')",
+          "comment": "Current employment type copied from current_employment_version_id.",
+          "size": 20
+        },
+        {
+          "id": "e2000003-0000-4000-8000-000000000003",
+          "name": "contract_start_date",
+          "type": "DATE",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Current contract start copied from current_employment_version_id."
+        },
+        {
+          "id": "e2000004-0000-4000-8000-000000000004",
+          "name": "contract_end_date",
+          "type": "DATE",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "contract_end_date IS NULL OR (contract_start_date IS NOT NULL AND contract_end_date >= contract_start_date)",
+          "comment": "Current contract end copied from current_employment_version_id."
         },
         {
           "id": "7Y4--f2V4ReU9jhvKo3_X",
@@ -1280,7 +1329,7 @@
           "size": 50
         }
       ],
-      "comment": "Odoo hr.employee adapted for a tenant. tenant_user_id is optional and must be unique per tenant when present. Sensitive fields require employees.view_sensitive. Migration must enforce composite tenant FK (tenant_id, tenant_user_id) -> tenant_users(tenant_id, id).",
+      "comment": "Odoo hr.employee adapted for a tenant. tenant_user_id is optional and must be unique per tenant when present. Employment assignment fields are a synchronized current snapshot of employee_employment_versions. Sensitive fields require employees.view_sensitive. Migration must enforce tenant-safe composite foreign keys.",
       "indices": [
         {
           "name": "idx_employees_tenant_status",
@@ -1342,6 +1391,14 @@
           "fields": [
             "tenant_id",
             "manager_employee_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_employees_tenant_current_employment_version",
+          "fields": [
+            "tenant_id",
+            "current_employment_version_id"
           ],
           "unique": false
         }
@@ -4927,6 +4984,238 @@
         }
       ],
       "color": "#059669"
+    },
+    {
+      "id": "b3000000-0000-4000-8000-000000000000",
+      "name": "employee_employment_versions",
+      "x": 2030,
+      "y": 2150,
+      "fields": [
+        {
+          "id": "b3000001-0000-4000-8000-000000000001",
+          "name": "id",
+          "type": "BIGINT",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": true,
+          "default": "",
+          "check": "",
+          "comment": "Internal database key; never expose this sequential value through the public API."
+        },
+        {
+          "id": "b3000002-0000-4000-8000-000000000002",
+          "name": "public_id",
+          "type": "UUID",
+          "primary": false,
+          "unique": true,
+          "notNull": true,
+          "increment": false,
+          "default": "uuidv7()",
+          "check": "",
+          "comment": "Stable opaque identifier exposed through APIs and URLs."
+        },
+        {
+          "id": "b3000003-0000-4000-8000-000000000003",
+          "name": "tenant_id",
+          "type": "BIGINT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Verified SaaS isolation boundary."
+        },
+        {
+          "id": "b3000004-0000-4000-8000-000000000004",
+          "name": "employee_id",
+          "type": "BIGINT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Employee whose effective-dated employment state this version records."
+        },
+        {
+          "id": "b3000005-0000-4000-8000-000000000005",
+          "name": "effective_from",
+          "type": "DATE",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "First tenant-local business date on which this version applies."
+        },
+        {
+          "id": "b3000006-0000-4000-8000-000000000006",
+          "name": "department_id",
+          "type": "BIGINT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Tenant department for this version."
+        },
+        {
+          "id": "b3000007-0000-4000-8000-000000000007",
+          "name": "job_position_id",
+          "type": "BIGINT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Tenant job position for this version."
+        },
+        {
+          "id": "b3000008-0000-4000-8000-000000000008",
+          "name": "manager_employee_id",
+          "type": "BIGINT",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "manager_employee_id IS NULL OR manager_employee_id <> employee_id",
+          "comment": "Tenant employee who manages this employee for this version."
+        },
+        {
+          "id": "b3000009-0000-4000-8000-000000000009",
+          "name": "employment_type",
+          "type": "VARCHAR",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "employment_type IS NULL OR employment_type IN ('employee','worker','student','trainee','contractor','freelance')",
+          "comment": "Stable employment type code adapted from Odoo hr.version.",
+          "size": 20
+        },
+        {
+          "id": "b3000010-0000-4000-8000-000000000010",
+          "name": "contract_start_date",
+          "type": "DATE",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Start date of the contract represented by this version."
+        },
+        {
+          "id": "b3000011-0000-4000-8000-000000000011",
+          "name": "contract_end_date",
+          "type": "DATE",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "contract_end_date IS NULL OR (contract_start_date IS NOT NULL AND contract_end_date >= contract_start_date)",
+          "comment": "End date of the contract represented by this version."
+        },
+        {
+          "id": "b3000012-0000-4000-8000-000000000012",
+          "name": "change_reason",
+          "type": "VARCHAR",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Human-readable reason for the employment change.",
+          "size": 255
+        },
+        {
+          "id": "b3000013-0000-4000-8000-000000000013",
+          "name": "is_active",
+          "type": "BOOLEAN",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "true",
+          "check": "",
+          "comment": "Inactive versions are voided history and never participate in effective-date selection."
+        },
+        {
+          "id": "b3000014-0000-4000-8000-000000000014",
+          "name": "recorded_by_tenant_user_id",
+          "type": "BIGINT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Tenant membership that recorded this version."
+        },
+        {
+          "id": "b3000015-0000-4000-8000-000000000015",
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        },
+        {
+          "id": "b3000016-0000-4000-8000-000000000016",
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "now()",
+          "check": "",
+          "comment": ""
+        }
+      ],
+      "comment": "Effective-dated employment state adapted from Odoo hr.version. This table is the source of truth; employees caches the selected current version. Composite tenant FKs, RLS, partial uniqueness, and deferred snapshot validation are installed by the companion migration.",
+      "indices": [
+        {
+          "name": "uq_employee_employment_versions_tenant_id",
+          "fields": [
+            "tenant_id",
+            "id"
+          ],
+          "unique": true
+        },
+        {
+          "name": "uq_employee_employment_versions_tenant_employee_id",
+          "fields": [
+            "tenant_id",
+            "employee_id",
+            "id"
+          ],
+          "unique": true
+        },
+        {
+          "name": "idx_employee_employment_versions_lookup",
+          "fields": [
+            "tenant_id",
+            "employee_id",
+            "effective_from"
+          ],
+          "unique": false
+        }
+      ],
+      "color": "#059669"
     }
   ],
   "relationships": [
@@ -5511,7 +5800,84 @@
       "endFieldId": "i8_YG5Kzr1GJiXllhcPfZ",
       "cardinality": "many_to_one",
       "updateConstraint": "No action",
-      "deleteConstraint": "Set null"
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "c4000001-0000-4000-8000-000000000001",
+      "name": "fk_employee_employment_versions_tenant_id",
+      "startTableId": "b3000000-0000-4000-8000-000000000000",
+      "startFieldId": "b3000003-0000-4000-8000-000000000003",
+      "endTableId": "WSJW9wPQZpYv8OGoOKob4",
+      "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "c4000002-0000-4000-8000-000000000002",
+      "name": "fk_employee_employment_versions_employee_id",
+      "startTableId": "b3000000-0000-4000-8000-000000000000",
+      "startFieldId": "b3000004-0000-4000-8000-000000000004",
+      "endTableId": "KEIeFlGCgN6AoCX4Qaknn",
+      "endFieldId": "i8_YG5Kzr1GJiXllhcPfZ",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "c4000003-0000-4000-8000-000000000003",
+      "name": "fk_employee_employment_versions_department_id",
+      "startTableId": "b3000000-0000-4000-8000-000000000000",
+      "startFieldId": "b3000006-0000-4000-8000-000000000006",
+      "endTableId": "c4c4b294-d266-4a4f-9680-1764ff8f5f7c",
+      "endFieldId": "9ebe01d9-24e4-441f-9ca3-ed358756410d",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "c4000004-0000-4000-8000-000000000004",
+      "name": "fk_employee_employment_versions_job_position_id",
+      "startTableId": "b3000000-0000-4000-8000-000000000000",
+      "startFieldId": "b3000007-0000-4000-8000-000000000007",
+      "endTableId": "a29bad2e-a14b-4de5-88bf-6ab647f22d0a",
+      "endFieldId": "0178a56d-bbe0-4ab2-9170-f7909248f3e1",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "c4000005-0000-4000-8000-000000000005",
+      "name": "fk_employee_employment_versions_manager_employee_id",
+      "startTableId": "b3000000-0000-4000-8000-000000000000",
+      "startFieldId": "b3000008-0000-4000-8000-000000000008",
+      "endTableId": "KEIeFlGCgN6AoCX4Qaknn",
+      "endFieldId": "i8_YG5Kzr1GJiXllhcPfZ",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "c4000006-0000-4000-8000-000000000006",
+      "name": "fk_employee_employment_versions_recorded_by_tenant_user_id",
+      "startTableId": "b3000000-0000-4000-8000-000000000000",
+      "startFieldId": "b3000014-0000-4000-8000-000000000014",
+      "endTableId": "EIt8WECuYSHn6OWablvmi",
+      "endFieldId": "TIdekZpmecw36SXXW1v_B",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
+    },
+    {
+      "id": "c4000007-0000-4000-8000-000000000007",
+      "name": "fk_employees_current_employment_version_id",
+      "startTableId": "KEIeFlGCgN6AoCX4Qaknn",
+      "startFieldId": "e2000001-0000-4000-8000-000000000001",
+      "endTableId": "b3000000-0000-4000-8000-000000000000",
+      "endFieldId": "b3000001-0000-4000-8000-000000000001",
+      "cardinality": "many_to_one",
+      "updateConstraint": "No action",
+      "deleteConstraint": "Restrict"
     }
   ],
   "notes": [
@@ -5528,12 +5894,12 @@
     {
       "id": 1,
       "title": "Required partial and expression indexes",
-      "content": "Executable commercial contract: ใช้ docs/scripts/mattersolv-phase0-commercial-constraints.sql หลัง export base schema เพื่อบังคับให้แต่ละ tenant มี current subscription ได้เพียงหนึ่งรายการ เมื่อ status เป็น trialing, active, past_due หรือ suspended โดยยังเก็บ pending, expired และ canceled history ได้ Migration DDL ต้องคง employee_number_key = lower(btrim(employee_number)) และ expression indexes สำหรับ normalized lookup ที่ไม่ได้แทนด้วย stored key Composite unique indexes ใน diagram ใช้กับ membership, invited email, employee linkage และ parent tenant keys; PostgreSQL UNIQUE อนุญาต NULL ซ้ำได้สำหรับแถวที่ยังไม่เชื่อม",
+      "content": "Executable commercial contract: ใช้ docs/scripts/mattersolv-phase0-commercial-constraints.sql หลัง export base schema เพื่อบังคับให้แต่ละ tenant มี current subscription ได้เพียงหนึ่งรายการ เมื่อ status เป็น trialing, active, past_due หรือ suspended โดยยังเก็บ pending, expired และ canceled history ได้ Migration DDL ต้องคง employee_number_key = lower(btrim(employee_number)) และ expression indexes สำหรับ normalized lookup ที่ไม่ได้แทนด้วย stored key Employment history ต้องสร้าง uq_employee_employment_versions_active_effective_date UNIQUE (tenant_id, employee_id, effective_from) WHERE is_active เพื่อเก็บ voided correction ได้หลายแถวแต่ห้าม active version ซ้ำวัน Composite unique indexes ใน diagram ใช้กับ membership, invited email, employee linkage และ parent tenant keys; PostgreSQL UNIQUE อนุญาต NULL ซ้ำได้สำหรับแถวที่ยังไม่เชื่อม",
       "x": 400,
       "y": 3400,
       "color": "#fef3c7",
       "width": 360,
-      "height": 402
+      "height": 546
     },
     {
       "id": 2,
@@ -5548,12 +5914,12 @@
     {
       "id": 3,
       "title": "Composite tenant foreign-key contract",
-      "content": "Migration ต้องสร้าง composite foreign key เมื่อ child และ parent เป็นข้อมูล tenant: tenant_role_assignments และ employees -> tenant_users; tenant_role_assignments -> tenant_groups; employee_addresses -> employees; tenant_invitations -> tenant_users และ tenant_groups; payment_transactions -> checkout/subscription ที่มี tenant_id; payment_events -> payment_transactions โดย parent ต้องมี UNIQUE (tenant_id,id) เพื่อป้องกันการเชื่อม ID ที่มีอยู่จริงแต่เป็นของ tenant อื่น; departments -> parent department; employees -> departments, job_positions และ manager employee",
+      "content": "Migration ต้องสร้าง composite foreign key เมื่อ child และ parent เป็นข้อมูล tenant: tenant_role_assignments และ employees -> tenant_users; tenant_role_assignments -> tenant_groups; employee_addresses -> employees; tenant_invitations -> tenant_users และ tenant_groups; payment_transactions -> checkout/subscription ที่มี tenant_id; payment_events -> payment_transactions โดย parent ต้องมี UNIQUE (tenant_id,id) เพื่อป้องกันการเชื่อม ID ที่มีอยู่จริงแต่เป็นของ tenant อื่น; departments -> parent department; employees -> departments, job_positions, manager employee และ current employment version; employee_employment_versions -> employee, department, job position, manager และ recording membership",
       "x": 1200,
       "y": 3400,
       "color": "#dbeafe",
       "width": 360,
-      "height": 378,
+      "height": 450,
       "locked": false
     },
     {
@@ -5624,7 +5990,7 @@
       "x": 1480,
       "y": 1550,
       "width": 800,
-      "height": 1350,
+      "height": 1600,
       "color": "#dcfce7"
     },
     {

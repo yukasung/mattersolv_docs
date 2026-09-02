@@ -22,7 +22,10 @@ const tablesByArea = new Map([
     'tenant_invitations', 'tenant_profiles', 'tenant_addresses',
     'tenant_number_sequences', 'audit_events'
   ]],
-  ['People & HR', ['employees', 'departments', 'job_positions', 'employee_addresses']],
+  ['People & HR', [
+    'employees', 'departments', 'job_positions', 'employee_addresses',
+    'employee_employment_versions'
+  ]],
   ['Plans & Billing', [
     'plans', 'features', 'plan_entitlements', 'subscriptions',
     'tenant_entitlement_overrides', 'checkout_sessions',

@@ -49,7 +49,7 @@ for (const code of ['court', 'civil', 'criminal', 'accounting', 'managingPartner
 
 assert.equal(field('employees', 'department'), undefined)
 assert.equal(field('employees', 'position'), undefined)
-for (const [name, notNull] of [['department_id', true], ['job_position_id', true], ['manager_employee_id', false]]) {
+for (const [name, notNull] of [['department_id', false], ['job_position_id', false], ['manager_employee_id', false]]) {
   assert.equal(field('employees', name)?.type, 'BIGINT')
   assert.equal(field('employees', name)?.notNull, notNull)
 }
@@ -58,7 +58,7 @@ assert.match(field('employees', 'manager_employee_id')?.check ?? '', /manager_em
 for (const [name, deleteConstraint] of [
   ['fk_departments_tenant_id', 'Restrict'], ['fk_departments_parent_department_id', 'Restrict'],
   ['fk_job_positions_tenant_id', 'Restrict'], ['fk_employees_department_id', 'Restrict'],
-  ['fk_employees_job_position_id', 'Restrict'], ['fk_employees_manager_employee_id', 'Set null']
+  ['fk_employees_job_position_id', 'Restrict'], ['fk_employees_manager_employee_id', 'Restrict']
 ]) {
   assert.ok(relationship(name), `${name} must exist`)
   assert.equal(relationship(name).deleteConstraint, deleteConstraint)
