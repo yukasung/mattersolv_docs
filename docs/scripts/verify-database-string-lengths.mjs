@@ -8,6 +8,12 @@ const tables = new Map(diagram.tables.map((table) => [table.name, table]))
 // Limits come from the frontend input contracts or an external code standard.
 const boundedStrings = new Map([
   ['tenants.country_code', 2],
+  ['tenant_profiles.company_email', 254],
+  ['tenant_addresses.building', 255],
+  ['tenant_addresses.road', 100],
+  ['tenant_addresses.alley', 100],
+  ['tenant_addresses.country_code', 2],
+  ['tenant_number_sequences.prefix', 20],
   ['tenant_users.invited_email', 150],
   ['employees.employee_number', 50],
   ['employees.prefix_other', 50],

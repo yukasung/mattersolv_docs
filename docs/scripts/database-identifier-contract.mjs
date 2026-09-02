@@ -11,7 +11,11 @@ export const publicIdentifierTableNames = Object.freeze([
   'payment_transactions',
   'payment_events',
   'tenant_invitations',
-  'user_profiles'
+  'user_profiles',
+  'tenant_profiles',
+  'tenant_addresses',
+  'tenant_number_sequences',
+  'audit_events'
 ])
 
 export const internalOnlyTableNames = Object.freeze([

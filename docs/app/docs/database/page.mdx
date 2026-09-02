@@ -111,6 +111,44 @@ Login Email ต้องผ่าน `lower(btrim(email))` และยาวไ
 RLS เป็น defense in depth หาก application ลืมกรอง Workspace แต่ไม่สามารถแทน
 กฎระดับ module, role, Matter, record scope หรือ approval state ได้
 
+## Tenant Settings and Number Sequences
+
+`GET/PATCH /api/settings` เป็น API façade ที่รวมข้อมูลจาก typed tables หลายตาราง
+Frontend จึงไม่ต้องทราบ physical schema และ Backend สามารถตรวจชนิดข้อมูลกับสิทธิ์
+ของแต่ละส่วนได้ชัดเจน
+
+| ตาราง | หน้าที่ |
+| --- | --- |
+| `tenants` | ชื่อ, ชื่อตามกฎหมาย, Tax ID, locale, timezone และ lifecycle |
+| `tenant_profiles` | อีเมลบริษัทและเว็บไซต์แบบ one-to-one กับ Tenant |
+| `tenant_addresses` | ที่อยู่สำนักงาน แยกด้วย `(tenant_id, address_type)` |
+| `tenant_number_sequences` | รูปแบบและ counter สำหรับเลข Client, Employee, Matter และ Quotation |
+| `audit_events` | ประวัติการเปลี่ยนค่าที่เพิ่มได้อย่างเดียวและแก้ย้อนหลังไม่ได้ |
+
+ไม่ใช้ universal JSONB หรือ key-value settings table สำหรับค่าที่รู้โครงสร้างแล้ว
+เพราะจะทำให้ database บังคับ type, length, uniqueness และ foreign key ได้ยาก
+JSONB สงวนไว้สำหรับ integration/plugin metadata ที่โครงสร้างไม่แน่นอนจริงเท่านั้น
+
+แต่ละ Tenant ต้อง provision sequence ต่อไปนี้ โดยเริ่ม `next_number = 1`:
+
+| `sequence_key` | Prefix | Padding |
+| --- | ---: | ---: |
+| `client` | `CUS-` | 5 |
+| `employee` | `EMP-` | 5 |
+| `matter` | `MAT-` | 5 |
+| `quotation` | `QT-` | 5 |
+
+เลขที่แสดงคำนวณด้วย `prefix || lpad(number::text, padding, '0')` เช่น
+`MAT-00001` Prefix ต้องยาว 1–20 ตัวอักษร และ padding ต้องเป็นจำนวนเต็ม 1–12
+API ไม่รับหรือส่ง `nextNumber`; client แก้ได้เฉพาะ prefix และ padding
+
+Backend ต้องจองเลขแบบ atomic ภายใน transaction ด้วย `UPDATE ... RETURNING`
+ห้ามอ่าน counter แล้วค่อย update แยกคำสั่ง เพราะ concurrent request อาจได้เลขซ้ำกัน
+เลขไม่ reset และยอมให้มี gap เมื่อ transaction ภายหลังยกเลิกหรือ business record ถูก
+ยกเลิก แต่ห้ามนำเลขเดิมกลับมาใช้ การเปลี่ยน prefix/padding มีผลเฉพาะเลขที่ออกใหม่
+และต้องสร้าง `audit_events` ที่เก็บค่าเดิม ค่าใหม่ ผู้แก้ และเวลา Companion migration
+ติดตั้ง trigger ห้ามลด `next_number` เพื่อป้องกัน reset/reuse แม้ application ทำงานผิดพลาด
+
 ## Tenant Lifecycle and Deletion Safety
 
 การหยุดใช้ Workspace ตาม flow ปกติต้องเปลี่ยน `tenants.status` เป็น `archived`
@@ -189,6 +227,10 @@ retention ที่ได้ประโยชน์จาก partition pruning 
 - การลบ Workspace ที่มีสมาชิก role, subscription หรือข้อมูลธุรกิจต้องถูก
   Foreign Key ปฏิเสธ
 - การ archive Workspace ต้องเก็บ role, role assignment และ Audit Log ไว้ครบถ้วน
+- Sequence key ซ้ำใน Workspace เดียวกัน Prefix/counter/padding ที่ผิดเงื่อนไข
+  และการแก้ Audit Event ต้องถูก PostgreSQL ปฏิเสธ
+- Concurrent allocator ต้องคืน running number ไม่ซ้ำ และ format ที่เปลี่ยนต้องไม่
+  แก้เลขที่ออกไปแล้ว
 - Partition routing และ partition pruning ทำงานตามช่วงที่กำหนด
 - การสร้าง partition ใหม่ไม่ทำให้ constraint หรือ index หาย
 - Restore test รักษาข้อมูล ความสัมพันธ์ audit history และขอบเขต Workspace
@@ -200,6 +242,12 @@ retention ที่ได้ประโยชน์จาก partition pruning 
 ทดสอบ `BIGINT` internal key, UUID v7 `public_id`, การ resolve public ID และการ
 ไม่สร้าง public ID บน join table ได้ด้วย
 `docs/scripts/verify-database-hybrid-identifiers.sql`
+
+ทดสอบ defaults, constraints, number formatting, RLS และ append-only audit policy
+ของ Tenant Settings ได้ด้วย `docs/scripts/verify-database-tenant-settings.sql`
+หลังโหลด schema export กับ tenant-isolation migration แล้ว ส่วน concurrent allocator
+ทดสอบด้วย `database:tenant-settings:concurrency:verify` ซึ่งเปิดหลาย `psql` connection
+และตรวจว่าเลขที่คืนไม่ซ้ำกับ `tenant_settings_allocation_results.issued_number`
 
 ## Related Documents
 

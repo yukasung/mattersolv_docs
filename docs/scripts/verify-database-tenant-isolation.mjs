@@ -16,6 +16,8 @@ const tenantTables = [
   'tenant_users',
   'tenant_groups',
   'tenant_role_assignments',
+  'tenant_profiles',
+  'tenant_addresses',
   'employees',
   'employee_addresses',
   'subscriptions',
@@ -41,12 +43,35 @@ for (const table of tenantTables) {
   )
 }
 
+for (const statement of [
+  'ALTER TABLE "tenant_number_sequences" ENABLE ROW LEVEL SECURITY;',
+  'ALTER TABLE "tenant_number_sequences" FORCE ROW LEVEL SECURITY;',
+  'CREATE POLICY tenant_isolation_select ON "tenant_number_sequences"',
+  'CREATE POLICY tenant_isolation_update ON "tenant_number_sequences"'
+]) {
+  assert.ok(migration.includes(statement), `tenant_number_sequences isolation must include: ${statement}`)
+}
+assert.doesNotMatch(migration, /CREATE POLICY tenant_isolation_insert ON "tenant_number_sequences"/)
+assert.doesNotMatch(migration, /CREATE POLICY tenant_isolation_delete ON "tenant_number_sequences"/)
+
+for (const statement of [
+  'ALTER TABLE "audit_events" ENABLE ROW LEVEL SECURITY;',
+  'ALTER TABLE "audit_events" FORCE ROW LEVEL SECURITY;',
+  'CREATE POLICY tenant_isolation_select ON "audit_events"',
+  'CREATE POLICY tenant_isolation_insert ON "audit_events"'
+]) {
+  assert.ok(migration.includes(statement), `audit_events isolation must include: ${statement}`)
+}
+assert.doesNotMatch(migration, /CREATE POLICY tenant_isolation_update ON "audit_events"/)
+assert.doesNotMatch(migration, /CREATE POLICY tenant_isolation_delete ON "audit_events"/)
+
 const compositeForeignKeys = [
   ['tenant_users', 'invited_by_tenant_user_id', 'tenant_users'],
   ['tenant_role_assignments', 'tenant_user_id', 'tenant_users'],
   ['tenant_role_assignments', 'tenant_group_id', 'tenant_groups'],
   ['tenant_role_assignments', 'assigned_by_tenant_user_id', 'tenant_users'],
   ['employees', 'tenant_user_id', 'tenant_users'],
+  ['audit_events', 'actor_tenant_user_id', 'tenant_users'],
   ['employee_addresses', 'employee_id', 'employees'],
   ['payment_transactions', 'checkout_session_id', 'checkout_sessions'],
   ['payment_transactions', 'subscription_id', 'subscriptions'],
@@ -89,6 +114,7 @@ const tenantReferences = diagram.relationships.filter(
   ({ endTableId }) => endTableId === tenants?.id
 )
 const expectedTenantReferences = [
+  'audit_events.tenant_id',
   'checkout_sessions.tenant_id',
   'employee_addresses.tenant_id',
   'employees.tenant_id',
@@ -96,9 +122,12 @@ const expectedTenantReferences = [
   'payment_transactions.tenant_id',
   'pending_trial_applications.resulting_tenant_id',
   'subscriptions.tenant_id',
+  'tenant_addresses.tenant_id',
   'tenant_entitlement_overrides.tenant_id',
   'tenant_groups.tenant_id',
   'tenant_invitations.tenant_id',
+  'tenant_number_sequences.tenant_id',
+  'tenant_profiles.tenant_id',
   'tenant_role_assignments.tenant_id',
   'tenant_users.tenant_id'
 ]
@@ -141,5 +170,5 @@ assert.match(lifecycleNote.content, /Legal Hold/)
 assert.match(lifecycleNote.content, /[\u0E00-\u0E7F]/)
 
 console.log(
-  `Verified executable tenant isolation for ${tenantTables.length} tables, ${compositeForeignKeys.length} composite foreign keys, and ${tenantReferences.length} restrictive tenant references`
+  `Verified executable tenant isolation for ${tenantTables.length + 1} tables, ${compositeForeignKeys.length} composite foreign keys, and ${tenantReferences.length} restrictive tenant references`
 )

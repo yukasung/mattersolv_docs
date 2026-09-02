@@ -12,6 +12,27 @@
 
 BEGIN;
 
+-- A counter may advance and gaps are allowed, but issued numbers must never be
+-- made reusable by moving next_number backwards.
+CREATE OR REPLACE FUNCTION prevent_tenant_number_sequence_rewind()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NEW.next_number < OLD.next_number THEN
+        RAISE EXCEPTION 'tenant number sequence cannot move backwards'
+            USING ERRCODE = '23514';
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS tenant_number_sequences_no_rewind
+    ON tenant_number_sequences;
+CREATE TRIGGER tenant_number_sequences_no_rewind
+    BEFORE UPDATE OF next_number ON tenant_number_sequences
+    FOR EACH ROW EXECUTE FUNCTION prevent_tenant_number_sequence_rewind();
+
 -- Enforce tenant consistency for relationships between tenant-owned records.
 -- Existing single-column foreign keys remain useful for their delete actions;
 -- these composite keys add the tenant equality invariant.
@@ -49,6 +70,12 @@ ALTER TABLE "employee_addresses"
 ALTER TABLE "employee_addresses"
     ADD CONSTRAINT "fk_employee_addresses_employee_tenant"
     FOREIGN KEY ("tenant_id", "employee_id") REFERENCES "employees" ("tenant_id", "id");
+
+ALTER TABLE "audit_events"
+    DROP CONSTRAINT IF EXISTS "fk_audit_events_actor_tenant";
+ALTER TABLE "audit_events"
+    ADD CONSTRAINT "fk_audit_events_actor_tenant"
+    FOREIGN KEY ("tenant_id", "actor_tenant_user_id") REFERENCES "tenant_users" ("tenant_id", "id");
 
 ALTER TABLE "payment_transactions"
     DROP CONSTRAINT IF EXISTS "fk_payment_transactions_checkout_tenant";
@@ -116,6 +143,46 @@ DROP POLICY IF EXISTS tenant_isolation ON "tenant_role_assignments";
 CREATE POLICY tenant_isolation ON "tenant_role_assignments"
     FOR ALL TO PUBLIC
     USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint)
+    WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
+
+ALTER TABLE "tenant_profiles" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "tenant_profiles" FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON "tenant_profiles";
+CREATE POLICY tenant_isolation ON "tenant_profiles"
+    FOR ALL TO PUBLIC
+    USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint)
+    WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
+
+ALTER TABLE "tenant_addresses" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "tenant_addresses" FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON "tenant_addresses";
+CREATE POLICY tenant_isolation ON "tenant_addresses"
+    FOR ALL TO PUBLIC
+    USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint)
+    WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
+
+ALTER TABLE "tenant_number_sequences" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "tenant_number_sequences" FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON "tenant_number_sequences";
+DROP POLICY IF EXISTS tenant_isolation_select ON "tenant_number_sequences";
+CREATE POLICY tenant_isolation_select ON "tenant_number_sequences"
+    FOR SELECT TO PUBLIC
+    USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
+DROP POLICY IF EXISTS tenant_isolation_update ON "tenant_number_sequences";
+CREATE POLICY tenant_isolation_update ON "tenant_number_sequences"
+    FOR UPDATE TO PUBLIC
+    USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint)
+    WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
+
+ALTER TABLE "audit_events" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "audit_events" FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_select ON "audit_events";
+CREATE POLICY tenant_isolation_select ON "audit_events"
+    FOR SELECT TO PUBLIC
+    USING ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
+DROP POLICY IF EXISTS tenant_isolation_insert ON "audit_events";
+CREATE POLICY tenant_isolation_insert ON "audit_events"
+    FOR INSERT TO PUBLIC
     WITH CHECK ("tenant_id" IS NOT NULL AND "tenant_id" = NULLIF(current_setting('app.tenant_id', true), '')::bigint);
 
 ALTER TABLE "employees" ENABLE ROW LEVEL SECURITY;

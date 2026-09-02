@@ -19,7 +19,8 @@ const tablesByArea = new Map([
   ]],
   ['Tenant & Authorization', [
     'tenants', 'tenant_users', 'tenant_groups', 'tenant_role_assignments',
-    'tenant_invitations'
+    'tenant_invitations', 'tenant_profiles', 'tenant_addresses',
+    'tenant_number_sequences', 'audit_events'
   ]],
   ['People & HR', ['employees', 'employee_addresses']],
   ['Plans & Billing', [
