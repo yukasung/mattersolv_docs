@@ -11,8 +11,9 @@
 [Permissions](/docs/roles/permissions)
 
 ตารางฝั่งสำนักงานที่ทำให้บทบาทแยกตาม Tenant ได้แก่ tenant_users, tenant_groups
-และ tenant_role_assignments ไม่อยู่ในขอบเขตของหน้านี้ แต่เส้นทางการตรวจสิทธิ์
-ที่เชื่อมสองฝั่งเข้าด้วยกันอธิบายไว้ที่หัวข้อ Permission Resolution Path
+และ tenant_role_assignments ไม่อยู่ในขอบเขตของหน้านี้ แต่มีคำอธิบายรายคอลัมน์อยู่ที่
+[Tenant & Authorization Tables](/docs/database/tenant-authorization) ส่วนเส้นทาง
+การตรวจสิทธิ์ที่เชื่อมสองฝั่งเข้าด้วยกันอธิบายไว้ที่หัวข้อ Permission Resolution Path
 
 ## Table Catalogue
 
@@ -359,6 +360,7 @@ data scope และเงื่อนไข workflow เป็นการต�
 ## Related Documents
 
 - [Database](/docs/database) — หลักการออกแบบฐานข้อมูลและกฎการใช้ตาราง Django auth
+- [Tenant & Authorization Tables](/docs/database/tenant-authorization) — ตารางฝั่งสำนักงาน
 - [Roles](/docs/roles) — ความหมายเชิงธุรกิจของบทบาทในสำนักงาน
 - [Permissions](/docs/roles/permissions) — รหัสสิทธิ์และ Django permission contract
 - [User Accounts](/docs/modules/administration/user-accounts) — การสร้างและเชิญผู้ใช้
