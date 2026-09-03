@@ -27,6 +27,11 @@
 | auth_user_groups | Django | ตารางเชื่อม User กับ Group ระดับระบบเท่านั้น |
 | auth_user_user_permissions | Django | ตารางเชื่อม User กับ Permission ระดับระบบเท่านั้น |
 
+คำว่า ระดับระบบ ในหน้านี้หมายถึงสิทธิ์ที่ไม่ผูกกับสำนักงานใดสำนักงานหนึ่ง และมีผล
+กับผู้ใช้ทุกที่ในระบบ ต่างจากสิทธิ์ระดับสำนักงานที่มีผลเฉพาะภายใน Tenant เดียว
+ตาราง auth_user_groups และ auth_user_user_permissions ไม่มีคอลัมน์ tenant_id
+จึงระบุขอบเขตสำนักงานไม่ได้ และรองรับได้เฉพาะสิทธิ์ระดับระบบเท่านั้น
+
 ลูกศรในแผนภาพชี้จากตารางที่ถือ Foreign Key ไปยังตารางปลายทาง
 
 <div aria-label="Django Authentication tables and foreign keys">
@@ -131,6 +136,10 @@ erDiagram
 user_profiles ผูกกับ auth_user แบบ one-to-one เพราะ user_id เป็น UNIQUE ส่วน
 ความสัมพันธ์อื่นเป็น one-to-many ทั้งหมด
 
+ตารางทั้งแปดไม่มี Foreign Key ชี้ออกไปนอก subject area นี้เลย มีแต่ตารางภายนอก
+ที่อ้างอิงเข้ามาที่ Primary Key ของ auth_user และ auth_group ซึ่งระบุไว้ในหัวข้อ
+ของตารางนั้น โดยไม่ได้วาดตารางภายนอกไว้ในแผนภาพ
+
 ## auth_user
 
 บัญชีเข้าสู่ระบบมาตรฐานของ Django หนึ่งคนมีหนึ่งแถวในระบบทั้งหมด ไม่ว่าจะเป็น
@@ -165,6 +174,16 @@ is_active กับ tenant_users.status ทำหน้าที่ต่าง�
 
 is_superuser และ is_staff เป็นสิทธิ์ของทีมงาน MatterSolv เอง ไม่ใช่บทบาทของ
 สำนักงานลูกค้า และห้ามนำมาใช้แทนบทบาทระดับ Tenant
+
+auth_user.id ถูกอ้างอิงต่อจากตารางนอก subject area นี้อีกสามจุด ซึ่งไม่ได้วาดไว้
+ในแผนภาพด้านบน
+
+- tenant_users.user_id ใช้ ON DELETE RESTRICT จึงลบบัญชีที่ยังเป็นสมาชิกของ
+  สำนักงานใดอยู่ไม่ได้ ต้องถอนสมาชิกภาพก่อน
+- checkout_sessions.buyer_user_id ใช้ ON DELETE SET NULL การลบบัญชีจึงเก็บ
+  ประวัติการสั่งซื้อไว้แต่ตัดผู้ซื้อออก
+- pending_trial_applications.resulting_user_id ใช้ ON DELETE SET NULL
+  ด้วยเหตุผลเดียวกัน
 
 ## user_profiles
 
@@ -205,6 +224,13 @@ role_code เพื่อไม่ให้ชนกันข้ามสำน�
 ชื่อที่แสดงต่อผู้ใช้เก็บใน tenant_groups.display_name ส่วนรหัสบทบาทที่โค้ดใช้
 อ้างอิงเก็บใน tenant_groups.code การเปลี่ยนชื่อที่ผู้ใช้เห็นจึงไม่กระทบ
 auth_group.name
+
+auth_group.id ถูกอ้างอิงต่อจากตารางนอก subject area นี้หนึ่งจุด ซึ่งไม่ได้วาดไว้
+ในแผนภาพด้านบน
+
+- tenant_groups.group_id ใช้ ON DELETE CASCADE การลบแถวใน auth_group จึงลบแถว
+  ใน tenant_groups ที่ผูกอยู่ไปด้วย และ group_id ยังเป็น UNIQUE จึงบังคับว่า
+  หนึ่ง Django Group เป็นของสำนักงานเดียวเท่านั้น
 
 ## auth_permission
 
@@ -267,6 +293,14 @@ tenant_role_assignments และ tenant_groups เสมอ ไม่ใช่�
 > ของผู้ใช้เข้าด้วยกัน ผู้ใช้ที่เป็นสมาชิกหลายสำนักงานจะได้สิทธิ์ติดตัวข้าม
 > สำนักงานทันที ให้มอบบทบาทผ่าน tenant_role_assignments แทน
 
+ตัวอย่างผลเสียถ้าใช้ผิด สมมติทนายคนหนึ่งเป็น Admin ที่สำนักงาน ก. และเป็นสมาชิก
+ธรรมดาที่สำนักงาน ข. หากมอบบทบาท Admin ผ่านตารางนี้ เขาจะกลายเป็น Admin ที่
+สำนักงาน ข. ทันทีด้วย ซึ่งเป็นช่องโหว่ยกระดับสิทธิ์ข้ามสำนักงาน
+
+ปัจจุบัน MatterSolv ยังไม่ได้นิยาม Group ระดับระบบไว้เลย สิทธิ์ของทีมงานผู้ให้บริการ
+ใช้ auth_user.is_superuser และ auth_user.is_staff แทน ตารางนี้จึงเป็นตารางที่ Django
+สร้างไว้ตามมาตรฐานและสงวนไว้เฉย ๆ ยังไม่มีการใช้งานจริงในระบบ
+
 ## auth_user_user_permissions
 
 ตารางเชื่อม User กับ Permission โดยตรงระดับระบบ ใช้มอบสิทธิ์เฉพาะรายที่ไม่ผ่าน
@@ -280,6 +314,8 @@ Group
 
 > **ห้าม:** ใช้ตารางนี้มอบสิทธิ์ระดับสำนักงาน ด้วยเหตุผลเดียวกับ auth_user_groups
 > คือสิทธิ์จะติดตัวผู้ใช้ข้ามทุกสำนักงาน
+
+ตารางนี้สงวนไว้เช่นเดียวกับ auth_user_groups และยังไม่มีการใช้งานจริงในระบบ
 
 ## Permission Resolution Path
 
