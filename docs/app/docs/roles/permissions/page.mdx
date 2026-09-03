@@ -75,10 +75,10 @@ Workflow ที่ไม่ใช่ CRUD ใช้ custom Django permissions �
 
 | กลุ่ม | Resource | Standard model | Custom Django permissions |
 | --- | --- | --- | --- |
-| สำนักงานและสมาชิก | การตั้งค่าสำนักงาน | `office.office` | — |
-| สำนักงานและสมาชิก | สมาชิก | `office.member` | `office.invite_member` |
+| สำนักงานและสมาชิก | การตั้งค่าสำนักงาน | `tenant.tenant` | — |
+| สำนักงานและสมาชิก | สมาชิก | `tenant.tenant_user` | `tenant.invite_tenant_user` |
 | สำนักงานและสมาชิก | บทบาท | `auth.group` | — |
-| ข้อมูลตั้งต้น | ข้อมูลตั้งต้น | `office.master_data` | — |
+| ข้อมูลตั้งต้น | ข้อมูลตั้งต้น | `tenant.master_data` | — |
 | ลูกความ | ลูกความ | `clients.client` | `clients.export_client`, `clients.invite_client_portal` |
 | สำนวน | สำนวน | `matters.matter` | `matters.approve_matter`, `matters.assign_matter_team` |
 | สำนวน | บันทึกเวลา | `matters.time_entry` | `matters.submit_time_entry`, `matters.approve_time_entry` |
@@ -97,7 +97,7 @@ Workflow ที่ไม่ใช่ CRUD ใช้ custom Django permissions �
 | บุคลากรและเงินเดือน | เงินเดือน | `hr.payroll` | `hr.approve_payroll`, `hr.export_payroll` |
 | รายงานและแดชบอร์ด | รายงาน (อ่านอย่างเดียว) | `reports.report` เฉพาะ `view` | `reports.export_report` |
 | บันทึกตรวจสอบและความปลอดภัย | บันทึกตรวจสอบ (อ่านอย่างเดียว) | `audit.audit_log` เฉพาะ `view` | `audit.export_audit_log` |
-| บันทึกตรวจสอบและความปลอดภัย | ความปลอดภัย | `office.security_setting` เฉพาะ `view/change` | — |
+| บันทึกตรวจสอบและความปลอดภัย | ความปลอดภัย | `tenant.security_setting` เฉพาะ `view/change` | — |
 
 ผู้ดูแลสำนักงานเลือกได้เฉพาะ permission จาก catalogue ของระบบ
 ไม่สามารถสร้าง codename ใหม่หรือเปลี่ยนความหมายของ codename ผ่านหน้าบทบาท
