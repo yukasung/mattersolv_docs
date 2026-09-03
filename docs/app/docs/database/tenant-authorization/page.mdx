@@ -161,7 +161,7 @@ erDiagram
     TEXT subdistrict
     TEXT district
     TEXT province
-    TEXT postal_code
+    VARCHAR(5) postal_code
     VARCHAR(2) country_code
     TIMESTAMPTZ created_at
     TIMESTAMPTZ updated_at
@@ -247,7 +247,7 @@ Foreign Key ทุกเส้นที่ชี้ไป tenants ใช้ ON D
 | slug | TEXT | ชื่อย่อ UNIQUE ทั้งระบบ ต้องเป็นตัวพิมพ์เล็ก |
 | name | TEXT | ชื่อสำนักงานที่ใช้แสดง |
 | legal_name | TEXT | ชื่อตามกฎหมาย |
-| tax_id | TEXT | เลขประจำตัวผู้เสียภาษี |
+| tax_id | TEXT | เลขประจำตัวผู้เสียภาษี ไม่จำกัดความยาวโดยตั้งใจ |
 | country_code | VARCHAR(2) | รหัสประเทศสองตัวอักษร |
 | default_language | TEXT | ภาษาเริ่มต้น th หรือ en |
 | timezone | TEXT | เขตเวลาของสำนักงาน ใช้คำนวณวันที่เชิงธุรกิจ |
@@ -262,6 +262,12 @@ Foreign Key ทุกเส้นที่ชี้ไป tenants ใช้ ON D
 - country_code มี CHECK ความยาวเท่ากับ 2 พอดี
 - status มี CHECK จำกัดค่าไว้สามค่า และผูกกับ archived_at แบบสองทาง คือ
   status เป็น archived ก็ต่อเมื่อ archived_at ไม่เป็น NULL
+
+tax_id เป็น TEXT โดยตั้งใจ ไม่ใช่การหลงลืมกำหนดความยาว เลขประจำตัวผู้เสียภาษีไทย
+มี 13 หลักเท่ากับ employees.identity_number ที่เป็น VARCHAR(13) แต่ tenants
+รองรับ country_code อื่นนอกจาก TH ได้ การจำกัดไว้ 13 หลักจึงจะปฏิเสธเลขภาษีของ
+นิติบุคคลต่างชาติ และไม่มีเพดานจาก frontend มายืนยัน จึงคง TEXT ตามกฎการเลือก
+ชนิดข้อมูลใน [Database](/docs/database)
 
 เงื่อนไขสองทางของ status กับ archived_at สำคัญกว่าที่เห็น เพราะกันทั้งกรณีตั้ง
 สถานะ archived โดยลืมบันทึกเวลา และกรณีบันทึกเวลาไว้แต่สถานะยังเป็น active ทำให้
@@ -421,7 +427,7 @@ unique บน tenant_id ทำให้หนึ่งสำนักงาน�
 | subdistrict | TEXT | ตำบลหรือแขวง |
 | district | TEXT | อำเภอหรือเขต |
 | province | TEXT | จังหวัด |
-| postal_code | TEXT | รหัสไปรษณีย์ |
+| postal_code | VARCHAR(5) | รหัสไปรษณีย์ไทยมีห้าหลักพอดี |
 | country_code | VARCHAR(2) | รหัสประเทศสองตัวอักษร |
 | created_at | TIMESTAMPTZ | เวลาสร้าง |
 | updated_at | TIMESTAMPTZ | เวลาแก้ไขล่าสุด |

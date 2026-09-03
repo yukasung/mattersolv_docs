@@ -116,7 +116,7 @@ erDiagram
     UUID public_id UK
     BIGINT user_id FK
     TEXT display_name
-    TEXT phone
+    VARCHAR(16) phone
     TIMESTAMPTZ email_verified_at
     TIMESTAMPTZ created_at
     TIMESTAMPTZ updated_at
@@ -198,7 +198,7 @@ auth_user.id ถูกอ้างอิงต่อจากตารางน�
 | public_id | UUID | Identifier ที่เปิดผ่าน API ค่าเริ่มต้น uuidv7() |
 | user_id | BIGINT | Foreign Key ไป auth_user.id เป็น UNIQUE จึงเป็น one-to-one |
 | display_name | TEXT | ชื่อที่แสดงในหน้าจอและประวัติการทำงาน |
-| phone | TEXT | หมายเลขโทรศัพท์ |
+| phone | VARCHAR(16) | หมายเลขโทรศัพท์ ความยาวตามมาตรฐาน E.164 |
 | email_verified_at | TIMESTAMPTZ | เวลายืนยันอีเมล ถ้ายังไม่ยืนยันเป็น NULL |
 | created_at | TIMESTAMPTZ | เวลาสร้างระเบียน ค่าเริ่มต้น now() |
 | updated_at | TIMESTAMPTZ | เวลาแก้ไขล่าสุด ค่าเริ่มต้น now() |

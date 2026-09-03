@@ -3734,14 +3734,15 @@
         {
           "id": "9cb5ed53-aff2-4aa0-a7ae-e637809a0530",
           "name": "phone",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "E.164 allows a plus sign and at most 15 digits, so 16 characters is the standard ceiling.",
+          "size": 16
         },
         {
           "id": "e89a0ea9-c772-41f6-84d1-8af381ec7062",
@@ -4285,14 +4286,15 @@
         {
           "id": "HP8jJvAJWs5XqPlKtkr-f",
           "name": "postal_code",
-          "type": "TEXT",
+          "type": "VARCHAR",
           "primary": false,
           "unique": false,
           "notNull": false,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "Thai postal codes are exactly five digits; matches employee_addresses.postal_code.",
+          "size": 5
         },
         {
           "id": "9BG1PHhRFIyM6sjg9OicN",
