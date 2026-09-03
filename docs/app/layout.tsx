@@ -3,6 +3,7 @@ import { Footer, Layout, Navbar } from 'nextra-theme-docs'
 import { Head } from 'nextra/components'
 import { getPageMap } from 'nextra/page-map'
 import type { FC } from 'react'
+import { MermaidZoom } from './_components/mermaid-zoom'
 import './globals.css'
 
 export const dynamic = 'force-dynamic'
@@ -90,6 +91,7 @@ const RootLayout: FC<LayoutProps<'/'>> = async ({ children }) => {
         >
           {resolvedChildren}
         </Layout>
+        <MermaidZoom />
       </body>
     </html>
   )

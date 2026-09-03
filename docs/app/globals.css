@@ -398,6 +398,55 @@ main div[aria-label] svg {
   height: auto;
 }
 
+/* Click any mermaid diagram to view it full screen. Collapsed, a diagram still
+   obeys the shared sizing rules above; zoomed, its container is promoted to a
+   fullscreen overlay and the SVG is drawn at natural size, so wide diagrams
+   such as the ER diagrams stay readable instead of being scaled down. */
+main svg[aria-roledescription] {
+  cursor: zoom-in;
+}
+
+.mermaid-zoomed {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  margin: 0;
+  padding: 3.5rem 1.5rem 2rem;
+  overflow: auto;
+  background: #ffffff;
+}
+
+:where(.dark) .mermaid-zoomed {
+  background: #111111;
+}
+
+.mermaid-zoomed svg {
+  max-width: none !important;
+  width: auto !important;
+  height: auto;
+  margin-inline: 0 !important;
+  cursor: zoom-out;
+}
+
+.mermaid-zoom-close {
+  position: fixed;
+  top: 1rem;
+  right: 1.5rem;
+  z-index: 61;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-radius: 999px;
+  padding: 0.2rem 0.85rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+.mermaid-zoom-close:hover {
+  background: color-mix(in srgb, currentColor 20%, transparent);
+}
+
 .workflow-step-explanation-title {
   margin-top: 1.5rem;
   font-size: 1.25rem;
