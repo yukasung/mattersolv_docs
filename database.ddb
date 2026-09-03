@@ -2666,7 +2666,7 @@
       "id": "uZ0lDxPc-e8SFXAmfz_XS",
       "name": "pending_trial_applications",
       "x": 3780,
-      "y": 2450,
+      "y": 2380,
       "fields": [
         {
           "id": "jo_2LtyZL0dvqfBw-nJQ3",
@@ -2792,15 +2792,15 @@
         },
         {
           "id": "Lm0E95fJFyAxISI1hNT9P",
-          "name": "verification_token_hash",
+          "name": "verification_code_hash",
           "type": "TEXT",
           "primary": false,
-          "unique": true,
+          "unique": false,
           "notNull": true,
           "increment": false,
           "default": "",
           "check": "",
-          "comment": ""
+          "comment": "Hash of the 6-digit verification code. Not unique: a 6-digit space collides across concurrent signups, so lookup is by email then code."
         },
         {
           "id": "r8BIy0hYSMMP90JLa56Pf",
@@ -2873,6 +2873,30 @@
           "default": "now()",
           "check": "",
           "comment": ""
+        },
+        {
+          "id": "wWy_rm4Fg-V3LpzV3k3rm",
+          "name": "verification_attempt_count",
+          "type": "SMALLINT",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "0",
+          "check": "verification_attempt_count BETWEEN 0 AND 5",
+          "comment": "Failed code entries. At the ceiling the application is expired so a short code cannot be brute forced."
+        },
+        {
+          "id": "Y51luvFEVh7dpfpC0wgWx",
+          "name": "last_code_sent_at",
+          "type": "TIMESTAMPTZ",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "default": "",
+          "check": "",
+          "comment": "Time the newest code was sent; backs the resend cooldown."
         }
       ],
       "comment": "Untrusted trial applicant before verification; does not grant access or create an active tenant.",
