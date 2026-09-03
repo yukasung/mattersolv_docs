@@ -23,7 +23,7 @@ export default {
       _technical: { type: 'separator', title: <Section>Technical</Section> },
       architecture: { title: 'Architecture', items: { index: 'Overview', 'technology-stack': 'Technology Stack', 'scalability-capacity': 'Scalability & Capacity' } },
       development: { title: 'Development', items: { workflow: 'Development Workflow', rules: 'Development Rules', 'design-system': 'Design System', 'component-library': 'Component Library' } },
-      database: { title: 'Database' },
+      database: { title: 'Database', items: { index: 'Overview', 'django-auth': 'Django Authentication' } },
       api: { title: 'API' },
       questions: { title: 'Questions' }
     }
