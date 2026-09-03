@@ -338,7 +338,7 @@
       "id": "EIt8WECuYSHn6OWablvmi",
       "name": "tenant_users",
       "x": 1800,
-      "y": 80,
+      "y": 79.69270833333337,
       "fields": [
         {
           "id": "TIdekZpmecw36SXXW1v_B",
@@ -1026,7 +1026,7 @@
           "notNull": true,
           "increment": false,
           "default": "",
-          "check": "",
+          "check": "work_email = lower(btrim(work_email)) AND char_length(work_email) <= 254",
           "comment": "",
           "size": 254
         },
@@ -1162,7 +1162,7 @@
           "notNull": false,
           "increment": false,
           "default": "",
-          "check": "",
+          "check": "private_email IS NULL OR (private_email = lower(btrim(private_email)) AND char_length(private_email) <= 254)",
           "comment": "",
           "size": 254
         },
@@ -1327,6 +1327,19 @@
           "check": "employee_number_key = lower(btrim(employee_number))",
           "comment": "Canonical case-insensitive key derived from employee_number by Django.",
           "size": 50
+        },
+        {
+          "id": "loeYCsv76zXZeKTjWPGKV",
+          "name": "identity_number_key",
+          "type": "VARCHAR",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "default": "",
+          "check": "identity_number_key = lower(btrim(identity_number))",
+          "comment": "Canonical case-insensitive key derived from identity_number by Django.",
+          "size": 13
         }
       ],
       "comment": "Odoo hr.employee adapted for a tenant. tenant_user_id is optional and must be unique per tenant when present. Employment assignment fields are a synchronized current snapshot of employee_employment_versions. Sensitive fields require employees.view_sensitive. Migration must enforce tenant-safe composite foreign keys.",
@@ -1401,6 +1414,14 @@
             "current_employment_version_id"
           ],
           "unique": false
+        },
+        {
+          "name": "uq_employees_tenant_identity_number_key",
+          "fields": [
+            "tenant_id",
+            "identity_number_key"
+          ],
+          "unique": true
         }
       ],
       "color": "#059669"

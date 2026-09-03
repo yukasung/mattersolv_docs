@@ -31,6 +31,7 @@ const boundedStrings = new Map([
   ['employees.private_email', 254],
   ['employees.private_phone', 16],
   ['employees.identity_number', 13],
+  ['employees.identity_number_key', 13],
   ['employees.language_proficiency', 200],
   ['employees.line_id', 20],
   ['employees.wechat_id', 20],
