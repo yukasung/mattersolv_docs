@@ -5632,7 +5632,7 @@
       "startFieldId": "ef7e4d41-70a2-48e2-9e93-9183a0f2fd29",
       "endTableId": "LLVjEYEdfl3MTj8FCs9UG",
       "endFieldId": "4xiSHOMIGaLCNYD6GwJ8t",
-      "cardinality": "many_to_one",
+      "cardinality": "one_to_one",
       "updateConstraint": "No action",
       "deleteConstraint": "Cascade"
     },
@@ -5654,7 +5654,7 @@
       "startFieldId": "769572d5-cc9a-4f99-a682-207819989c08",
       "endTableId": "UPSrpgagEvwD2eTmp0yTO",
       "endFieldId": "WJMYA9iXmd1kDWnAOuKpr",
-      "cardinality": "many_to_one",
+      "cardinality": "one_to_one",
       "updateConstraint": "No action",
       "deleteConstraint": "Cascade"
     },
@@ -5709,7 +5709,7 @@
       "startFieldId": "PjII_PUMI7BT_IzhgwcM9",
       "endTableId": "WSJW9wPQZpYv8OGoOKob4",
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
-      "cardinality": "one_to_many",
+      "cardinality": "one_to_one",
       "updateConstraint": "No action",
       "deleteConstraint": "Restrict"
     },
@@ -5720,7 +5720,7 @@
       "startFieldId": "oFVWqWqvx36nvc5SxpnGa",
       "endTableId": "WSJW9wPQZpYv8OGoOKob4",
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
-      "cardinality": "one_to_many",
+      "cardinality": "many_to_one",
       "updateConstraint": "No action",
       "deleteConstraint": "Restrict"
     },
@@ -5731,7 +5731,7 @@
       "startFieldId": "LzLOImcT5XLVDDwhlKPVw",
       "endTableId": "WSJW9wPQZpYv8OGoOKob4",
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
-      "cardinality": "one_to_many",
+      "cardinality": "many_to_one",
       "updateConstraint": "No action",
       "deleteConstraint": "Restrict"
     },
@@ -5742,7 +5742,7 @@
       "startFieldId": "fczzEHkJ8iQKOISlk_nCl",
       "endTableId": "WSJW9wPQZpYv8OGoOKob4",
       "endFieldId": "QjhdpnU_DdJkKQUu2c_Sv",
-      "cardinality": "one_to_many",
+      "cardinality": "many_to_one",
       "updateConstraint": "No action",
       "deleteConstraint": "Restrict"
     },
@@ -5753,7 +5753,7 @@
       "startFieldId": "rXb3NDdeJYvlLps9gzfrp",
       "endTableId": "EIt8WECuYSHn6OWablvmi",
       "endFieldId": "TIdekZpmecw36SXXW1v_B",
-      "cardinality": "one_to_many",
+      "cardinality": "many_to_one",
       "updateConstraint": "No action",
       "deleteConstraint": "Restrict"
     },
