@@ -6008,6 +6008,16 @@
       "color": "#ede9fe",
       "width": 360,
       "height": 546
+    },
+    {
+      "id": 8,
+      "title": "Audit event contract",
+      "content": "Append-only audit trail\n- มีเฉพาะ policy SELECT และ INSERT ห้ามเพิ่ม UPDATE หรือ DELETE เขียนผิดแล้วแก้ไม่ได้\n- ต้องสร้าง audit event เมื่อ ลบ ส่งออก อนุมัติ เปลี่ยนสิทธิ์ และแก้ข้อมูลการเงิน\n- ต้องเขียนใน transaction เดียวกับการเปลี่ยนข้อมูล ห้าม fire-and-forget\n- action ใช้ <domain>.<verb_phrase> อดีตกาล; entity_type ใช้ชื่อตารางเอกพจน์\n- ทั้งสองค่าต้องจดทะเบียนใน docs/scripts/audit-event-contract.mjs\n- actor เป็น NULL ได้เฉพาะเมื่อระบบเป็นผู้ทำ\n- ห้ามบันทึกค่าดิบของ employees.identity_number เพราะตารางนี้ลบไม่ได้",
+      "x": 3200,
+      "y": 3400,
+      "color": "#ede9fe",
+      "width": 360,
+      "height": 402
     }
   ],
   "enums": [],
