@@ -410,7 +410,7 @@
           "notNull": true,
           "increment": false,
           "default": "active",
-          "check": "status IN ('pending','active','archived')",
+          "check": "status IN ('pending','active','archived') AND ((status = 'archived') = (archived_at IS NOT NULL))",
           "comment": ""
         },
         {
@@ -1576,7 +1576,7 @@
           "notNull": false,
           "increment": false,
           "default": "",
-          "check": "",
+          "check": "postal_code IS NULL OR postal_code ~ '^[0-9]{5}$'",
           "comment": "",
           "size": 5
         },
@@ -3836,7 +3836,7 @@
           "notNull": true,
           "increment": false,
           "default": "",
-          "check": "code = lower(btrim(code))",
+          "check": "code = lower(btrim(code)) AND char_length(code) <= 50",
           "comment": ""
         },
         {
@@ -4292,7 +4292,7 @@
           "notNull": false,
           "increment": false,
           "default": "",
-          "check": "",
+          "check": "postal_code IS NULL OR postal_code ~ '^[0-9]{5}$'",
           "comment": "Thai postal codes are exactly five digits; matches employee_addresses.postal_code.",
           "size": 5
         },

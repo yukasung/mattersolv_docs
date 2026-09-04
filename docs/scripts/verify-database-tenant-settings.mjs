@@ -45,6 +45,12 @@ assert.deepEqual(
 )
 assert.equal(index('tenant_addresses', 'uq_tenant_addresses_type')?.unique, true)
 
+// VARCHAR(5) alone still admits 'abcde'; the postal code must be five digits.
+// employee_addresses carries the same rule and the two must not drift apart.
+for (const tableName of ['tenant_addresses', 'employee_addresses']) {
+  assert.match(field(tableName, 'postal_code')?.check ?? '', /\^\[0-9\]\{5\}\$/)
+}
+
 const sequenceKey = field('tenant_number_sequences', 'sequence_key')
 assert.match(sequenceKey?.check ?? '', /'client'/)
 assert.match(sequenceKey?.check ?? '', /'employee'/)

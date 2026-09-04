@@ -199,6 +199,26 @@ assert.match(
   /status = 'archived'.*archived_at IS NOT NULL/
 )
 
+// Membership archival must be as unambiguous as tenant archival: a membership is
+// archived exactly when archived_at is set, never one without the other.
+const tenantUsers = diagram.tables.find(({ name }) => name === 'tenant_users')
+const tenantUserArchivedAt = tenantUsers?.fields.find(
+  ({ name }) => name === 'archived_at'
+)
+assert.equal(tenantUserArchivedAt?.type, 'TIMESTAMPTZ')
+assert.equal(tenantUserArchivedAt?.notNull, false)
+const tenantUserStatus = tenantUsers?.fields.find(({ name }) => name === 'status')
+assert.match(
+  tenantUserStatus?.check ?? '',
+  /status = 'archived'.*archived_at IS NOT NULL/
+)
+
+// auth_group.name is built as "{tenant_uuid}:{role_code}" into a VARCHAR(150),
+// so an unbounded role code would break tenant provisioning at insert time.
+const tenantGroups = diagram.tables.find(({ name }) => name === 'tenant_groups')
+const tenantGroupCode = tenantGroups?.fields.find(({ name }) => name === 'code')
+assert.match(tenantGroupCode?.check ?? '', /char_length\(code\) <= 50/)
+
 const lifecycleNote = diagram.notes.find(
   ({ title }) => title === 'Tenant lifecycle and deletion safety'
 )
