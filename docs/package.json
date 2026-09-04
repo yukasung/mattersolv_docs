@@ -14,6 +14,7 @@
     "database:employment-history:verify": "node scripts/verify-database-employment-history.mjs",
     "database:layout:verify": "node scripts/verify-database-layout.mjs",
     "database:relationships:verify": "node scripts/verify-database-relationships.mjs",
+    "database:audit-events:verify": "node scripts/verify-database-audit-events.mjs",
     "database:string-lengths:verify": "node scripts/verify-database-string-lengths.mjs",
     "database:tenant-settings:verify": "node scripts/verify-database-tenant-settings.mjs",
     "database:tenant-settings:concurrency:verify": "node scripts/verify-database-tenant-settings-concurrency.mjs",
